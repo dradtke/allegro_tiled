@@ -1,0 +1,13 @@
+[Vim Project]
+Name=allegro-game
+Compiler=gcc
+Exec=./main
+
+[In]
+" Everything after this header will be sourced when this project is opened
+nmap <F11> :make!<cr>
+nmap <S-F11> :make! clean<cr>
+nmap <F12> :call vip#Exec()<cr>
+
+[Out]
+" Everything after this header will be sourced when this project is closed
