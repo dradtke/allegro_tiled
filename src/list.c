@@ -13,6 +13,7 @@ struct node* prepend_to_list(struct node *head, void *data) {
 void free_list(struct node *head) {
 	while (head != NULL) {
 		struct node *temp = head->next;
+		//free(head->data);
 		free(head);
 		head = temp;
 	}

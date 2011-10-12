@@ -53,9 +53,6 @@ int main(int argc, char *argv[]) {
 	al_start_timer(timer);
 
 	map = parse_map("data/maps/level1.tmx");
-	printf("---------------------\n");
-	printf("map is at %d, orientation %d\n", map, &map->orientation);
-	printf("orientation = %s\n", map->orientation);
 
 	// Main loop
 	while (running) {
@@ -90,6 +87,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	// Clean up and return
+	free_map(map);
 	al_destroy_display(display);
 	al_destroy_event_queue(event_queue);
 	return 0;

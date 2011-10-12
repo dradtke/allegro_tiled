@@ -1,7 +1,5 @@
 #include "map-parser.h"
 
-map_tileset *tileset_list;
-
 // Given a parent xml node and a name of desired children,
 // returns a list of all children with that name
 struct node *get_nodes_for_name(xmlNode *parent, char *name) {
@@ -40,8 +38,10 @@ xmlNode *get_first_node_for_name(xmlNode *parent, char *name) {
 }
 
 // Fetches the value of an attribute from a node
+// Creates a new copy for the returned value
 char *get_xml_attribute(xmlNode *node, char *name) {
 	xmlAttr *attrs = node->properties;
+
 	while (attrs != NULL) {
 		if (!strcmp(attrs->name, name))
 			return attrs->children->content;
@@ -54,6 +54,14 @@ char *get_xml_attribute(xmlNode *node, char *name) {
 
 char *decode_layer_data(xmlNode *data_node) {
 	return NULL;
+}
+
+// Returns a copy of the passed in string
+char *copy(char *src) {
+	int len = strlen(src);
+	char *result = (char *)malloc(sizeof(char) * (len+1));
+	strcpy(result, src);;
+	return result;
 }
 
 map_data *parse_map(const char *filename) {
@@ -80,8 +88,7 @@ map_data *parse_map(const char *filename) {
 	map->height = atoi(get_xml_attribute(root, "height"));
 	map->tile_width = atoi(get_xml_attribute(root, "tilewidth"));
 	map->tile_height = atoi(get_xml_attribute(root, "tileheight"));
-	map->orientation = get_xml_attribute(root, "orientation");
-	printf("orientation = %s\n", map->orientation);
+	map->orientation = copy(get_xml_attribute(root, "orientation"));
 
 	// Construct the list of tilesets
 	struct node *tilesets = NULL;
@@ -95,7 +102,7 @@ map_data *parse_map(const char *filename) {
 		// fill in required values
 		set = (map_tileset*)malloc(sizeof(map_tileset));
 		set->firstgid = atoi(get_xml_attribute(node, "firstgid"));
-		set->name = get_xml_attribute(node, "name");
+		set->name = copy(get_xml_attribute(node, "name"));
 		set->tile_width = atoi(get_xml_attribute(node, "tilewidth"));
 		set->tile_height = atoi(get_xml_attribute(node, "tileheight"));
 
@@ -107,7 +114,7 @@ map_data *parse_map(const char *filename) {
 			if (DEBUG) printf("Found image\n");
 
 			img = (struct tileset_image*)malloc(sizeof(struct tileset_image));
-			img->source = get_xml_attribute(img_node, "source");
+			img->source = copy(get_xml_attribute(img_node, "source"));
 			img->width = atoi(get_xml_attribute(img_node, "width"));
 			img->height = atoi(get_xml_attribute(img_node, "height"));
 
@@ -131,8 +138,8 @@ map_data *parse_map(const char *filename) {
 				property *prop;
 
 				prop = (property*)malloc(sizeof(property));
-				prop->name = get_xml_attribute(prop_node, "name");
-				prop->value = get_xml_attribute(prop_node, "value");
+				prop->name = copy(get_xml_attribute(prop_node, "name"));
+				prop->value = copy(get_xml_attribute(prop_node, "value"));
 				properties = prepend_to_list(properties, prop);
 
 				property_nodes = property_nodes->next;
@@ -164,7 +171,7 @@ map_data *parse_map(const char *filename) {
 		if (DEBUG) printf("Found layer\n");
 
 		layer = (map_layer*)malloc(sizeof(map_layer));
-		layer->name = get_xml_attribute(layer_node, "name");
+		layer->name = copy(get_xml_attribute(layer_node, "name"));
 		layer->width = atoi(get_xml_attribute(layer_node, "width"));;
 		layer->height = atoi(get_xml_attribute(layer_node, "height"));
 		layer->data = decode_layer_data(get_first_node_for_name(layer_node, "data"));
@@ -177,11 +184,8 @@ map_data *parse_map(const char *filename) {
 	// Fill in the map data
 	map->tilesets = tilesets;
 	map->layers = layers;
-//
-//	if (DEBUG) printf("Done parsing\n");
-//
-//	// Free the doc and return
-	printf("map is at %d, orientation %d\n", map, &map->orientation);
+
+	// Free the doc and return
 	xmlFreeDoc(doc);
 	return map;
 }
