@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <allegro5/allegro.h>
+#include "list.h"
 #include "map-parser.h"
 
 const float FPS = 60;
@@ -8,6 +9,7 @@ int main(int argc, char *argv[]) {
 	ALLEGRO_DISPLAY	*display = NULL;
 	ALLEGRO_EVENT_QUEUE	*event_queue = NULL;
 	ALLEGRO_TIMER *timer = NULL;
+	map_data *map;
 
 	bool running = true;
 	bool redraw = true;
@@ -44,45 +46,48 @@ int main(int argc, char *argv[]) {
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
 	
 	// Display a black screen
-	al_clear_to_color(al_map_rgb(0xF, 0xF, 0xF));
+	al_clear_to_color(al_map_rgb(0, 0, 0));
 	al_flip_display();
 
 	// Start the timer
 	al_start_timer(timer);
 
-	parse_map("data/maps/level1.tmx");
+	map = parse_map("data/maps/level1.tmx");
+	printf("---------------------\n");
+	printf("map is at %d, orientation %d\n", map, &map->orientation);
+	printf("orientation = %s\n", map->orientation);
 
 	// Main loop
-//	while (running) {
-//		ALLEGRO_EVENT event;
-//		ALLEGRO_TIMEOUT	timeout;
-//
-//		// Initialize the timeout (assuming this is the game's clock?)
-//		al_init_timeout(&timeout, 0.06);
-//
-//		// Fetch the event (if one exists)
-//		bool get_event = al_wait_for_event_until(event_queue, &event, &timeout);
-//
-//		// Handle the event
-//		if (get_event) {
-//			switch (event.type) {
-//				case ALLEGRO_EVENT_TIMER:
-//					redraw = true;
-//					break;
-//				case ALLEGRO_EVENT_DISPLAY_CLOSE:
-//					running = false;
-//					break;
-//				default:
-//					fprintf(stderr, "Unsupported event received: %d\n", event.type);
-//					break;
-//			}
-//		}
-//
-//		if (redraw && al_is_event_queue_empty(event_queue)) {
-//			al_clear_to_color(al_map_rgb(0xF, 0xF, 0xF));
-//			al_flip_display();
-//		}
-//	}
+	while (running) {
+		ALLEGRO_EVENT event;
+		ALLEGRO_TIMEOUT	timeout;
+
+		// Initialize the timeout (assuming this is the game's clock?)
+		al_init_timeout(&timeout, 0.06);
+
+		// Fetch the event (if one exists)
+		bool get_event = al_wait_for_event_until(event_queue, &event, &timeout);
+
+		// Handle the event
+		if (get_event) {
+			switch (event.type) {
+				case ALLEGRO_EVENT_TIMER:
+					redraw = true;
+					break;
+				case ALLEGRO_EVENT_DISPLAY_CLOSE:
+					running = false;
+					break;
+				default:
+					fprintf(stderr, "Unsupported event received: %d\n", event.type);
+					break;
+			}
+		}
+
+		if (redraw && al_is_event_queue_empty(event_queue)) {
+			al_clear_to_color(al_map_rgb(0, 0, 0));
+			al_flip_display();
+		}
+	}
 
 	// Clean up and return
 	al_destroy_display(display);

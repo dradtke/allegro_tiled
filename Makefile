@@ -9,10 +9,10 @@ TARGET := main
 all: $(SOURCES) $(TARGET)
 
 $(TARGET): $(OBJECTS)
-	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
+	@echo "  Linking..."; $(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c -o $@ $< $(LDFLAGS)
+	@echo "  CC $<"; $(CC) $(CFLAGS) -c -o $@ $< $(LDFLAGS)
 
 clean:
 	$(RM) src/*.o $(TARGET)

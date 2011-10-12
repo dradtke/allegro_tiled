@@ -1,9 +1,13 @@
+#include <stdlib.h>
+
 #ifndef LIST_H
 #define LIST_H
 
-typedef struct node {
+struct node {
 	void *data;
 	struct node *next;
-} node;
+};
+
+struct node* prepend_to_list(struct node *node, void *data);
 
 #endif
