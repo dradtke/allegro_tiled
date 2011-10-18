@@ -1,7 +1,7 @@
 CC := gcc
 ALLEGRO := /opt/allegro/current
 CFLAGS := -I$(ALLEGRO)/include -L$(ALLEGRO)/lib
-LDFLAGS := -lallegro -lxml2
+LDFLAGS := -lallegro -lxml2 -lz
 SOURCES := $(shell find src/ -type f -name "*.c")
 OBJECTS := $(SOURCES:.c=.o)
 TARGET := main

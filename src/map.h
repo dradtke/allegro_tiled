@@ -11,8 +11,8 @@ typedef struct {
 	int tile_width;			// width of each tile
 	int tile_height;		// height of each tile
 	char *orientation;		// "orthogonal" or ... isometric?
-	struct node *tilesets;	// a list of tileset structs
-	struct node *layers;	// a list of layers
+	list tilesets;			// a list of tileset structs
+	list layers;			// a list of layers
 } map_data;
 
 // layer
@@ -20,7 +20,7 @@ typedef struct {
 	char *name;				// name of the layer
 	int width;				// width in tiles
 	int height;				// height in tiles
-	char *data;				// encoded data (should be decoded here?)
+	char *data;				// decoded data
 } map_layer;
 
 // tileset
@@ -29,21 +29,21 @@ typedef struct {
 	char *name;				// name
 	int tile_width;			// width of each tile
 	int tile_height;		// height of each tile
-	struct node *images;	// list of tileset_image structs
-	struct node *tiles;		// list of tiles
+	list images;			// list of tileset_image structs
+	list tiles;				// list of tiles
 } map_tileset;
 
 // tileset image
-struct tileset_image {
+typedef struct {
 	char *source;			// path to this image's source
 	int width;				// width of this image
 	int height;				// height of this image
-};
+} map_tileset_img;
 
 // map tile
 typedef struct {
 	int id;					// the tile id
-	struct node *properties;// a list of properties
+	list properties;		// a list of properties
 } map_tile;
 
 // property struct (for tile properties)

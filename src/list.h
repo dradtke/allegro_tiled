@@ -3,11 +3,13 @@
 #ifndef LIST_H
 #define LIST_H
 
+typedef struct node *list;
+
 struct node {
 	void *data;
-	struct node *next;
+	list next;
 };
 
-struct node* prepend_to_list(struct node *node, void *data);
+list prepend_to_list(list node, void *data);
 
 #endif

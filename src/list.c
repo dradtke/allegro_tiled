@@ -1,18 +1,24 @@
 #include "list.h"
 
-// Prepends data to the list
-// Returns a new head of the list
-struct node* prepend_to_list(struct node *head, void *data) {
-	struct node *temp;
-	temp = (struct node*)malloc(sizeof(struct node*));
+/*
+ * Prepends an item to the list
+ * Returns a new head for the list
+ */
+list prepend_to_list(list head, void *data) {
+	list temp;
+	temp = (list)malloc(sizeof(list));
 	temp->data = data;
 	temp->next = head;
 	return temp;
 }
 
-void free_list(struct node *head) {
+/*
+ * Frees a list
+ */
+void free_list(list head) {
 	while (head != NULL) {
-		struct node *temp = head->next;
+		list temp = head->next;
+		// TODO: get this to work, because I think it might be needed
 		//free(head->data);
 		free(head);
 		head = temp;

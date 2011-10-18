@@ -5,6 +5,9 @@
 
 const float FPS = 60;
 
+/*
+ * Application entry point
+ */
 int main(int argc, char *argv[]) {
 	ALLEGRO_DISPLAY	*display = NULL;
 	ALLEGRO_EVENT_QUEUE	*event_queue = NULL;
@@ -14,6 +17,8 @@ int main(int argc, char *argv[]) {
 	bool running = true;
 	bool redraw = true;
 
+	//{{{ initialization
+	
 	// Initialize allegro
 	if (!al_init()) {
 		fprintf(stderr, "Failed to initialize allegro.\n");
@@ -44,6 +49,8 @@ int main(int argc, char *argv[]) {
 	// Register event sources
 	al_register_event_source(event_queue, al_get_display_event_source(display));
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
+
+	//}}}
 	
 	// Display a black screen
 	al_clear_to_color(al_map_rgb(0, 0, 0));

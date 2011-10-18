@@ -1,18 +1,27 @@
 #include "map.h"
 
-void free_tileset_image(struct tileset_image *img) {
+/*
+ * Frees a tileset image struct from memory
+ */
+void free_tileset_image(map_tileset_img *img) {
 	free(img->source);
 	free(img);
 }
 
+/*
+ * Frees a property struct from memory
+ */
 void free_property(property *prop) {
 	free(prop->name);
 	free(prop->value);
 	free(prop);
 }
 
+/*
+ * Frees a tile struct from memory
+ */
 void free_tile(map_tile *tile) {
-	struct node *properties = tile->properties;
+	list properties = tile->properties;
 	while (properties != NULL) {
 		property *prop = (property *)properties->data;
 		free_property(prop);
@@ -23,20 +32,23 @@ void free_tile(map_tile *tile) {
 	free(tile);
 }
 
+/*
+ * Frees a tileset struct from memory
+ */
 void free_tileset(map_tileset *tileset) {
 	free(tileset->name);
 
 	// free all images
-	struct node *images = tileset->images;
+	list images = tileset->images;
 	while (images != NULL) {
-		struct tileset_image *img = (struct tileset_image*)images->data;
+		map_tileset_img *img = (map_tileset_img*)images->data;
 		free_tileset_image(img);
 		images = images->next;
 	}
 	free_list(tileset->images);
 
 	// free all tiles
-	struct node *tiles = tileset->tiles;
+	list tiles = tileset->tiles;
 	while (tiles != NULL) {
 		map_tile *tile = (map_tile *)tiles->data;
 		free_tile(tile);
@@ -47,15 +59,21 @@ void free_tileset(map_tileset *tileset) {
 	free(tileset);
 }
 
+/*
+ * Frees a layer struct from memory
+ */
 void free_layer(map_layer *layer) {
 	free(layer->name);
 	free(layer->data);
 	free(layer);
 }
 
+/*
+ * Frees a map struct from memory
+ */
 void free_map(map_data *map) {
 	// free all tilesets
-	struct node *tilesets = map->tilesets;
+	list tilesets = map->tilesets;
 	while (tilesets != NULL) {
 		map_tileset *set = (map_tileset *)tilesets->data;
 		free_tileset(set);
@@ -64,7 +82,7 @@ void free_map(map_data *map) {
 	free_list(map->tilesets);
 
 	// free all layers
-	struct node *layers = map->layers;
+	list layers = map->layers;
 	while (layers != NULL) {
 		map_layer *layer = (map_layer *)layers->data;
 		free_layer(layer);
