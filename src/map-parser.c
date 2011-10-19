@@ -60,12 +60,39 @@ char *get_xml_attribute(xmlNode *node, char *name) {
 
 /*
  * Decodes map data from a <data> node
+ * There should be a better way to do this; a lot of file closing and opening
+ * Returns the path to a temporary file storing the decoded data
  */
-char *decode_layer_data(xmlNode *data_node) {
+int decode_layer_data(xmlNode *data_node, char *data_path) {
 	// TODO: get the encoding and compression
-	char *data = data_node->children->content;
-	int ret = decompress(trim(data), "base64");
-	return NULL;
+	char *data = trim(data_node->children->content);
+	char *orig_path, *final_path;
+	FILE *fdata_orig, *fdata_final;
+	int ret;
+	int read, wrote;
+
+	orig_path = "/tmp/mapdata-orig";
+	final_path = "/tmp/mapdata-final";
+
+	// write the original data out to a file
+	fdata_orig = fopen(orig_path, "w");
+	fwrite(data, sizeof(char), strlen(data), fdata_orig);
+	fclose(fdata_orig);
+
+	// open decompressed for reading and final data for writing
+	fdata_orig = fopen(orig_path, "r");
+	fdata_final = fopen(final_path, "w");
+
+	ret = decompress(fdata_orig, fdata_final);
+
+	// close file handlers
+	fclose(fdata_orig);
+	fclose(fdata_final);
+
+	// well, this doesn't fucking work.
+	data_path = copy(final_path);
+
+	return 0;
 }
 
 /*
@@ -177,13 +204,18 @@ map_data *parse_map(const char *filename) {
 	while (layer_nodes != NULL) {
 		xmlNode *layer_node = (xmlNode*)layer_nodes->data;
 		map_layer *layer;
+		char *data_path;
 		if (DEBUG) printf("Found layer\n");
 
 		layer = (map_layer*)malloc(sizeof(map_layer));
 		layer->name = copy(get_xml_attribute(layer_node, "name"));
 		layer->width = atoi(get_xml_attribute(layer_node, "width"));;
 		layer->height = atoi(get_xml_attribute(layer_node, "height"));
-		layer->data = decode_layer_data(get_first_child_for_name(layer_node, "data"));
+
+		decode_layer_data(get_first_child_for_name(layer_node, "data"), data_path);
+		// TODO: read in from data_path and store it in layer->data
+		//layer->data = decode_layer_data(get_first_child_for_name(layer_node, "data"));
+		layer->data = NULL;
 
 		layers = prepend_to_list(layers, layer);
 		layer_nodes = layer_nodes->next;

@@ -5,7 +5,7 @@
 #include "map.h"
 #include "global.h"
 #include "util.h"
-#include "map-data-decompresser.h"
+#include "zlib.h"
 
 #ifndef MAP_PARSER_H
 #define MAP_PARSER_H

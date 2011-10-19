@@ -18,6 +18,6 @@
 
 #define CHUNK 16384
 
-int decompress(unsigned char *data, char *encoding);
+int decompress(FILE *src, FILE *dest);
 
 #endif
