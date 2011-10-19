@@ -59,6 +59,7 @@ int main(int argc, char *argv[]) {
 	// Start the timer
 	al_start_timer(timer);
 
+	// This now, for the most part, works
 	map = parse_map("data/maps/level1.tmx");
 
 	// Main loop
@@ -67,7 +68,7 @@ int main(int argc, char *argv[]) {
 		ALLEGRO_TIMEOUT	timeout;
 
 		// Initialize the timeout (assuming this is the game's clock?)
-		al_init_timeout(&timeout, 0.06);
+		//al_init_timeout(&timeout, 0.06);
 
 		// Fetch the event (if one exists)
 		bool get_event = al_wait_for_event_until(event_queue, &event, &timeout);

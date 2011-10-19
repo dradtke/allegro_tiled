@@ -18,6 +18,9 @@ inline char value(char c)
 	}
 }
 
+/*
+ * Decode a block of base64-encoded data
+ */
 int UnBase64(unsigned char *dest, const unsigned char *src, int srclen)
 {
 	*dest = 0;
@@ -61,12 +64,12 @@ int UnBase64(unsigned char *dest, const unsigned char *src, int srclen)
 
 /*
  * Decompresses data from a map file
+ * Taken from zlib's zpipe.c example, with slight modifications
  */
-
-int decompress(FILE *source, FILE *dest)
+int decompress(char *src, FILE *dest)
 {
     int ret;
-    unsigned have;
+    unsigned have, len;
     z_stream strm;
     unsigned char in[CHUNK];
 	unsigned char debased[CHUNK];
@@ -78,21 +81,23 @@ int decompress(FILE *source, FILE *dest)
     strm.opaque = Z_NULL;
     strm.avail_in = 0;
     strm.next_in = Z_NULL;
-    ret = inflateInit(&strm);
+    ret = inflateInit2(&strm, 32+MAX_WBITS);
     if (ret != Z_OK)
         return ret;
 
     /* decompress until deflate stream ends or end of file */
     do {
-        strm.avail_in = fread(in, 1, CHUNK, source);
-        if (ferror(source)) {
-            (void)inflateEnd(&strm);
-            return Z_ERRNO;
-        }
-        if (strm.avail_in == 0)
+		len = strlen(src);
+		// if nothing's there, break out of the loop
+        if (len == 0)
             break;
 
-		strm.avail_in = UnBase64(debased, in, strm.avail_in);
+		// read at most CHUNK bytes
+		if (len > CHUNK)
+			len = CHUNK;
+
+		strncpy(in, src, len);
+		strm.avail_in = UnBase64(debased, in, len);
         strm.next_in = debased;
 
         /* run inflate() on input until output buffer not full */

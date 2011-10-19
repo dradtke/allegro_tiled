@@ -47,33 +47,33 @@
   <image source="../tilesets/backgrounds.png" width="96" height="64"/>
  </tileset>
  <layer name="Sky" width="75" height="40">
-  <data encoding="base64" compression="zlib">
-   eJztwzENAAAMBKFb37/hyugCCaumqqqqqqqqqqqqqqrPD383aXk=
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAA+3DMQ0AAAwEoVvfv+HK6AIJq6aqqqqqqqqqqqqqqs8PwWLil+AuAAA=
   </data>
  </layer>
  <layer name="Clouds" width="75" height="40">
-  <data encoding="base64" compression="zlib">
-   eJzt2EsOwyAMBcBco9/0/qdsFsmmapAr3ELJjOQlNhIKT2GaOJr7UvNaj6R+e322WRlzWrgsdV3rltRvr882K2MO0JfTS53bbock38y4UrZG1/eUv7UZV/pmStkaIX/hvdp76Ehq76Ffcq5x/3SuEdnvACPLfgdgXP7rPiOD4kbLIICeyKM4eQQAAAC09gT5Ngdi
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAA+3YSw7DIAwFwFyj3/T+p2wWyaZqkCvcQsmM5CU2EgpPYZo4mvtS81qPpH57fbZZGXNauCx1XeuW1G+vzzYrYw7Ql9NLndtuhyTfzLhStkbX95S/tRlX+mZK2Rohf+G92nvoSGrvoV9yrnH/dK4R2e8AI8t+B2Bc/us+I4PiRssggJ7Iozh5BAAAALT2BF2azG/gLgAA
   </data>
  </layer>
  <layer name="Background 1" width="75" height="40">
-  <data encoding="base64" compression="zlib">
-   eJzt0DsKgEAMBNC9gYr4uf9JTZNybYQssu/BVFNMSGsAAAAAAMCMlsj20q2dPrteDwAAMKN79AE/cUTOyFW8uxfvfZV/ylT/CwBGegB0DQFs
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAA+3QOwqAQAwE0L2Bivi5/0lNk3JthCyy78FUU0xIawAAAAAAwIyWyPbSrZ0+u14PAAAwo3v0AT9xRM7IVby7F+99lX/KVP8LAEZ6AHEIlR7gLgAA
   </data>
  </layer>
  <layer name="Background 2" width="75" height="40">
-  <data encoding="base64" compression="zlib">
-   eJztzbENADAIA0EmSMj+y4YVKJAo7qRv7QgAAAAAAAAAAABgo1tl9QY/zuA2AHR92bcAPw==
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAA+3NsQ0AMAgDQSZIyP7LhhUokCjupG/tCAAAAAAAAAAAAGCjW2X1Bj/O4DYAdH1Ew2gs4C4AAA==
   </data>
  </layer>
  <layer name="Blocks 1" width="75" height="40">
-  <data encoding="base64" compression="zlib">
-   eJzt19kKgCAURVFTG/7/izPoSRxCvQ60F1ySCLNjCioFAAAAAAAAyDORNoD5PWvWelfgL7YBhTqnq2v0IBaxuzpGD2IRZJVnMpV63nYaI8pJzVHuPwF6m2k/io0ldH/G9ZPa+2vot1rTkfaqtJLJyu9Taj560Uomq1CfUnPSg59Tq2+I9Vnyri/n6xHn+5WKrMiKrMhqtroB+e8CUw==
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAA+3X2QqAIBRFUVMb/v+LM+hJHEK9DrQXXJIIs2MKKgUAAAAAAADIM5E2gPk9a9Z6V+AvtgGFOqera/QgFrG7OkYPYhFklWcylXredhojyknNUe4/AXqbaT+KjSV0f8b1k9r7a+i3WtOR9qq0ksnK71NqPnrRSiarUJ9Sc9KDn1Orb4j1WfKuL+frEef7lYqsyIqsyGq2ugGUe7yO4C4AAA==
   </data>
  </layer>
  <layer name="Blocks 2" width="75" height="40">
-  <data encoding="base64" compression="zlib">
-   eJzt0LkJADAQA8FL/PRfsa8E4cQYZkC52CoAAAAAACCxevv1iU+M3nx94hNa5bTKaZXTKqdVTisAAAC4dwA74QBd
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAA+3QuQkAMBADwUv89F+xrwThxBhmQLnYKgAAAAAAILF6+/WJT4zefH3iE1rltMppldMqp1VOKwAAALh3AEJW2XngLgAA
   </data>
  </layer>
  <objectgroup name="Hello" width="75" height="40"/>

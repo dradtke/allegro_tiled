@@ -60,38 +60,49 @@ char *get_xml_attribute(xmlNode *node, char *name) {
 
 /*
  * Decodes map data from a <data> node
- * There should be a better way to do this; a lot of file closing and opening
- * Returns the path to a temporary file storing the decoded data
+ * Saves the decoded and decompressed data to dest
  */
-int decode_layer_data(xmlNode *data_node, char *data_path) {
+int decode_layer_data(xmlNode *data_node, map_layer *layer) {
 	// TODO: get the encoding and compression
-	char *data = trim(data_node->children->content);
-	char *orig_path, *final_path;
-	FILE *fdata_orig, *fdata_final;
-	int ret;
-	int read, wrote;
+	char *str = trim(data_node->children->content);
+	char *data = NULL;
+	int flen = 0;
+	FILE *tmp = tmpfile();
 
-	orig_path = "/tmp/mapdata-orig";
-	final_path = "/tmp/mapdata-final";
+	decompress(str, tmp);
+	fflush(tmp);
 
-	// write the original data out to a file
-	fdata_orig = fopen(orig_path, "w");
-	fwrite(data, sizeof(char), strlen(data), fdata_orig);
-	fclose(fdata_orig);
+	// get file length
+	flen = ftell(tmp);
 
-	// open decompressed for reading and final data for writing
-	fdata_orig = fopen(orig_path, "r");
-	fdata_final = fopen(final_path, "w");
+	// read in the file
+	rewind(tmp);
+	data = (char *)calloc(flen, sizeof(char));
+	if (fread(data, sizeof(char), flen, tmp) < flen) {
+		fprintf(stderr, "failed to read in map data\n");
+		return -1;
+	}
+	
+	// every tile id takes 4 bytes
+	layer->datalen = flen/4;
+	layer->data = (char *)calloc(layer->datalen, sizeof(char));
+	int x, y, i;
+	i = 0;
+	for (y = 0; y<layer->height; y++) {
+		for (x = 0; x<layer->width; x++) {
+			int tileid = 0;
+			tileid |= data[i];
+			tileid |= data[i+1] << 8;
+			tileid |= data[i+2] << 16;
+			tileid |= data[i+3] << 24;
+			layer->data[i/4] = tileid;
+			i += 4;
+		}
+	}
+//	printf("layer dimensions: %dx%d, data length = %d\n", 
+//			layer->width, layer->height, flen);
 
-	ret = decompress(fdata_orig, fdata_final);
-
-	// close file handlers
-	fclose(fdata_orig);
-	fclose(fdata_final);
-
-	// well, this doesn't fucking work.
-	data_path = copy(final_path);
-
+	fclose(tmp);
 	return 0;
 }
 
@@ -106,10 +117,10 @@ map_data *parse_map(const char *filename) {
 	map_data *map;
 
 	// Read in the data file
-	if (DEBUG) printf("Parsing map [%s]\n", filename);
+	debug("parsing map [%s]", filename);
 	doc = xmlReadFile(filename, NULL, 0);
 	if (!doc) {
-		fprintf(stderr, "Failed to parse map data: %s\n", filename);
+		fprintf(stderr, "failed to parse map data: %s\n", filename);
 		return NULL;
 	}
 
@@ -133,7 +144,7 @@ map_data *parse_map(const char *filename) {
 	while (tileset_nodes != NULL) {
 		map_tileset *set;
 		xmlNode *node = (xmlNode*)tileset_nodes->data;
-		if (DEBUG) printf("Found tileset\n");
+		debug("found tileset node");
 
 		// fill in required values
 		set = (map_tileset*)malloc(sizeof(map_tileset));
@@ -147,7 +158,7 @@ map_data *parse_map(const char *filename) {
 		while (image_nodes != NULL) {
 			xmlNode *img_node = (xmlNode*)image_nodes->data;
 			map_tileset_img *img;
-			if (DEBUG) printf("Found image\n");
+			debug("found image node");
 
 			img = (map_tileset_img*)malloc(sizeof(map_tileset_img));
 			img->source = copy(get_xml_attribute(img_node, "source"));
@@ -167,7 +178,7 @@ map_data *parse_map(const char *filename) {
 			list property_nodes = get_children_for_name(
 					get_first_child_for_name(tile_node, "properties"), "property");
 			list properties = NULL;
-			if (DEBUG) printf("Found tile\n");
+			debug("found tile node");
 
 			while (property_nodes != NULL) {
 				xmlNode *prop_node = (xmlNode*)property_nodes->data;
@@ -204,18 +215,17 @@ map_data *parse_map(const char *filename) {
 	while (layer_nodes != NULL) {
 		xmlNode *layer_node = (xmlNode*)layer_nodes->data;
 		map_layer *layer;
-		char *data_path;
-		if (DEBUG) printf("Found layer\n");
+		debug("found layer node");
 
 		layer = (map_layer*)malloc(sizeof(map_layer));
 		layer->name = copy(get_xml_attribute(layer_node, "name"));
 		layer->width = atoi(get_xml_attribute(layer_node, "width"));;
 		layer->height = atoi(get_xml_attribute(layer_node, "height"));
+		layer->data = NULL;
 
-		decode_layer_data(get_first_child_for_name(layer_node, "data"), data_path);
+		decode_layer_data(get_first_child_for_name(layer_node, "data"), layer);
 		// TODO: read in from data_path and store it in layer->data
 		//layer->data = decode_layer_data(get_first_child_for_name(layer_node, "data"));
-		layer->data = NULL;
 
 		layers = prepend_to_list(layers, layer);
 		layer_nodes = layer_nodes->next;

@@ -21,6 +21,7 @@ typedef struct {
 	int width;				// width in tiles
 	int height;				// height in tiles
 	char *data;				// decoded data
+	int datalen;			// length of the decoded data
 } map_layer;
 
 // tileset

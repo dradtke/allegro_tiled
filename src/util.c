@@ -20,9 +20,22 @@ char *trim(char *str) {
  * Returns a copy of a string
  * Used to keep XML data that would otherwise be freed
  */
-char *copy(char *src) {
+char *copy(const char *src) {
 	int len = strlen(src);
 	char *result = (char *)malloc(sizeof(char) * (len+1));
 	strcpy(result, src);;
 	return result;
+}
+
+/*
+ * Utility debug method
+ * Used like printf, but only prints if DEBUG is set in global.c
+ */
+void debug(const char *format, ...) {
+	if (DEBUG) {
+		va_list argptr;
+		va_start(argptr, format);
+		vprintf(format, argptr);
+		printf("\n");
+	}
 }
