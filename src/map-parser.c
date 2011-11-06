@@ -12,7 +12,7 @@ list get_children_for_name(xmlNode *parent, char *name) {
 		if (!strcmp(child->name, name)) {
 			//head = prepend_to_list(&head, child);
 			list temp;
-			temp = (list)malloc(sizeof(list));
+			temp = (list)malloc(sizeof(struct node));
 			temp->data = child;
 			temp->next = head;
 			head = temp;
@@ -125,11 +125,11 @@ map_data *parse_map(const char *filename) {
 	}
 
 	// Get the root element, <map>
-	if (DEBUG) printf("Getting root element\n");
+	debug("Getting root element");
 	root = xmlDocGetRootElement(doc);
 
 	// Get some basic info
-	if (DEBUG) printf("Fetching map attributes\n");
+	debug("Fetching map attributes");
 	map = (map_data*)malloc(sizeof(map_data));
 	map->width = atoi(get_xml_attribute(root, "width"));
 	map->height = atoi(get_xml_attribute(root, "height"));

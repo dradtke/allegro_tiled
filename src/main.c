@@ -67,8 +67,8 @@ int main(int argc, char *argv[]) {
 		ALLEGRO_EVENT event;
 		ALLEGRO_TIMEOUT	timeout;
 
-		// Initialize the timeout (assuming this is the game's clock?)
-		//al_init_timeout(&timeout, 0.06);
+		// Initialize the timeout (not the game's clock, I think)
+		al_init_timeout(&timeout, 0.06);
 
 		// Fetch the event (if one exists)
 		bool get_event = al_wait_for_event_until(event_queue, &event, &timeout);
@@ -89,6 +89,7 @@ int main(int argc, char *argv[]) {
 		}
 
 		if (redraw && al_is_event_queue_empty(event_queue)) {
+			// Redraw
 			al_clear_to_color(al_map_rgb(0, 0, 0));
 			al_flip_display();
 		}
