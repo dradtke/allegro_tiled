@@ -62,6 +62,14 @@ int main(int argc, char *argv[]) {
 	// This now, for the most part, works
 	map = parse_map("data/maps/level1.tmx");
 
+	// for a test, let's print out all of the tileset names
+	int i;
+	printf("number of tilesets: %d\n", map->tilesets->length);
+	for (i = 0; i<map->tilesets->length; i++) {
+		map_tileset set = map->tilesets->list[i];
+		printf("Name = %s\n", set.name);
+	}
+
 	// Main loop
 	while (running) {
 		ALLEGRO_EVENT event;

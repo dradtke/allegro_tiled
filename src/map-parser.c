@@ -4,24 +4,26 @@
  * Given a parent XML node and the name of all desired children,
  * returns a list of all children with that name
  */
-list get_children_for_name(xmlNode *parent, char *name) {
-	list head = NULL;
+int get_children_for_name(xmlNode *parent, char *name, list *dest){
+	int count = 0;
+	(*dest) = NULL;
 	xmlNode *child = parent->children->next;
 
 	while (child != NULL) {
 		if (!strcmp(child->name, name)) {
-			//head = prepend_to_list(&head, child);
+			//dest = prepend_to_list(&children, child);
 			list temp;
 			temp = (list)malloc(sizeof(struct node));
 			temp->data = child;
-			temp->next = head;
-			head = temp;
+			temp->next = (*dest);
+			(*dest) = temp;
+			count++;
 		}
 
 		child = child->next;
 	}
 
-	return head;
+	return count;
 }
 
 /*
@@ -137,104 +139,95 @@ map_data *parse_map(const char *filename) {
 	map->tile_height = atoi(get_xml_attribute(root, "tileheight"));
 	map->orientation = copy(get_xml_attribute(root, "orientation"));
 
-	// Construct the list of tilesets
-	list tilesets = NULL;
+	// get all the tilesets
+	list tileset_list;
+	int tileset_count = get_children_for_name(root, "tileset", &tileset_list);
+	debug("Found %d tilesets", tileset_count);
+	map_tileset_list *tmp_tilesets = (map_tileset_list*)malloc(sizeof(map_tileset_list));
+	tmp_tilesets->length = tileset_count;
+	tmp_tilesets->list = (map_tileset*)malloc(sizeof(map_tileset[tmp_tilesets->length]));
 
-	list tileset_nodes = get_children_for_name(root, "tileset");
-	while (tileset_nodes != NULL) {
-		map_tileset *set;
-		xmlNode *node = (xmlNode*)tileset_nodes->data;
-		debug("found tileset node");
+	int i = tileset_count - 1;
+	while (tileset_list != NULL) {
+		xmlNode *node = (xmlNode*)tileset_list->data;
+		tmp_tilesets->list[i].firstgid = atoi(get_xml_attribute(node, "firstgid"));
+		tmp_tilesets->list[i].name = copy(get_xml_attribute(node, "name"));
+		tmp_tilesets->list[i].tile_width = atoi(get_xml_attribute(node, "tilewidth"));
+		tmp_tilesets->list[i].tile_height = atoi(get_xml_attribute(node, "tileheight"));
+		//tmp_tilesets->list[i].images = NULL;
+		tmp_tilesets->list[i].tiles = NULL;
+		debug("Tileset [name = '%s', firstgid = '%d']",
+				tmp_tilesets->list[i].name, tmp_tilesets->list[i].firstgid);
 
-		// fill in required values
-		set = (map_tileset*)malloc(sizeof(map_tileset));
-		set->firstgid = atoi(get_xml_attribute(node, "firstgid"));
-		set->name = copy(get_xml_attribute(node, "name"));
-		set->tile_width = atoi(get_xml_attribute(node, "tilewidth"));
-		set->tile_height = atoi(get_xml_attribute(node, "tileheight"));
+		// for each tileset, get its images
+		list image_list;
+		int image_count = get_children_for_name(node, "image", &image_list);
+		debug("Found %d images", image_count);
+		map_image_list *tmp_images = (map_image_list*)malloc(sizeof(map_image_list));
+		tmp_images->length = image_count;
+		tmp_images->list = (map_image*)malloc(sizeof(map_image[tmp_images->length]));
 
-		list images = NULL;
-		list image_nodes = get_children_for_name(node, "image");
-		while (image_nodes != NULL) {
-			xmlNode *img_node = (xmlNode*)image_nodes->data;
-			map_tileset_img *img;
-			debug("found image node");
-
-			img = (map_tileset_img*)malloc(sizeof(map_tileset_img));
-			img->source = copy(get_xml_attribute(img_node, "source"));
-			img->width = atoi(get_xml_attribute(img_node, "width"));
-			img->height = atoi(get_xml_attribute(img_node, "height"));
-
-			images = prepend_to_list(images, img);
-			image_nodes = image_nodes->next;
+		int j = image_count - 1;
+		while (image_list != NULL) {
+			xmlNode *_node = (xmlNode*)image_list->data;
+			tmp_images->list[j].source = copy(get_xml_attribute(_node, "source"));
+			tmp_images->list[j].width = atoi(get_xml_attribute(_node, "width"));
+			tmp_images->list[j].height = atoi(get_xml_attribute(_node, "height"));
+			debug("Image [source = '%s', width = '%d', height = '%d']",
+					tmp_images->list[j].source, tmp_images->list[j].width, tmp_images->list[j].height);
+			image_list = image_list->next;
+			j--;
 		}
-		free_list(image_nodes);
 
-		list tiles = NULL;
-		list tile_nodes = get_children_for_name(node, "tile");
-		while (tile_nodes != NULL) {
-			xmlNode *tile_node = (xmlNode*)tile_nodes->data;
-			map_tile *t;
-			list property_nodes = get_children_for_name(
-					get_first_child_for_name(tile_node, "properties"), "property");
-			list properties = NULL;
-			debug("found tile node");
+		tmp_tilesets->list[i].images = tmp_images;
 
-			while (property_nodes != NULL) {
-				xmlNode *prop_node = (xmlNode*)property_nodes->data;
-				property *prop;
+		// get the tiles
+		list tile_list;
+		int tile_count = get_children_for_name(node, "tile", &tile_list);
+		debug("Found %d tiles", tile_count);
+		map_tile_list *tmp_tiles = (map_tile_list*)malloc(sizeof(map_tile_list));
+		tmp_tiles->length = tile_count;
+		tmp_tiles->list = (map_tile*)malloc(sizeof(map_tile[tmp_tiles->length]));
 
-				prop = (property*)malloc(sizeof(property));
-				prop->name = copy(get_xml_attribute(prop_node, "name"));
-				prop->value = copy(get_xml_attribute(prop_node, "value"));
-				properties = prepend_to_list(properties, prop);
+		j = tile_count - 1;
+		while (tile_list != NULL) {
+			xmlNode *_node = (xmlNode*)tile_list->data;
+			tmp_tiles->list[j].id = atoi(get_xml_attribute(_node, "id"));
+			debug("Tile [id = '%d']", tmp_tiles->list[j].id);
 
-				property_nodes = property_nodes->next;
+			list prop_list;
+			int prop_count = get_children_for_name(get_first_child_for_name(_node, "properties"),
+					"property", &prop_list);
+			debug("Found %d properties", prop_count);
+			map_prop_list *tmp_props = (map_prop_list*)malloc(sizeof(map_prop_list));
+			tmp_props->length = prop_count;
+			tmp_props->list = (map_property*)malloc(sizeof(map_property[tmp_props->length]));
+
+			int k = prop_count - 1;
+			while (prop_list != NULL) {
+				xmlNode *__node = (xmlNode*)prop_list->data;
+				tmp_props->list[k].name = copy(get_xml_attribute(__node, "name"));
+				tmp_props->list[k].value = copy(get_xml_attribute(__node, "value"));
+				debug("Property [name = '%s', value = '%s']",
+						tmp_props->list[k].name, tmp_props->list[k].value);
+				prop_list = prop_list->next;
+				k--;
 			}
 
-			t = (map_tile*)malloc(sizeof(map_tile));
-			t->id = atoi(get_xml_attribute(tile_node, "id"));
-			t->properties = properties;
+			tmp_tiles->list[j].properties = tmp_props;
 
-			tiles = prepend_to_list(tiles, t);
-			tile_nodes = tile_nodes->next;
+			tile_list = tile_list->next;
+			j--;
 		}
-		free_list(tile_nodes);
 
-		set->images = images;
-		set->tiles = tiles;
+		tmp_tilesets->list[i].tiles = tmp_tiles;
 
-		// add it to the list and continue on
-		tilesets = prepend_to_list(tilesets, set);
-		tileset_nodes = tileset_nodes->next;
+		// continue looping
+		tileset_list = tileset_list->next;
+		i--;
 	}
-	free_list(tileset_nodes);
-
-	list layer_nodes = get_children_for_name(root, "layer");
-	list layers = NULL;
-	while (layer_nodes != NULL) {
-		xmlNode *layer_node = (xmlNode*)layer_nodes->data;
-		map_layer *layer;
-		debug("found layer node");
-
-		layer = (map_layer*)malloc(sizeof(map_layer));
-		layer->name = copy(get_xml_attribute(layer_node, "name"));
-		layer->width = atoi(get_xml_attribute(layer_node, "width"));;
-		layer->height = atoi(get_xml_attribute(layer_node, "height"));
-		layer->data = NULL;
-
-		decode_layer_data(get_first_child_for_name(layer_node, "data"), layer);
-		// TODO: read in from data_path and store it in layer->data
-		//layer->data = decode_layer_data(get_first_child_for_name(layer_node, "data"));
-
-		layers = prepend_to_list(layers, layer);
-		layer_nodes = layer_nodes->next;
-	}
-	free_list(layer_nodes);
-
-	// Fill in the map data
-	map->tilesets = tilesets;
-	map->layers = layers;
+	// save the list in map
+	map->tilesets = tmp_tilesets;
 
 	// Free the doc and return
 	xmlFreeDoc(doc);
