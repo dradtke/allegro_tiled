@@ -3,7 +3,8 @@
 /*
  * Trims whitespace from before and after a string
  */
-char *trim(char *str) {
+char *trim(char *str)
+{
 	char *end;
 
 	while (isspace(*str)) str++;
@@ -20,10 +21,11 @@ char *trim(char *str) {
  * Returns a copy of a string
  * Used to keep XML data that would otherwise be freed
  */
-char *copy(const char *src) {
+char *copy(const char *src)
+{
 	int len = strlen(src);
 	char *result = (char *)malloc(sizeof(char) * (len+1));
-	strcpy(result, src);;
+	strcpy(result, src);
 	return result;
 }
 
@@ -31,11 +33,13 @@ char *copy(const char *src) {
  * Utility debug method
  * Used like printf, but only prints if DEBUG is set in global.c
  */
-void debug(const char *format, ...) {
-	if (DEBUG) {
-		va_list argptr;
-		va_start(argptr, format);
-		vprintf(format, argptr);
-		printf("\n");
-	}
+void debug(const char *format, ...)
+{
+	if (!DEBUG)
+		return;
+
+	va_list argptr;
+	va_start(argptr, format);
+	vprintf(format, argptr);
+	printf("\n");
 }

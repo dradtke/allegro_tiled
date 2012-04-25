@@ -1,18 +1,22 @@
 #include <stdio.h>
 #include <allegro5/allegro.h>
-#include "list.h"
-#include "map-parser.h"
-
-const float FPS = 60;
+#include "global.h"
+#include "draw.h"
+#include "parser.h"
 
 /*
  * Application entry point
  */
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
 	ALLEGRO_DISPLAY	*display = NULL;
 	ALLEGRO_EVENT_QUEUE	*event_queue = NULL;
 	ALLEGRO_TIMER *timer = NULL;
 	map_data *map;
+
+	// move to executable's directory
+	//cwd = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
+	//al_change_directory(al_path_cstr(cwd, ALLEGRO_NATIVE_PATH_SEP));
 
 	bool running = true;
 	bool redraw = true;
@@ -61,14 +65,7 @@ int main(int argc, char *argv[]) {
 
 	// This now, for the most part, works
 	map = parse_map("data/maps/level1.tmx");
-
-	// for a test, let's print out all of the tileset names
-	int i;
-	printf("number of tilesets: %d\n", map->tilesets->length);
-	for (i = 0; i<map->tilesets->length; i++) {
-		map_tileset set = map->tilesets->list[i];
-		printf("Name = %s\n", set.name);
-	}
+	draw(map);
 
 	// Main loop
 	while (running) {
@@ -98,8 +95,10 @@ int main(int argc, char *argv[]) {
 
 		if (redraw && al_is_event_queue_empty(event_queue)) {
 			// Redraw
+			/*
 			al_clear_to_color(al_map_rgb(0, 0, 0));
 			al_flip_display();
+			*/
 		}
 	}
 
