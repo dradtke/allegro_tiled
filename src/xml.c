@@ -12,7 +12,7 @@ _AL_VECTOR *get_children_for_name(xmlNode *parent, char *name)
 	_al_vector_init(vec, sizeof(xmlNode*));
 
 	while (child != NULL) {
-		if (!strcmp(child->name, name))
+		if (!strcmp((const char*)child->name, name))
 			_al_vector_append_array(vec, 1, &child);
 
 		child = child->next;
@@ -30,7 +30,7 @@ xmlNode *get_first_child_for_name(xmlNode *parent, char *name)
 	xmlNode *child = parent->children->next;
 
 	while  (child != NULL) {
-		if (!strcmp(child->name, name))
+		if (!strcmp((const char*)child->name, name))
 			return child;
 
 		child = child->next;
@@ -48,8 +48,8 @@ char *get_xml_attribute(xmlNode *node, char *name)
 	xmlAttr *attrs = node->properties;
 
 	while (attrs != NULL) {
-		if (!strcmp(attrs->name, name))
-			return attrs->children->content;
+		if (!strcmp((const char*)attrs->name, name))
+			return (char *)attrs->children->content;
 
 		attrs = attrs->next;
 	}

@@ -14,10 +14,6 @@ int main(int argc, char *argv[])
 	ALLEGRO_TIMER *timer = NULL;
 	map_data *map;
 
-	// move to executable's directory
-	//cwd = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
-	//al_change_directory(al_path_cstr(cwd, ALLEGRO_NATIVE_PATH_SEP));
-
 	bool running = true;
 	bool redraw = true;
 
@@ -64,7 +60,7 @@ int main(int argc, char *argv[])
 	al_start_timer(timer);
 
 	// This now, for the most part, works
-	map = parse_map("data/maps/level1.tmx");
+	map = parse_map("data/maps", "level1.tmx");
 	draw(map);
 
 	// Main loop

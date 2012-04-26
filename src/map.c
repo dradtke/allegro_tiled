@@ -1,6 +1,25 @@
 #include "map.h"
 
 /*
+ * Looks up tiles in a map by id.
+ * TODO: is there a way to index this by id,
+ * rather than looping through every time?
+ */
+map_tile *get_tile_for_id(map_data *map, char id)
+{
+	_AL_LIST_ITEM *tile_item = _al_list_front(map->tiles);
+	while (tile_item != NULL) {
+		map_tile *tile = _al_list_item_data(tile_item);
+		if (tile->id == id)
+			return tile;
+
+		tile_item = _al_list_next(map->tiles, tile_item);
+	}
+
+	return NULL;
+}
+
+/*
  * Frees a tileset image struct from memory
  */
 void free_tileset_image(map_image *img)

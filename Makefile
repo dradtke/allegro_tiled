@@ -1,8 +1,6 @@
 CC		:= gcc
-ALLEGRO := /opt/allegro/current
-CFLAGS	:= -I$(ALLEGRO)/include -g
-LDFLAGS := -L$(ALLEGRO)/lib
-LIBS	:= -lallegro  -lxml2 -lz
+CFLAGS	:= -g -Wall
+LIBS	:= -lallegro -lxml2 -lz
 SOURCES := $(shell find src/ -type f -name "*.c")
 OBJECTS := $(SOURCES:.c=.o)
 TARGET	:= main
@@ -10,12 +8,12 @@ TARGET	:= main
 all: $(SOURCES) $(TARGET)
 
 $(TARGET): $(OBJECTS)
-	@echo "  Linking..."; $(CC) $(LDFLAGS) $^ -o $@ $(LIBS)
+	@echo "  Linking..."; $(CC)  $^ -o $@ $(LIBS)
 
 %.o: %.c
-	@echo "  CC $<"; $(CC) $(CFLAGS) $(CFLAGS) -c -o $@ $<
+	@echo "  CC $<"; $(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	$(RM) src/*.o $(TARGET)
+	@echo "  Cleaning..."; $(RM) src/*.o $(TARGET)
 
 .PHONY: all clean

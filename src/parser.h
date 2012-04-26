@@ -8,6 +8,6 @@
 #ifndef MAP_PARSER_H
 #define MAP_PARSER_H
 
-map_data *parse_map(const char *filename);
+map_data *parse_map(const char *dir, const char *filename);
 
 #endif

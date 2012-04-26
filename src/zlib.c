@@ -96,7 +96,7 @@ int decompress(char *src, FILE *dest)
 		if (len > CHUNK)
 			len = CHUNK;
 
-		strncpy(in, src, len);
+		strncpy((char *)in, src, len);
 		strm.avail_in = UnBase64(debased, in, len);
         strm.next_in = debased;
 
