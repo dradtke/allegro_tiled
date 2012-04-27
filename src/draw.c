@@ -1,19 +1,27 @@
 #include "draw.h"
 
-void draw(map_data *map)
+void draw(map_data *map, float dx, float dy)
 {
-	/*
-	_AL_LIST_ITEM *tileset_item = _al_list_front(map->tilesets);
-	while (tileset_item != NULL) {
-		map_tileset *tileset = _al_list_item_data(tileset_item);
+	int x, y;
+	_AL_LIST_ITEM *layer_item = _al_list_front(map->layers);
+	while (layer_item != NULL) {
+		map_layer *layer_ob = _al_list_item_data(layer_item);
+		for (y = 0; y<layer_ob->height; y++) {
+			for (x = 0; x<layer_ob->width; x++) {
+				char id = get_tile_id(layer_ob, x, y);
+				map_tile *tile_ob = get_tile_for_id(map, id);
+				if (!tile_ob)
+					continue;
 
-		_AL_LIST_ITEM *image_item = _al_list_front(tileset->images);
-		while (image_item != NULL) {
-			map_image *image = _al_list_item_data(image_item);
-			image_item = _al_list_next(tileset->images, image_item);
+				float tx = dx + x*(tile_ob->tileset->tilewidth);
+				float ty = dy + y*(tile_ob->tileset->tileheight);
+
+				al_draw_bitmap(tile_ob->bitmap, tx, ty, 0);
+			}
 		}
 
-		tileset_item = _al_list_next(map->tilesets, tileset_item);
+		layer_item = _al_list_next(map->layers, layer_item);
 	}
-	*/
+
+	al_flip_display();
 }

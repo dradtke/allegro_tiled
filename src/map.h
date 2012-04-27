@@ -29,6 +29,7 @@ typedef struct
 	int datalen;			// length of the decoded data
 	char *name;				// name of the layer
 	char *data;				// decoded data
+	map_data *map;			// reference to the map
 }
 map_layer;
 
@@ -77,6 +78,7 @@ typedef struct
 map_property;
 //}}}
 
+inline char get_tile_id(map_layer *layer_ob, int x, int y);
 map_tile *get_tile_for_id(map_data *map, char id);
 void free_map(map_data *map);
 void free_layer(map_layer *layer);

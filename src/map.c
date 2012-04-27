@@ -1,5 +1,11 @@
 #include "map.h"
 
+inline char get_tile_id(map_layer *layer_ob, int x, int y)
+{
+	// TODO: check bits 32-30 for "flipped" properties and clear them
+	return layer_ob->data[x+(y*layer_ob->width)];
+}
+
 /*
  * Looks up tiles in a map by id.
  * TODO: is there a way to index this by id,
@@ -7,6 +13,9 @@
  */
 map_tile *get_tile_for_id(map_data *map, char id)
 {
+	if (id == 0)
+		return NULL;
+
 	_AL_LIST_ITEM *tile_item = _al_list_front(map->tiles);
 	while (tile_item != NULL) {
 		map_tile *tile = _al_list_item_data(tile_item);

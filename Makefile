@@ -1,6 +1,6 @@
 CC		:= gcc
 CFLAGS	:= -g -Wall
-LIBS	:= -lallegro -lxml2 -lz
+LIBS	:= -lallegro -lallegro_image -lxml2 -lz
 SOURCES := $(shell find src/ -type f -name "*.c")
 OBJECTS := $(SOURCES:.c=.o)
 TARGET	:= main

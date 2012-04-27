@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <allegro5/allegro.h>
+#include <allegro5/allegro_image.h>
 #include "global.h"
 #include "draw.h"
 #include "parser.h"
@@ -22,6 +23,11 @@ int main(int argc, char *argv[])
 	// Initialize allegro
 	if (!al_init()) {
 		fprintf(stderr, "Failed to initialize allegro.\n");
+		return 1;
+	}
+
+	if (!al_init_image_addon()) {
+		fprintf(stderr, "Failed to initialize image addon.\n");
 		return 1;
 	}
 
@@ -61,7 +67,7 @@ int main(int argc, char *argv[])
 
 	// This now, for the most part, works
 	map = parse_map("data/maps", "level1.tmx");
-	draw(map);
+	draw(map, 0, 0);
 
 	// Main loop
 	while (running) {

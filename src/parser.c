@@ -64,9 +64,9 @@ static int decode_layer_data(xmlNode *data_node, map_layer *layer)
  * After all the tiles have been parsed out of their tilesets,
  * create the map's global list of tiles.
  */
-static void cache_tile_list(map_data *map, unsigned tilecount)
+static void cache_tile_list(map_data *map)
 {
-	map->tiles = create_list(tilecount);
+	map->tiles = create_list(0);
 	_AL_LIST_ITEM *tileset_item = _al_list_front(map->tilesets);
 
 	while (tileset_item != NULL) {
@@ -102,7 +102,6 @@ map_data *parse_map(const char *dir, const char *filename)
 	map_data *map;
 
 	unsigned i, j, k;
-	int tilecount;
 
 	// Read in the data file
 	debug("parsing map [%s]", filename);
@@ -144,17 +143,10 @@ map_data *parse_map(const char *dir, const char *filename)
 		image_ob->source = copy(get_xml_attribute(image_node, "source"));
 		image_ob->bitmap = al_load_bitmap(image_ob->source);
 
-		// TODO: can't seem to load bitmaps
-		if (image_ob->bitmap == NULL)
-			printf("Failed to load bitmap: %s\n", image_ob->source);
-		else
-			printf("Success! Loaded bitmap: %s\n", image_ob->source);
-
 		tileset_ob->image = image_ob;
 
 		// Get this tileset's tiles
 		_AL_VECTOR *tiles = get_children_for_name(*tileset_node, "tile");
-		tilecount += _al_vector_size(tiles);
 		tileset_ob->tiles = create_list(_al_vector_size(tiles));
 		for (j = 0; j<_al_vector_size(tiles); j++) {
 			xmlNode **tile_node = _al_vector_ref(tiles, j);
@@ -186,7 +178,7 @@ map_data *parse_map(const char *dir, const char *filename)
 	_al_vector_free(tilesets);
 
 	// Create the map's master list of tiles
-	cache_tile_list(map, tilecount);
+	cache_tile_list(map);
 
 	// Get the layers
 	_AL_VECTOR *layers = get_children_for_name(root, "layer");
@@ -197,41 +189,62 @@ map_data *parse_map(const char *dir, const char *filename)
 		layer_ob->name = copy(get_xml_attribute(*layer_node, "name"));
 		layer_ob->width = atoi(get_xml_attribute(*layer_node, "width"));
 		layer_ob->height = atoi(get_xml_attribute(*layer_node, "height"));
+		layer_ob->map = map;
 		decode_layer_data(get_first_child_for_name(*layer_node, "data"), layer_ob);
 
 		// Create any missing tile objects
 		for (j = 0; j<layer_ob->height; j++) {
 			for (k = 0; k<layer_ob->width; k++) {
-				char t = layer_ob->data[k+(j*layer_ob->width)];
-				// TODO: check bits 32-30 for "flipped" properties
-				map_tile *tile = get_tile_for_id(map, t);
-				if (tile == NULL) {
+				char id = get_tile_id(layer_ob, k, j);
+
+				if (id == 0)
+					continue;
+
+				map_tile *tile_ob = get_tile_for_id(map, id);
+				if (!tile_ob) {
 					// wasn't defined in the map file, presumably
 					// because it had no properties
-					tile = (map_tile*)malloc(sizeof(map_tile));
-					tile->id = t;
-					tile->properties = _al_list_create();
-					tile->tileset = NULL;
-					tile->bitmap = NULL;
+					tile_ob = (map_tile*)malloc(sizeof(map_tile));
+					tile_ob->id = id;
+					tile_ob->properties = _al_list_create();
+					tile_ob->tileset = NULL;
+					tile_ob->bitmap = NULL;
 
 					// locate its tilemap
 					_AL_LIST_ITEM *tileset_item = _al_list_front(map->tilesets);
 					while (tileset_item != NULL) {
 						map_tileset *tileset_ob = _al_list_item_data(tileset_item);
-						if (tileset_ob->firstgid < t) {
-							if (tile->tileset == NULL || tileset_ob->firstgid > tile->tileset->firstgid)
-								tile->tileset = tileset_ob;
+						if (tileset_ob->firstgid <= id) {
+							if (!tile_ob->tileset || tileset_ob->firstgid > tile_ob->tileset->firstgid) {
+								tile_ob->tileset = tileset_ob;
+							}
 						}
 						tileset_item = _al_list_next(map->tilesets, tileset_item);
 					}
+
+					_al_list_push_back(map->tiles, tile_ob);
+				}
+
+				// create this tile's bitmap if it hasn't been yet
+				if (!tile_ob->bitmap) {
+					map_tileset *tileset = tile_ob->tileset;
+					int id = tile_ob->id - tileset->firstgid;
+					int width = tileset->image->width / tileset->tilewidth;
+					int x = (id % width) * tileset->tilewidth;
+					int y = (id / width) * tileset->tileheight;
+					tile_ob->bitmap = al_create_sub_bitmap(
+							tileset->image->bitmap,
+							x, y,
+							tileset->tilewidth,
+							tileset->tileheight);
 				}
 			}
 		}
+
+		_al_list_push_back(map->layers, layer_ob);
 	}
 
 	_al_vector_free(layers);
-
-	// Let's load some bitmaps!
 	
 	// Free the doc and return
 	xmlFreeDoc(doc);
