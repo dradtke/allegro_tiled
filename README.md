@@ -6,7 +6,7 @@ Compiling the Library
 Make sure the following dependencies are installed:
 
  * allegro
- * allegro\_tiled
+ * allegro\_image
  * xml2
  * zlib
 
