@@ -15,4 +15,6 @@ Then simply run `make` in the root folder to compile it.
 Running the Example
 ===================
 
-There is one example provided under examples, possibly with more to come. To run it, cd into examples/mario and run `make run`. This will compile, link, and run it.
+There is one example provided under examples, possibly with more to come. To run it, cd into example/mario and run `make run`. This will compile, link, and run it. Here's a screenshot:
+
+![Screenshot](https://github.com/dradtke/Allegro-Tiled/tree/master/example/mario/screenshot.png)
