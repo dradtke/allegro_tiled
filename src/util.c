@@ -1,4 +1,4 @@
-#include "util.h"
+#include <allegro5/tiled.h>
 
 /*
  * Trims whitespace from before and after a string
@@ -29,17 +29,3 @@ char *copy(const char *src)
 	return result;
 }
 
-/*
- * Utility debug method
- * Used like printf, but only prints if DEBUG is set in global.c
- */
-void debug(const char *format, ...)
-{
-	if (!DEBUG)
-		return;
-
-	va_list argptr;
-	va_start(argptr, format);
-	vprintf(format, argptr);
-	printf("\n");
-}

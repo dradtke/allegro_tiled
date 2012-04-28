@@ -1,9 +1,14 @@
+#ifndef ALLEGRO_TILED_H
+#define ALLEGRO_TILED_H
+
 #include <allegro5/allegro.h>
 #include <allegro5/internal/aintern_list.h>
-#include <stdio.h>
-
-#ifndef MAP_H
-#define MAP_H
+#include <allegro5/internal/aintern_vector.h>
+#include <ctype.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <string.h>
+#include <zlib.h>
 
 //{{{ map structs
 // map_data
@@ -78,14 +83,40 @@ typedef struct
 map_property;
 //}}}
 
+// draw.h
+void draw(map_data *map, float dx, float dy);
+
+// map.h
 inline char get_tile_id(map_layer *layer_ob, int x, int y);
 map_tile *get_tile_for_id(map_data *map, char id);
 void free_map(map_data *map);
-void free_layer(map_layer *layer);
-void free_tileset(map_tileset *tileset);
-void free_tile(map_tile *tile);
-void free_property(map_property *prop);
-void free_tileset_image(map_image *img);
 
+// parser.h
+map_data *parse_map(const char *dir, const char *filename);
+map_tile *get_tile_for_pos(map_layer *layer, int x, int y);
+
+// util.h
+char *trim(char *str);
+char *copy(const char *str);
+
+// xml.h
+_AL_VECTOR *get_children_for_name(xmlNode *parent, char *name);
+xmlNode *get_first_child_for_name(xmlNode *parent, char *name);
+char *get_xml_attribute(xmlNode *node, char *name);
+
+// zlib.h
+// Hack to make it work on Windows
+// ???: Is this actually needed?
+#if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
+#  include <fcntl.h>
+#  include <io.h>
+#  define SET_BINARY_MODE(file) setmode(fileno(file), O_BINARY)
+#else
+#  define SET_BINARY_MODE(file)
 #endif
 
+#define CHUNK 16384
+
+int decompress(char *src, FILE *dest);
+
+#endif

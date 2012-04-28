@@ -1,4 +1,4 @@
-#include "zlib.h"
+#include <allegro5/tiled.h>
 
 static const char  table[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 static const int   BASE64_INPUT_SIZE = 57;

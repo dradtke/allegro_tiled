@@ -1,4 +1,4 @@
-#include "xml.h"
+#include <allegro5/tiled.h>
 
 /*
  * Given a parent XML node and the name of all desired children,

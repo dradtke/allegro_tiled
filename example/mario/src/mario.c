@@ -1,9 +1,38 @@
+/*
+ * This program demonstrates the use of the allegro_tiled library.
+ * Compile it with:
+ *
+ *   $ gcc -Iinclude/ -L./ -o mario example/mario.c -lallegro -lallegro_image -lallegro_tiled
+ *
+ * and run it with:
+ *
+ *   $ LD_LIBRARY_PATH=. ./mario
+ *
+ * Enjoy.
+ */
+
 #include <stdio.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_image.h>
-#include "global.h"
-#include "draw.h"
-#include "parser.h"
+#include <allegro5/tiled.h>
+
+#define FPS 60
+#define DEBUG 0
+
+/*
+ * Utility debug method
+ * Used like printf, but only prints if DEBUG is set in global.c
+ */
+void debug(const char *format, ...)
+{
+	if (!DEBUG)
+		return;
+
+	va_list argptr;
+	va_start(argptr, format);
+	vprintf(format, argptr);
+	printf("\n");
+}
 
 /*
  * Application entry point

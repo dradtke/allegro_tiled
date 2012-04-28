@@ -1,4 +1,4 @@
-#include "parser.h"
+#include <allegro5/tiled.h>
 
 /*
  * Small workaround for Allegro's list creation.
@@ -104,7 +104,6 @@ map_data *parse_map(const char *dir, const char *filename)
 	unsigned i, j, k;
 
 	// Read in the data file
-	debug("parsing map [%s]", filename);
 	doc = xmlReadFile(filename, NULL, 0);
 	if (!doc) {
 		fprintf(stderr, "failed to parse map data: %s\n", filename);
@@ -112,11 +111,9 @@ map_data *parse_map(const char *dir, const char *filename)
 	}
 
 	// Get the root element, <map>
-	debug("Getting root element");
 	root = xmlDocGetRootElement(doc);
 
 	// Get some basic info
-	debug("Fetching map attributes");
 	map = (map_data*)malloc(sizeof(map_data));
 	map->width = atoi(get_xml_attribute(root, "width"));
 	map->height = atoi(get_xml_attribute(root, "height"));
