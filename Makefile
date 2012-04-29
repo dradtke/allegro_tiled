@@ -1,8 +1,8 @@
-CC         := gcc
-LIBNAME    := allegro_tiled
-CFLAGS     := -g -fPIC -Wall -Iinclude/
-LDFLAGS    := -shared -Wl,-soname,lib$(LIBNAME).so
-LIBS       := -lallegro -lallegro_image -lxml2 -lz
+CC      := gcc
+LIBNAME := allegro_tiled
+CFLAGS  := -g -fPIC -Wall -Iinclude/
+LDFLAGS := -shared -Wl,-soname,lib$(LIBNAME).so
+LIBS    := -lallegro -lallegro_image -lxml2 -lz
 SOURCES := $(shell find src/ -type f -name "*.c")
 OBJECTS := $(SOURCES:.c=.o)
 
