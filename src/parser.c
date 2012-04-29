@@ -115,11 +115,19 @@ map_data *parse_map(const char *dir, const char *filename)
 
 	// Get some basic info
 	map = (map_data*)malloc(sizeof(map_data));
+	map->x = 0;
+	map->y = 0;
 	map->width = atoi(get_xml_attribute(root, "width"));
 	map->height = atoi(get_xml_attribute(root, "height"));
 	map->tile_width = atoi(get_xml_attribute(root, "tilewidth"));
 	map->tile_height = atoi(get_xml_attribute(root, "tileheight"));
 	map->orientation = copy(get_xml_attribute(root, "orientation"));
+
+	map->bounds = (map_bounds*)malloc(sizeof(map_bounds));
+	map->bounds->left = 0;
+	map->bounds->top = 0;
+	map->bounds->right = map->width * map->tile_width;
+	map->bounds->bottom = map->height * map->tile_height;
 
 	// Get the tilesets
 	_AL_VECTOR *tilesets = get_children_for_name(root, "tileset");
@@ -242,8 +250,43 @@ map_data *parse_map(const char *dir, const char *filename)
 	}
 
 	_al_vector_free(layers);
-	
-	// Free the doc and return
+
+	// Done parsing XML, so let's free the doc
 	xmlFreeDoc(doc);
+
+	// Create the map's backbuffer
+	ALLEGRO_BITMAP *orig_backbuffer = al_get_target_bitmap();
+	map->backbuffer = al_create_bitmap(map->bounds->right, map->bounds->bottom);
+	map->bounds->right -= al_get_bitmap_width(orig_backbuffer);
+	map->bounds->bottom -= al_get_bitmap_height(orig_backbuffer);
+	al_set_target_bitmap(map->backbuffer);
+
+	if (!strcmp(map->orientation, "orthogonal")) {
+		_AL_LIST_ITEM *layer_item = _al_list_front(map->layers);
+		while (layer_item != NULL) {
+			map_layer *layer_ob = _al_list_item_data(layer_item);
+			for (i = 0; i<layer_ob->height; i++) {
+				for (j = 0; j<layer_ob->width; j++) {
+					char id = get_tile_id(layer_ob, j, i);
+					map_tile *tile_ob = get_tile_for_id(map, id);
+					if (!tile_ob)
+						continue;
+
+					int tx = j*(tile_ob->tileset->tilewidth);
+					int ty = i*(tile_ob->tileset->tileheight);
+
+					al_draw_bitmap(tile_ob->bitmap, tx, ty, 0);
+				}
+			}
+
+			layer_item = _al_list_next(map->layers, layer_item);
+		}
+	}
+	else {
+		fprintf(stderr, "Cannot draw unsupported map orientation: %s\n", map->orientation);
+	}
+
+	al_set_target_bitmap(orig_backbuffer);
+	
 	return map;
 }

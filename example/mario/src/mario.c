@@ -1,12 +1,10 @@
 /*
  * This program demonstrates the use of the allegro_tiled library.
- * Compile it with:
+ * Compiling and running can both be handled by make; simply type
  *
- *   $ gcc -Iinclude/ -L./ -o mario example/mario.c -lallegro -lallegro_image -lallegro_tiled
+ *  $ make run
  *
- * and run it with:
- *
- *   $ LD_LIBRARY_PATH=. ./mario
+ * and, assuming the library was built, it should compile and run.
  *
  * Enjoy.
  */
@@ -21,7 +19,7 @@
 
 /*
  * Utility debug method
- * Used like printf, but only prints if DEBUG is set in global.c
+ * Used like printf, but only prints if DEBUG is set
  */
 void debug(const char *format, ...)
 {
@@ -34,6 +32,11 @@ void debug(const char *format, ...)
 	printf("\n");
 }
 
+map_data *open_map(char *filename)
+{
+	return parse_map("data/maps", filename);
+}
+
 /*
  * Application entry point
  */
@@ -42,10 +45,12 @@ int main(int argc, char *argv[])
 	ALLEGRO_DISPLAY	*display = NULL;
 	ALLEGRO_EVENT_QUEUE	*event_queue = NULL;
 	ALLEGRO_TIMER *timer = NULL;
+	ALLEGRO_KEYBOARD_STATE keyboard_state;
 	map_data *map;
 
 	bool running = true;
 	bool redraw = true;
+	bool reload = false;
 
 	//{{{ initialization
 	
@@ -55,6 +60,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
+	// Initialize allegro_image addon
 	if (!al_init_image_addon()) {
 		fprintf(stderr, "Failed to initialize image addon.\n");
 		return 1;
@@ -64,6 +70,12 @@ int main(int argc, char *argv[])
 	timer = al_create_timer(1.0 / FPS);
 	if (!timer) {
 		fprintf(stderr, "Failed to create timer.\n");
+		return 1;
+	}
+
+	// Install the keyboard
+	if (!al_install_keyboard()) {
+		fprintf(stderr, "Failed to install keyboard.\n");
 		return 1;
 	}
 
@@ -84,19 +96,20 @@ int main(int argc, char *argv[])
 	// Register event sources
 	al_register_event_source(event_queue, al_get_display_event_source(display));
 	al_register_event_source(event_queue, al_get_timer_event_source(timer));
+	al_register_event_source(event_queue, al_get_keyboard_event_source());
 
 	//}}}
 	
-	// Display a black screen
-	al_clear_to_color(al_map_rgb(0, 0, 0));
-	al_flip_display();
-
 	// Start the timer
 	al_start_timer(timer);
 
-	// This now, for the most part, works
-	map = parse_map("data/maps", "level1.tmx");
-	draw(map, 0, 0);
+	// Parse the map
+	map = open_map("level1.tmx");
+
+	// Draw the map
+	al_clear_to_color(al_map_rgb(0, 0, 0));
+	draw_map(map);
+	al_flip_display();
 
 	// Main loop
 	while (running) {
@@ -113,10 +126,43 @@ int main(int argc, char *argv[])
 		if (get_event) {
 			switch (event.type) {
 				case ALLEGRO_EVENT_TIMER:
+					// is an arrow key being held?
+					al_get_keyboard_state(&keyboard_state);
+					if (al_key_down(&keyboard_state, ALLEGRO_KEY_RIGHT)) {
+						map->x += 5;
+						if (map->x > map->bounds->right)
+							map->x = map->bounds->right;
+					}
+					else if (al_key_down(&keyboard_state, ALLEGRO_KEY_LEFT)) {
+						map->x -= 5;
+						if (map->x < map->bounds->left)
+							map->x = map->bounds->left;
+					}
+					else if (al_key_down(&keyboard_state, ALLEGRO_KEY_UP)) {
+						map->y -= 5;
+						if (map->y < map->bounds->top)
+							map->y = map->bounds->top;
+					}
+					else if (al_key_down(&keyboard_state, ALLEGRO_KEY_DOWN)) {
+						map->y += 5;
+						if (map->y > map->bounds->bottom)
+							map->y = map->bounds->bottom;
+					}
+
 					redraw = true;
 					break;
 				case ALLEGRO_EVENT_DISPLAY_CLOSE:
 					running = false;
+					break;
+				case ALLEGRO_EVENT_KEY_DOWN:
+					// ignore
+					break;
+				case ALLEGRO_EVENT_KEY_UP:
+					// ignore
+					break;
+				case ALLEGRO_EVENT_KEY_CHAR:
+					if (event.keyboard.keycode == ALLEGRO_KEY_SPACE)
+						reload = true;
 					break;
 				default:
 					fprintf(stderr, "Unsupported event received: %d\n", event.type);
@@ -125,11 +171,26 @@ int main(int argc, char *argv[])
 		}
 
 		if (redraw && al_is_event_queue_empty(event_queue)) {
-			// Redraw
-			/*
+			// Clear the screen
 			al_clear_to_color(al_map_rgb(0, 0, 0));
+
+			// If we need to reload, do it
+			// Otherwise, redraw
+			if (reload) {
+				int x = map->x;
+				int y = map->y;
+				free_map(map);
+				map = open_map("level1.tmx");
+				map->x = x;
+				map->y = y;
+				reload = false;
+			}
+			else {
+				draw_map(map);
+			}
+
 			al_flip_display();
-			*/
+			redraw = false;
 		}
 	}
 

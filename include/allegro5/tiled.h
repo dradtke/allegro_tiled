@@ -11,17 +11,29 @@
 #include <zlib.h>
 
 //{{{ map structs
+// map_bounds
+typedef struct
+{
+	int left;
+	int right;
+	int top;
+	int bottom;
+}
+map_bounds;
+
 // map_data
 typedef struct
 {
-	int width;				// width in tiles
-	int height;				// height in tiles
+	int x, y;				// map position
+	int width, height;		// dimensions in tiles
 	int tile_width;			// width of each tile
 	int tile_height;		// height of each tile
 	char *orientation;		// "orthogonal" or ... isometric?
+	map_bounds *bounds;		// map boundaries
 	_AL_LIST *tilesets;		// list of tilesets
 	_AL_LIST *layers;		// list of layers
 	_AL_LIST *tiles;		// full list of tiles
+	ALLEGRO_BITMAP *backbuffer; // back buffer
 }
 map_data;
 
@@ -84,7 +96,7 @@ map_property;
 //}}}
 
 // draw.h
-void draw(map_data *map, float dx, float dy);
+void draw_map(map_data *map);
 
 // map.h
 inline char get_tile_id(map_layer *layer_ob, int x, int y);

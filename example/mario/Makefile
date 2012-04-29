@@ -1,8 +1,8 @@
-CC         := gcc
-TARGET     := mario
-CFLAGS     := -I../../include/
-LDFLAGS    := -L../../
-LIBS       := -lallegro -lallegro_image -lallegro_tiled
+CC      := gcc
+TARGET  := mario
+CFLAGS  := -I../../include/
+LDFLAGS := -L../../
+LIBS    := -lallegro -lallegro_image -lallegro_tiled
 SOURCES := $(shell find src/ -type f -name "*.c")
 OBJECTS := $(SOURCES:.c=.o)
 
@@ -18,4 +18,4 @@ clean:
 run: $(TARGET)
 	@echo "  Starting..."; LD_LIBRARY_PATH=../../ ./$(TARGET)
 
-.PHONY: clean
+.PHONY: clean run
