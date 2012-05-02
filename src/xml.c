@@ -1,24 +1,23 @@
 #include <allegro5/tiled.h>
+#include "internal.h"
 
 /*
  * Given a parent XML node and the name of all desired children,
  * returns a list of all children with that name
  */
-_AL_VECTOR *get_children_for_name(xmlNode *parent, char *name)
+_AL_LIST *get_children_for_name(xmlNode *parent, char *name)
 {
-	_AL_VECTOR *vec = (_AL_VECTOR*)malloc(sizeof(_AL_VECTOR));
+	_AL_LIST *list = _al_list_create();
 	xmlNode *child = parent->children->next;
-
-	_al_vector_init(vec, sizeof(xmlNode*));
 
 	while (child != NULL) {
 		if (!strcmp((const char*)child->name, name))
-			_al_vector_append_array(vec, 1, &child);
+			_al_list_push_back(list, child);
 
 		child = child->next;
 	}
 
-	return vec;
+	return list;
 }
 
 /*

@@ -32,9 +32,9 @@ void debug(const char *format, ...)
 	printf("\n");
 }
 
-map_data *open_map(char *filename)
+TILED_MAP *open_map(const char *filename)
 {
-	return parse_map("data/maps", filename);
+	return tiled_parse_map("data/maps", filename);
 }
 
 /*
@@ -46,11 +46,14 @@ int main(int argc, char *argv[])
 	ALLEGRO_EVENT_QUEUE	*event_queue = NULL;
 	ALLEGRO_TIMER *timer = NULL;
 	ALLEGRO_KEYBOARD_STATE keyboard_state;
-	map_data *map;
+	TILED_MAP *map;
 
 	bool running = true;
 	bool redraw = true;
 	bool reload = false;
+
+	int screen_width = 640;
+	int screen_height = 480;
 
 	//{{{ initialization
 	
@@ -80,7 +83,7 @@ int main(int argc, char *argv[])
 	}
 
 	// Create the display
-	display = al_create_display(640, 480);
+	display = al_create_display(screen_width, screen_height);
 	if (!display) {
 		fprintf(stderr, "Failed to create display.\n");
 		return 1;
@@ -108,7 +111,7 @@ int main(int argc, char *argv[])
 
 	// Draw the map
 	al_clear_to_color(al_map_rgb(0, 0, 0));
-	draw_map(map);
+	draw_map(map, screen_width, screen_height);
 	al_flip_display();
 
 	// Main loop
@@ -179,14 +182,14 @@ int main(int argc, char *argv[])
 			if (reload) {
 				int x = map->x;
 				int y = map->y;
-				free_map(map);
+				tiled_free_map(map);
 				map = open_map("level1.tmx");
 				map->x = x;
 				map->y = y;
 				reload = false;
 			}
 			else {
-				draw_map(map);
+				draw_map(map, screen_width, screen_height);
 			}
 
 			al_flip_display();
@@ -195,7 +198,7 @@ int main(int argc, char *argv[])
 	}
 
 	// Clean up and return
-	free_map(map);
+	tiled_free_map(map);
 	al_destroy_display(display);
 	al_destroy_event_queue(event_queue);
 	return 0;

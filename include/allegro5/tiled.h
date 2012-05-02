@@ -7,11 +7,9 @@
 #include <ctype.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
-#include <string.h>
 #include <zlib.h>
 
 //{{{ map structs
-// map_bounds
 typedef struct
 {
 	int left;
@@ -19,9 +17,8 @@ typedef struct
 	int top;
 	int bottom;
 }
-map_bounds;
+TILED_MAP_BOUNDS;
 
-// map_data
 typedef struct
 {
 	int x, y;				// map position
@@ -29,16 +26,14 @@ typedef struct
 	int tile_width;			// width of each tile
 	int tile_height;		// height of each tile
 	char *orientation;		// "orthogonal" or ... isometric?
-	map_bounds *bounds;		// map boundaries
+	TILED_MAP_BOUNDS *bounds; // map boundaries
 	_AL_LIST *tilesets;		// list of tilesets
 	_AL_LIST *layers;		// list of layers
 	_AL_LIST *tiles;		// full list of tiles
 	ALLEGRO_BITMAP *backbuffer; // back buffer
 }
-map_data;
+TILED_MAP;
 
-
-// layer
 typedef struct
 {
 	int width;				// width in tiles
@@ -46,89 +41,49 @@ typedef struct
 	int datalen;			// length of the decoded data
 	char *name;				// name of the layer
 	char *data;				// decoded data
-	map_data *map;			// reference to the map
+	TILED_MAP *map;			// reference to the map
 }
-map_layer;
+TILED_MAP_LAYER;
 
-
-// tileset image
-typedef struct
-{
-	char *source;			// path to this image's source
-	ALLEGRO_BITMAP *bitmap; // allegro bitmap object
-	int width;				// width of this image
-	int height;				// height of this image
-}
-map_image;
-
-
-// tileset
 typedef struct
 {
 	int firstgid;			// first global id
 	int tilewidth;			// width of each tile
 	int tileheight;			// height of each tile
+	int width, height;		// total dimensions (in pixels)
 	char *name;				// name
-	map_image *image;		// image for this tileset
+	char *source;			// path to this tileset's image source
+	ALLEGRO_BITMAP *bitmap;	// image for this tileset
 	_AL_LIST *tiles;		// list of tiles
 }
-map_tileset;
+TILED_MAP_TILESET;
 
-
-// map tile
 typedef struct
 {
 	int id;					// the tile id
-	map_tileset *tileset;	// pointer to its tileset
+	TILED_MAP_TILESET *tileset; // pointer to its tileset
 	_AL_LIST *properties;	// tile properties
 	ALLEGRO_BITMAP *bitmap; // this tile's image
 }
-map_tile;
+TILED_MAP_TILE;
 
-
-// property struct (for tile properties)
 typedef struct
 {
 	char *name;				// the property's name
 	char *value;			// the property's value
 }
-map_property;
+TILED_MAP_TILE_PROPERTY;
 //}}}
 
 // draw.h
-void draw_map(map_data *map);
+void draw_map(TILED_MAP *map, int screen_width, int screen_height);
 
 // map.h
-inline char get_tile_id(map_layer *layer_ob, int x, int y);
-map_tile *get_tile_for_id(map_data *map, char id);
-void free_map(map_data *map);
+TILED_MAP_TILE *tiled_get_tile_for_id(TILED_MAP *map, char id);
+void tiled_free_map(TILED_MAP *map);
 
 // parser.h
-map_data *parse_map(const char *dir, const char *filename);
-map_tile *get_tile_for_pos(map_layer *layer, int x, int y);
-
-// util.h
-char *trim(char *str);
-char *copy(const char *str);
-
-// xml.h
-_AL_VECTOR *get_children_for_name(xmlNode *parent, char *name);
-xmlNode *get_first_child_for_name(xmlNode *parent, char *name);
-char *get_xml_attribute(xmlNode *node, char *name);
-
-// zlib.h
-// Hack to make it work on Windows
-// ???: Is this actually needed?
-#if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
-#  include <fcntl.h>
-#  include <io.h>
-#  define SET_BINARY_MODE(file) setmode(fileno(file), O_BINARY)
-#else
-#  define SET_BINARY_MODE(file)
-#endif
-
-#define CHUNK 16384
-
-int decompress(char *src, FILE *dest);
+TILED_MAP *tiled_parse_map(const char *dir, const char *filename);
+TILED_MAP_TILE *tiled_get_tile_for_pos(TILED_MAP_LAYER *layer, int x, int y);
 
 #endif

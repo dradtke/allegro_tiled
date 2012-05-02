@@ -1,4 +1,5 @@
 #include <allegro5/tiled.h>
+#include "internal.h"
 
 /*
  * Trims whitespace from before and after a string
