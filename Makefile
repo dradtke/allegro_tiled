@@ -4,7 +4,7 @@ CFLAGS	:= -g -fPIC -Wall -Iinclude/
 LIBS	:= -lallegro -lallegro_image -lxml2 -lz
 
 TARGET	:= lib$(LIBNAME).so
-LDFLAGS	:= -shared -Wl,soname=$(TARGET)
+LDFLAGS	:= -shared -Wl,-soname=$(TARGET)
 SOURCES	:= $(shell find src/ -type f -name *.c)
 OBJECTS	:= $(patsubst src/%,build/%,$(SOURCES:.c=.o))
 
