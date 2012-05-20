@@ -1,4 +1,4 @@
-CC      := gcc
+CC      := clang
 LIBNAME := allegro_tiled
 CFLAGS  := -g -fPIC -Wall -Iinclude/
 LDFLAGS := -shared -Wl,-soname,lib$(LIBNAME).so

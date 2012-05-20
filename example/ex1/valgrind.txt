@@ -1,0 +1,343 @@
+==15658== Memcheck, a memory error detector
+==15658== Copyright (C) 2002-2010, and GNU GPL'd, by Julian Seward et al.
+==15658== Using Valgrind-3.6.1 and LibVEX; rerun with -h for copyright info
+==15658== Command: ./mario
+==15658== Parent PID: 30020
+==15658== 
+==15658== Invalid read of size 8
+==15658==    at 0x564FF24: __strspn_sse42 (in /lib64/libc-2.14.1.so)
+==15658==    by 0x95D2E72: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95D406E: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x9B80AF5: ??? (in /lib64/libexpat.so.1.5.2)
+==15658==    by 0x9B81BC0: ??? (in /lib64/libexpat.so.1.5.2)
+==15658==    by 0x9B7EA9B: ??? (in /lib64/libexpat.so.1.5.2)
+==15658==    by 0x9B8042A: ??? (in /lib64/libexpat.so.1.5.2)
+==15658==    by 0x9B839D1: XML_ParseBuffer (in /lib64/libexpat.so.1.5.2)
+==15658==    by 0x95D496F: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95E462C: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95D2222: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x66D250E: ??? (in /usr/lib64/libGL.so.1.2)
+==15658==  Address 0x8c90a90 is 0 bytes inside a block of size 4 alloc'd
+==15658==    at 0x4C297CD: malloc (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+==15658==    by 0x95D3F4C: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x9B80AF5: ??? (in /lib64/libexpat.so.1.5.2)
+==15658==    by 0x9B81BC0: ??? (in /lib64/libexpat.so.1.5.2)
+==15658==    by 0x9B7EA9B: ??? (in /lib64/libexpat.so.1.5.2)
+==15658==    by 0x9B8042A: ??? (in /lib64/libexpat.so.1.5.2)
+==15658==    by 0x9B839D1: XML_ParseBuffer (in /lib64/libexpat.so.1.5.2)
+==15658==    by 0x95D496F: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95E462C: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95D2222: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x66D250E: ??? (in /usr/lib64/libGL.so.1.2)
+==15658==    by 0x66AE568: ??? (in /usr/lib64/libGL.so.1.2)
+==15658== 
+==15658== Invalid read of size 8
+==15658==    at 0x564FFAB: __strspn_sse42 (in /lib64/libc-2.14.1.so)
+==15658==    by 0x95D2E72: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95D4083: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x9B80AF5: ??? (in /lib64/libexpat.so.1.5.2)
+==15658==    by 0x9B81BC0: ??? (in /lib64/libexpat.so.1.5.2)
+==15658==    by 0x9B7EA9B: ??? (in /lib64/libexpat.so.1.5.2)
+==15658==    by 0x9B8042A: ??? (in /lib64/libexpat.so.1.5.2)
+==15658==    by 0x9B839D1: XML_ParseBuffer (in /lib64/libexpat.so.1.5.2)
+==15658==    by 0x95D496F: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95E462C: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95D2222: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x66D250E: ??? (in /usr/lib64/libGL.so.1.2)
+==15658==  Address 0x8c90a90 is 0 bytes inside a block of size 4 alloc'd
+==15658==    at 0x4C297CD: malloc (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+==15658==    by 0x95D3F4C: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x9B80AF5: ??? (in /lib64/libexpat.so.1.5.2)
+==15658==    by 0x9B81BC0: ??? (in /lib64/libexpat.so.1.5.2)
+==15658==    by 0x9B7EA9B: ??? (in /lib64/libexpat.so.1.5.2)
+==15658==    by 0x9B8042A: ??? (in /lib64/libexpat.so.1.5.2)
+==15658==    by 0x9B839D1: XML_ParseBuffer (in /lib64/libexpat.so.1.5.2)
+==15658==    by 0x95D496F: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95E462C: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95D2222: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x66D250E: ??? (in /usr/lib64/libGL.so.1.2)
+==15658==    by 0x66AE568: ??? (in /usr/lib64/libGL.so.1.2)
+==15658== 
+==15658== Syscall param ioctl(generic) points to uninitialised byte(s)
+==15658==    at 0x5608837: ioctl (in /lib64/libc-2.14.1.so)
+==15658==    by 0x8384947: drmIoctl (in /usr/lib64/libdrm.so.2.4.0)
+==15658==    by 0x8386C9B: drmCommandWriteRead (in /usr/lib64/libdrm.so.2.4.0)
+==15658==    by 0x95E45C3: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95E464D: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95D2222: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x66D250E: ??? (in /usr/lib64/libGL.so.1.2)
+==15658==    by 0x66AE568: ??? (in /usr/lib64/libGL.so.1.2)
+==15658==    by 0x66AA0A8: glXQueryVersion (in /usr/lib64/libGL.so.1.2)
+==15658==    by 0x4ED631C: ??? (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4E9168B: al_create_display (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4011B1: main (in /home/damien/workspace/allegro-tiled/example/mario/mario)
+==15658==  Address 0x7fefff834 is on thread 1's stack
+==15658== 
+==15658== Syscall param ioctl(generic) points to uninitialised byte(s)
+==15658==    at 0x5608837: ioctl (in /lib64/libc-2.14.1.so)
+==15658==    by 0x8384947: drmIoctl (in /usr/lib64/libdrm.so.2.4.0)
+==15658==    by 0x9DA713B: drm_intel_bufmgr_gem_init (in /usr/lib64/libdrm_intel.so.1.0.0)
+==15658==    by 0x95E474C: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95D2222: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x66D250E: ??? (in /usr/lib64/libGL.so.1.2)
+==15658==    by 0x66AE568: ??? (in /usr/lib64/libGL.so.1.2)
+==15658==    by 0x66AA0A8: glXQueryVersion (in /usr/lib64/libGL.so.1.2)
+==15658==    by 0x4ED631C: ??? (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4E9168B: al_create_display (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4011B1: main (in /home/damien/workspace/allegro-tiled/example/mario/mario)
+==15658==  Address 0x7fefff814 is on thread 1's stack
+==15658== 
+==15658== Invalid read of size 4
+==15658==    at 0x966FBC7: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x964CB6F: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95DD23F: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95D2A25: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x66D2E5E: ??? (in /usr/lib64/libGL.so.1.2)
+==15658==    by 0x66AD25F: glXMakeContextCurrent (in /usr/lib64/libGL.so.1.2)
+==15658==    by 0x4ED6724: ??? (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4E9168B: al_create_display (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4011B1: main (in /home/damien/workspace/allegro-tiled/example/mario/mario)
+==15658==  Address 0x8d693b0 is 0 bytes inside a block of size 1 alloc'd
+==15658==    at 0x4C27EB4: calloc (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+==15658==    by 0x966FDA2: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x964CB6F: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95DD23F: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95D2A25: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x66D2E5E: ??? (in /usr/lib64/libGL.so.1.2)
+==15658==    by 0x66AD25F: glXMakeContextCurrent (in /usr/lib64/libGL.so.1.2)
+==15658==    by 0x4ED6724: ??? (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4E9168B: al_create_display (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4011B1: main (in /home/damien/workspace/allegro-tiled/example/mario/mario)
+==15658== 
+==15658== Conditional jump or move depends on uninitialised value(s)
+==15658==    at 0x53325CC: UnBase64 (zlib.c:59)
+==15658==    by 0x53326FE: decompress (zlib.c:101)
+==15658==    by 0x5331442: decode_layer_data (parser.c:32)
+==15658==    by 0x5331EC9: tiled_parse_map (parser.c:233)
+==15658==    by 0x401058: open_map (in /home/damien/workspace/allegro-tiled/example/mario/mario)
+==15658==    by 0x401291: main (in /home/damien/workspace/allegro-tiled/example/mario/mario)
+==15658== 
+==15658== Conditional jump or move depends on uninitialised value(s)
+==15658==    at 0x53325D7: UnBase64 (zlib.c:59)
+==15658==    by 0x53326FE: decompress (zlib.c:101)
+==15658==    by 0x5331442: decode_layer_data (parser.c:32)
+==15658==    by 0x5331EC9: tiled_parse_map (parser.c:233)
+==15658==    by 0x401058: open_map (in /home/damien/workspace/allegro-tiled/example/mario/mario)
+==15658==    by 0x401291: main (in /home/damien/workspace/allegro-tiled/example/mario/mario)
+==15658== 
+==15658== Conditional jump or move depends on uninitialised value(s)
+==15658==    at 0x53325E2: UnBase64 (zlib.c:59)
+==15658==    by 0x53326FE: decompress (zlib.c:101)
+==15658==    by 0x5331442: decode_layer_data (parser.c:32)
+==15658==    by 0x5331EC9: tiled_parse_map (parser.c:233)
+==15658==    by 0x401058: open_map (in /home/damien/workspace/allegro-tiled/example/mario/mario)
+==15658==    by 0x401291: main (in /home/damien/workspace/allegro-tiled/example/mario/mario)
+==15658== 
+==15658== 
+==15658== HEAP SUMMARY:
+==15658==     in use at exit: 166,862 bytes in 1,142 blocks
+==15658==   total heap usage: 33,542 allocs, 32,400 frees, 429,293,277 bytes allocated
+==15658== 
+==15658== 8 bytes in 1 blocks are definitely lost in loss record 16 of 207
+==15658==    at 0x4C297CD: malloc (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+==15658==    by 0x4ED8ED6: _al_xglx_config_select_visual (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4ED649F: ??? (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4E9168B: al_create_display (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4011B1: main (in /home/damien/workspace/allegro-tiled/example/mario/mario)
+==15658== 
+==15658== 124 bytes in 1 blocks are definitely lost in loss record 116 of 207
+==15658==    at 0x4C297CD: malloc (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+==15658==    by 0x72FFD44: ??? (in /usr/lib64/libxcb.so.1.1.0)
+==15658==    by 0x72FFE0A: ??? (in /usr/lib64/libxcb.so.1.1.0)
+==15658==    by 0x72FF96A: xcb_connect_to_display_with_auth_info (in /usr/lib64/libxcb.so.1.1.0)
+==15658==    by 0x5D80191: _XConnectXCB (in /usr/lib64/libX11.so.6.3.0)
+==15658==    by 0x5D6FDC0: XOpenDisplay (in /usr/lib64/libX11.so.6.3.0)
+==15658==    by 0x4EDB8CF: ??? (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4E9AB27: al_install_system (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4010B3: main (in /home/damien/workspace/allegro-tiled/example/mario/mario)
+==15658== 
+==15658== 124 bytes in 1 blocks are definitely lost in loss record 117 of 207
+==15658==    at 0x4C297CD: malloc (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+==15658==    by 0x72FFD44: ??? (in /usr/lib64/libxcb.so.1.1.0)
+==15658==    by 0x72FFE0A: ??? (in /usr/lib64/libxcb.so.1.1.0)
+==15658==    by 0x72FF96A: xcb_connect_to_display_with_auth_info (in /usr/lib64/libxcb.so.1.1.0)
+==15658==    by 0x5D80191: _XConnectXCB (in /usr/lib64/libX11.so.6.3.0)
+==15658==    by 0x5D6FDC0: XOpenDisplay (in /usr/lib64/libX11.so.6.3.0)
+==15658==    by 0x4EDB8E2: ??? (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4E9AB27: al_install_system (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4010B3: main (in /home/damien/workspace/allegro-tiled/example/mario/mario)
+==15658== 
+==15658== 192 bytes in 1 blocks are possibly lost in loss record 140 of 207
+==15658==    at 0x4C27EB4: calloc (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+==15658==    by 0x9DA6209: ??? (in /usr/lib64/libdrm_intel.so.1.0.0)
+==15658==    by 0x95D72E8: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95D7328: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95DCAD4: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95F598C: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95D1D5F: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x66D22FF: ??? (in /usr/lib64/libGL.so.1.2)
+==15658==    by 0x66AA3DA: ??? (in /usr/lib64/libGL.so.1.2)
+==15658==    by 0x66AA7C9: glXCreateNewContext (in /usr/lib64/libGL.so.1.2)
+==15658==    by 0x4ED9939: _al_xglx_config_create_context (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4ED66F4: ??? (in /usr/lib64/liballegro.so.5.0.6)
+==15658== 
+==15658== 192 bytes in 1 blocks are possibly lost in loss record 141 of 207
+==15658==    at 0x4C27EB4: calloc (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+==15658==    by 0x9DA6209: ??? (in /usr/lib64/libdrm_intel.so.1.0.0)
+==15658==    by 0x95D7354: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95DCAD4: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95F598C: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95D1D5F: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x66D22FF: ??? (in /usr/lib64/libGL.so.1.2)
+==15658==    by 0x66AA3DA: ??? (in /usr/lib64/libGL.so.1.2)
+==15658==    by 0x66AA7C9: glXCreateNewContext (in /usr/lib64/libGL.so.1.2)
+==15658==    by 0x4ED9939: _al_xglx_config_create_context (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4ED66F4: ??? (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4E9168B: al_create_display (in /usr/lib64/liballegro.so.5.0.6)
+==15658== 
+==15658== 192 bytes in 1 blocks are possibly lost in loss record 142 of 207
+==15658==    at 0x4C27EB4: calloc (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+==15658==    by 0x9DA6209: ??? (in /usr/lib64/libdrm_intel.so.1.0.0)
+==15658==    by 0x95D72E8: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95DB388: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x66AC85C: glXSwapBuffers (in /usr/lib64/libGL.so.1.2)
+==15658==    by 0x4E91775: al_create_display (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4011B1: main (in /home/damien/workspace/allegro-tiled/example/mario/mario)
+==15658== 
+==15658== 192 bytes in 1 blocks are possibly lost in loss record 143 of 207
+==15658==    at 0x4C27EB4: calloc (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+==15658==    by 0x9DA6209: ??? (in /usr/lib64/libdrm_intel.so.1.0.0)
+==15658==    by 0x95E302F: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95E24CC: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95EC7ED: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95ED1A2: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x96BAEE4: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x96BB51A: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x4EF4E7F: ??? (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4E71C08: ??? (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4E71DD5: al_create_bitmap (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x53321C9: tiled_parse_map (parser.c:295)
+==15658== 
+==15658== 192 bytes in 1 blocks are possibly lost in loss record 144 of 207
+==15658==    at 0x4C27EB4: calloc (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+==15658==    by 0x9DA6209: ??? (in /usr/lib64/libdrm_intel.so.1.0.0)
+==15658==    by 0x95D72E8: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95F857D: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x96E7E6A: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x4EF5DA3: ??? (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4EF5431: ??? (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4E70EB1: ??? (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4E70F22: al_draw_tinted_bitmap_region (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x5332350: tiled_parse_map (parser.c:314)
+==15658==    by 0x401058: open_map (in /home/damien/workspace/allegro-tiled/example/mario/mario)
+==15658==    by 0x401291: main (in /home/damien/workspace/allegro-tiled/example/mario/mario)
+==15658== 
+==15658== 192 bytes in 1 blocks are definitely lost in loss record 145 of 207
+==15658==    at 0x4C27EB4: calloc (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+==15658==    by 0x9DA6209: ??? (in /usr/lib64/libdrm_intel.so.1.0.0)
+==15658==    by 0x9608102: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x9608547: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x960AE0C: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x960AFDD: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x960A12C: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95F8602: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x96E7E6A: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x4EF5DA3: ??? (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4EF5431: ??? (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4E70EB1: ??? (in /usr/lib64/liballegro.so.5.0.6)
+==15658== 
+==15658== 248 bytes in 1 blocks are possibly lost in loss record 154 of 207
+==15658==    at 0x4C297CD: malloc (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+==15658==    by 0x400C4A8: _dl_map_object_deps (in /lib64/ld-2.14.1.so)
+==15658==    by 0x4011C87: dl_open_worker (in /lib64/ld-2.14.1.so)
+==15658==    by 0x400DC35: _dl_catch_error (in /lib64/ld-2.14.1.so)
+==15658==    by 0x40117C9: _dl_open (in /lib64/ld-2.14.1.so)
+==15658==    by 0x7510F25: dlopen_doit (in /lib64/libdl-2.14.1.so)
+==15658==    by 0x400DC35: _dl_catch_error (in /lib64/ld-2.14.1.so)
+==15658==    by 0x75114CE: _dlerror_run (in /lib64/libdl-2.14.1.so)
+==15658==    by 0x7510FC0: dlopen@@GLIBC_2.2.5 (in /lib64/libdl-2.14.1.so)
+==15658==    by 0x66CED6A: ??? (in /usr/lib64/libGL.so.1.2)
+==15658==    by 0x66D23F5: ??? (in /usr/lib64/libGL.so.1.2)
+==15658==    by 0x66AE568: ??? (in /usr/lib64/libGL.so.1.2)
+==15658== 
+==15658== 288 (80 direct, 208 indirect) bytes in 2 blocks are definitely lost in loss record 155 of 207
+==15658==    at 0x4C297CD: malloc (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+==15658==    by 0x4ED15AB: _al_list_insert_before_ex (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x5330F14: get_children_for_name (xml.c:15)
+==15658==    by 0x5331BED: tiled_parse_map (parser.c:192)
+==15658==    by 0x401058: open_map (in /home/damien/workspace/allegro-tiled/example/mario/mario)
+==15658==    by 0x4015CB: main (in /home/damien/workspace/allegro-tiled/example/mario/mario)
+==15658== 
+==15658== 384 bytes in 2 blocks are possibly lost in loss record 160 of 207
+==15658==    at 0x4C27EB4: calloc (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+==15658==    by 0x9DA6209: ??? (in /usr/lib64/libdrm_intel.so.1.0.0)
+==15658==    by 0x95E302F: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95E24CC: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95EC7ED: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95ED1A2: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x96BAEE4: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x96BB51A: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x4EF4E7F: ??? (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4E71C08: ??? (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4E71DD5: al_create_bitmap (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x512B44B: ??? (in /usr/lib64/liballegro_image.so.5.0.6)
+==15658== 
+==15658== 576 bytes in 3 blocks are possibly lost in loss record 166 of 207
+==15658==    at 0x4C27EB4: calloc (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+==15658==    by 0x9DA6209: ??? (in /usr/lib64/libdrm_intel.so.1.0.0)
+==15658==    by 0x95DA2BC: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95F9212: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95F9998: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x960A12C: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x95F8602: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x96E7E6A: ??? (in /usr/lib64/dri/i965_dri.so)
+==15658==    by 0x4EF5DA3: ??? (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4EF5431: ??? (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4E70EB1: ??? (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4E70F22: al_draw_tinted_bitmap_region (in /usr/lib64/liballegro.so.5.0.6)
+==15658== 
+==15658== 576 (416 direct, 160 indirect) bytes in 4 blocks are definitely lost in loss record 167 of 207
+==15658==    at 0x4C297CD: malloc (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+==15658==    by 0x4ED1348: ??? (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x5330ED0: get_children_for_name (xml.c:10)
+==15658==    by 0x5331BED: tiled_parse_map (parser.c:192)
+==15658==    by 0x401058: open_map (in /home/damien/workspace/allegro-tiled/example/mario/mario)
+==15658==    by 0x401291: main (in /home/damien/workspace/allegro-tiled/example/mario/mario)
+==15658== 
+==15658== 576 (160 direct, 416 indirect) bytes in 4 blocks are definitely lost in loss record 168 of 207
+==15658==    at 0x4C297CD: malloc (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+==15658==    by 0x4ED15AB: _al_list_insert_before_ex (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x5330F14: get_children_for_name (xml.c:15)
+==15658==    by 0x5331BED: tiled_parse_map (parser.c:192)
+==15658==    by 0x401058: open_map (in /home/damien/workspace/allegro-tiled/example/mario/mario)
+==15658==    by 0x401291: main (in /home/damien/workspace/allegro-tiled/example/mario/mario)
+==15658== 
+==15658== 640 bytes in 1 blocks are definitely lost in loss record 170 of 207
+==15658==    at 0x4C297CD: malloc (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+==15658==    by 0x5D7EB15: XGetVisualInfo (in /usr/lib64/libX11.so.6.3.0)
+==15658==    by 0x66AA7EE: glXGetVisualFromFBConfig (in /usr/lib64/libGL.so.1.2)
+==15658==    by 0x4ED8F01: _al_xglx_config_select_visual (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4ED649F: ??? (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4E9168B: al_create_display (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x4011B1: main (in /home/damien/workspace/allegro-tiled/example/mario/mario)
+==15658== 
+==15658== 3,168 (2,288 direct, 880 indirect) bytes in 22 blocks are definitely lost in loss record 192 of 207
+==15658==    at 0x4C297CD: malloc (in /usr/lib64/valgrind/vgpreload_memcheck-amd64-linux.so)
+==15658==    by 0x4ED1348: ??? (in /usr/lib64/liballegro.so.5.0.6)
+==15658==    by 0x5330ED0: get_children_for_name (xml.c:10)
+==15658==    by 0x5331BED: tiled_parse_map (parser.c:192)
+==15658==    by 0x401058: open_map (in /home/damien/workspace/allegro-tiled/example/mario/mario)
+==15658==    by 0x4015CB: main (in /home/damien/workspace/allegro-tiled/example/mario/mario)
+==15658== 
+==15658== LEAK SUMMARY:
+==15658==    definitely lost: 4,032 bytes in 37 blocks
+==15658==    indirectly lost: 1,664 bytes in 32 blocks
+==15658==      possibly lost: 2,168 bytes in 11 blocks
+==15658==    still reachable: 158,998 bytes in 1,062 blocks
+==15658==         suppressed: 0 bytes in 0 blocks
+==15658== Reachable blocks (those to which a pointer was found) are not shown.
+==15658== To see them, rerun with: --leak-check=full --show-reachable=yes
+==15658== 
+==15658== For counts of detected and suppressed errors, rerun with: -v
+==15658== Use --track-origins=yes to see where uninitialised values come from
+==15658== ERROR SUMMARY: 90 errors from 25 contexts (suppressed: 26 from 9)

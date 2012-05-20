@@ -9,7 +9,7 @@ int isbase64(char c)
 	return c && strchr(table, c) != NULL;
 }
 
-inline char value(char c)
+static char value(char c)
 {
 	const char *p = strchr(table, c);
 	if(p) {

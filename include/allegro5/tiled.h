@@ -39,6 +39,8 @@ typedef struct
 	int width;				// width in tiles
 	int height;				// height in tiles
 	int datalen;			// length of the decoded data
+	float opacity;			// the layer's opacity
+	int visible;			// 0 for hidden, 1 for visible
 	char *name;				// name of the layer
 	char *data;				// decoded data
 	TILED_MAP *map;			// reference to the map

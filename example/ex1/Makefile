@@ -1,7 +1,7 @@
-CC      := gcc
-TARGET  := mario
-CFLAGS  := -I../../include/
-LDFLAGS := -L../../
+CC      := clang
+TARGET  := ex1
+CFLAGS  := -I../../include -g
+LDFLAGS := -L../..
 LIBS    := -lallegro -lallegro_image -lallegro_tiled
 SOURCES := $(shell find src/ -type f -name "*.c")
 OBJECTS := $(SOURCES:.c=.o)

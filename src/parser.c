@@ -230,6 +230,13 @@ TILED_MAP *tiled_parse_map(const char *dir, const char *filename)
 		layer_ob->width = atoi(get_xml_attribute(layer_node, "width"));
 		layer_ob->height = atoi(get_xml_attribute(layer_node, "height"));
 		layer_ob->map = map;
+
+		char *layer_visible = get_xml_attribute(layer_node, "visible");
+		layer_ob->visible = (layer_visible != NULL ? atoi(layer_visible) : 1);
+
+		char *layer_opacity = get_xml_attribute(layer_node, "opacity");
+		layer_ob->opacity = (layer_opacity != NULL ? atof(layer_opacity) : 1.0);
+
 		decode_layer_data(get_first_child_for_name(layer_node, "data"), layer_ob);
 
 		// Create any missing tile objects

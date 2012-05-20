@@ -1,7 +1,7 @@
 #include <allegro5/tiled.h>
 #include "internal.h"
 
-inline char tile_id(TILED_MAP_LAYER *layer_ob, int x, int y)
+char tile_id(TILED_MAP_LAYER *layer_ob, int x, int y)
 {
 	// TODO: check bits 32-30 for "flipped" properties and clear them
 	return layer_ob->data[x+(y*layer_ob->width)];

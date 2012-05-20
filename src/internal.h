@@ -2,7 +2,7 @@
 #define INTERNAL_H
 
 // map.h
-inline char tile_id(TILED_MAP_LAYER *layer_ob, int x, int y);
+char tile_id(TILED_MAP_LAYER *layer_ob, int x, int y);
 
 // util.h
 char *trim(char *str);
