@@ -17,6 +17,6 @@ Running the Example
 
 There is one fully functional example provided under example/mario. To run it, first build the library, then cd to the example's folder and use `make run` to compile and run it:
 
-![screenshot](https://github.com/dradtke/Allegro-Tiled/raw/master/example/mario/screenshot.png)
+![screenshot](https://github.com/dradtke/Allegro-Tiled/raw/master/example/ex1/screenshot.png)
 
 The arrow keys will scroll the camera around the map, and pressing Space will reload data/maps/level1.tmx. Simply open up the map file in Tiled, make some changes, and press Space to see them appear instantly!
