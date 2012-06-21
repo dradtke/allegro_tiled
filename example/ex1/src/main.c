@@ -42,8 +42,8 @@ TILED_MAP *open_map(const char *filename)
  */
 int main(int argc, char *argv[])
 {
-	ALLEGRO_DISPLAY	*display = NULL;
-	ALLEGRO_EVENT_QUEUE	*event_queue = NULL;
+	ALLEGRO_DISPLAY *display = NULL;
+	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 	ALLEGRO_TIMER *timer = NULL;
 	ALLEGRO_KEYBOARD_STATE keyboard_state;
 	TILED_MAP *map;
