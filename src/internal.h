@@ -18,6 +18,11 @@
 #ifndef INTERNAL_H
 #define INTERNAL_H
 
+#include <ctype.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <zlib.h>
+
 // map.h
 char tile_id(TILED_MAP_LAYER *layer_ob, int x, int y);
 
