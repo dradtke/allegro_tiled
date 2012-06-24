@@ -18,10 +18,34 @@
 #include <allegro5/tiled.h>
 #include "internal.h"
 
+// Bits on the far end of the 32-bit global tile ID are used for tile flags
+const unsigned FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
+const unsigned FLIPPED_VERTICALLY_FLAG   = 0x40000000;
+const unsigned FLIPPED_DIAGONALLY_FLAG   = 0x20000000;
+
+static inline char lookup_tile(TILED_MAP_LAYER *layer_ob, int x, int y)
+{
+	return layer_ob->data[x+(y*layer_ob->width)];
+}
+
 char tile_id(TILED_MAP_LAYER *layer_ob, int x, int y)
 {
-	// TODO: check bits 32-30 for "flipped" properties and clear them
-	return layer_ob->data[x+(y*layer_ob->width)];
+	char id = lookup_tile(layer_ob, x, y);
+	id &= ~(FLIPPED_HORIZONTALLY_FLAG
+		   |FLIPPED_VERTICALLY_FLAG
+		   |FLIPPED_DIAGONALLY_FLAG);
+
+	return id;
+}
+
+bool flipped_horizontally(TILED_MAP_LAYER *layer_ob, int x, int y)
+{
+	return lookup_tile(layer_ob, x, y) & FLIPPED_HORIZONTALLY_FLAG;
+}
+
+bool flipped_vertically(TILED_MAP_LAYER *layer_ob, int x, int y)
+{
+	return lookup_tile(layer_ob, x, y) & FLIPPED_VERTICALLY_FLAG;
 }
 
 /*

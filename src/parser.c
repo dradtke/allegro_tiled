@@ -18,10 +18,6 @@
 #include <allegro5/tiled.h>
 #include "internal.h"
 
-// Bits on the far end of the 32-bit global tile ID are used for tile flags
-const unsigned FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
-const unsigned FLIPPED_VERTICALLY_FLAG   = 0x40000000;
-const unsigned FLIPPED_DIAGONALLY_FLAG   = 0x20000000;
 
 /*
  * Small workaround for Allegro's list creation.
@@ -72,19 +68,6 @@ static int decode_layer_data(xmlNode *data_node, TILED_MAP_LAYER *layer)
 			tileid |= data[i+1] << 8;
 			tileid |= data[i+2] << 16;
 			tileid |= data[i+3] << 24;
-
-			// Read out the flags
-			// TODO: implement this
-			/*
-			bool flipped_horizontally = (tileid & FLIPPED_HORIZONTALLY_FLAG);
-			bool flipped_vertically = (tileid & FLIPPED_VERTICALLY_FLAG);
-			bool flipped_diagonally = (tileid & FLIPPED_DIAGONALLY_FLAG);
-			*/
-
-			// Clear the flags
-			tileid &= ~(FLIPPED_HORIZONTALLY_FLAG
-			           |FLIPPED_VERTICALLY_FLAG
-			           |FLIPPED_DIAGONALLY_FLAG);
 
 			layer->data[i/4] = tileid;
 			i += 4;
@@ -334,8 +317,9 @@ TILED_MAP *tiled_parse_map(const char *dir, const char *filename)
 
 					int tx = j*(tile_ob->tileset->tilewidth);
 					int ty = i*(tile_ob->tileset->tileheight);
+					int flags = flipped_horizontally(layer_ob, j, i) | flipped_vertically(layer_ob, j, i);
 
-					al_draw_bitmap(tile_ob->bitmap, tx, ty, 0);
+					al_draw_bitmap(tile_ob->bitmap, tx, ty, flags);
 				}
 			}
 
