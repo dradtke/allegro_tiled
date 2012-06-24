@@ -3,14 +3,15 @@ This library adds support for [Tiled](http://www.mapeditor.org/) maps to the [Al
 Currently, the following is supported:
 
 1. Orthogonal maps.
-2. Zlib compression and base64 encoding.
-3. Tile "flipped" flags, both vertically and horizontally.
+2. Zlib/Gzip compression and base64 encoding.
+3. CSV "encoding."
+4. Tile "flipped" flags, both vertically and horizontally.
 
 The following is not yet supported:
 
-4. Isometric maps.
-5. Other compressions and encodings (everything allowed by Tiled will, eventually, be supported).
-6. Objects.
+1. Isometric maps.
+2. Other compressions and encodings (everything allowed by Tiled will, eventually, be supported).
+3. Objects.
 
 Compiling the Library
 =====================
