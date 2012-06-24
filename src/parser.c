@@ -124,6 +124,10 @@ static int decode_layer_data(xmlNode *data_node, TILED_MAP_LAYER *layer)
 			layer->data[i] = atoi(id);
 		}
 	}
+	else if (encoding == NULL) {
+		fprintf(stderr, "Error: xml-encoded data is not yet supported.\n");
+		return 1;
+	}
 	else {
 		fprintf(stderr, "Error: unknown encoding format '%s'\n", encoding);
 		return 1;
