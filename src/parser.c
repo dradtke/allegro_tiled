@@ -36,48 +36,75 @@ static inline _AL_LIST *create_list(size_t capacity)
  */
 static int decode_layer_data(xmlNode *data_node, TILED_MAP_LAYER *layer)
 {
-	// TODO: get the encoding and compression
 	char *str = trim((char *)data_node->children->content);
-	char *data = NULL;
-	int flen = 0;
-	FILE *tmp = tmpfile();
+	int datalen = layer->width * layer->height;
 
-	decompress(str, tmp);
-	fflush(tmp);
+	// TODO: get the encoding and compression
+	char *encoding = get_xml_attribute(data_node, "encoding");
+	if (!strcmp(encoding, "base64")) {
+		char *compression = get_xml_attribute(data_node, "compression");
+		if (strcmp(compression, "zlib") && strcmp(compression, "gzip")) {
+			fprintf(stderr, "Error: unknown compression format '%s'\n", compression);
+			return 1;
+		}
 
-	// get file length
-	flen = ftell(tmp);
+		int flen = 0;
+		char *data = NULL;
+		FILE *tmp = tmpfile();
 
-	// read in the file
-	rewind(tmp);
-	data = (char *)calloc(flen, sizeof(char));
-	if (fread(data, sizeof(char), flen, tmp) < flen) {
-		fprintf(stderr, "failed to read in map data\n");
+		decompress(str, tmp, compression);
+		fflush(tmp);
+
+		// get file length
+		flen = ftell(tmp);
+
+		// read in the file
+		rewind(tmp);
+		data = (char *)calloc(flen, sizeof(char));
+		if (fread(data, sizeof(char), flen, tmp) < flen) {
+			fprintf(stderr, "Error: failed to read in map data\n");
+			return 1;
+		}
+
+		// every tile id takes 4 bytes
+		layer->data = (char *)calloc(datalen, sizeof(char));
+		int x, y, i;
+		i = 0;
+		for (y = 0; y<layer->height; y++) {
+			for (x = 0; x<layer->width; x++) {
+				int tileid = 0;
+				tileid |= data[i];
+				tileid |= data[i+1] << 8;
+				tileid |= data[i+2] << 16;
+				tileid |= data[i+3] << 24;
+
+				layer->data[i/4] = tileid;
+				i += 4;
+			}
+		}
+		//	printf("layer dimensions: %dx%d, data length = %d\n", 
+		//			layer->width, layer->height, flen);
+
+		fclose(tmp);
+		al_free(data);
+	}
+	else if (!strcmp(encoding, "csv")) {
+		layer->data = (char *)calloc(datalen, sizeof(char));
+		int x, y, i;
+		i = 0;
+		for (y = 0; y<layer->height; y++) {
+			for (x = 0; x<layer->width; x++) {
+				char *id = strtok((x == 0 && y == 0 ? str : NULL), ",");
+				layer->data[i] = atoi(id);
+				i++;
+			}
+		}
+	}
+	else {
+		fprintf(stderr, "Error: unknown encoding format '%s'\n", encoding);
 		return 1;
 	}
 
-	// every tile id takes 4 bytes
-	layer->datalen = flen/4;
-	layer->data = (char *)calloc(layer->datalen, sizeof(char));
-	int x, y, i;
-	i = 0;
-	for (y = 0; y<layer->height; y++) {
-		for (x = 0; x<layer->width; x++) {
-			int tileid = 0;
-			tileid |= data[i];
-			tileid |= data[i+1] << 8;
-			tileid |= data[i+2] << 16;
-			tileid |= data[i+3] << 24;
-
-			layer->data[i/4] = tileid;
-			i += 4;
-		}
-	}
-	//	printf("layer dimensions: %dx%d, data length = %d\n", 
-	//			layer->width, layer->height, flen);
-
-	fclose(tmp);
-	al_free(data);
 	return 0;
 }
 
@@ -124,7 +151,7 @@ TILED_MAP *tiled_parse_map(const char *dir, const char *filename)
 
 	al_join_paths(cwd, path);
 	if (!al_change_directory(al_path_cstr(cwd, ALLEGRO_NATIVE_PATH_SEP))) {
-		printf("Failed to change directory.");
+		fprintf(stderr, "Error: failed to change directory in tiled_parse_map().");
 	}
 
 	al_destroy_path(cwd);
@@ -133,7 +160,7 @@ TILED_MAP *tiled_parse_map(const char *dir, const char *filename)
 	// Read in the data file
 	doc = xmlReadFile(filename, NULL, 0);
 	if (!doc) {
-		fprintf(stderr, "failed to parse map data: %s\n", filename);
+		fprintf(stderr, "Error: failed to parse map data: %s\n", filename);
 		return NULL;
 	}
 
@@ -249,8 +276,7 @@ TILED_MAP *tiled_parse_map(const char *dir, const char *filename)
 
 				TILED_MAP_TILE *tile_ob = tiled_get_tile_for_id(map, id);
 				if (!tile_ob) {
-					// wasn't defined in the map file, presumably
-					// because it had no properties
+					// wasn't defined in the map file, presumably because it had no properties
 					tile_ob = (TILED_MAP_TILE*)malloc(sizeof(TILED_MAP_TILE));
 					tile_ob->id = id;
 					tile_ob->properties = _al_list_create();
@@ -326,8 +352,11 @@ TILED_MAP *tiled_parse_map(const char *dir, const char *filename)
 			layer_item = _al_list_next(map->layers, layer_item);
 		}
 	}
+	else if (!strcmp(map->orientation, "isometric")) {
+		fprintf(stderr, "Error: sorry, can't draw isometric maps right now. =(\n");
+	}
 	else {
-		fprintf(stderr, "Cannot draw unsupported map orientation: %s\n", map->orientation);
+		fprintf(stderr, "Error: unknown map orientation: %s\n", map->orientation);
 	}
 
 	al_set_target_bitmap(orig_backbuffer);

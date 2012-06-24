@@ -50,7 +50,7 @@ char *get_xml_attribute(xmlNode *node, char *name);
 
 #define CHUNK 16384
 
-int decompress(char *src, FILE *dest);
+int decompress(char *src, FILE *dest, char *compression);
 
 // custom list item destructors
 void dtor_map_tile(void *value, void *user_data);
