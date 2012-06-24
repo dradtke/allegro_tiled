@@ -77,7 +77,7 @@ static int decode_layer_data(xmlNode *data_node, TILED_MAP_LAYER *layer)
 	//			layer->width, layer->height, flen);
 
 	fclose(tmp);
-	free(data);
+	al_free(data);
 	return 0;
 }
 
