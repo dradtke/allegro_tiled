@@ -4,14 +4,13 @@ Currently, the following is supported:
 
 1. Orthogonal maps.
 2. Base64 encoding with gzip, zlib, or no compression.
-3. CSV encoding.
+3. XML and CSV encoding. (though honestly, why would you?)
 4. Tile "flipped" flags, both vertically and horizontally.
 
 The following is not yet supported:
 
 1. Isometric maps.
-2. XML encoding.
-3. Objects.
+2. Objects.
 
 Compiling the Library
 =====================
