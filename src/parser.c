@@ -40,9 +40,20 @@ static int decode_layer_data(xmlNode *data_node, TILED_MAP_LAYER *layer)
 	int datalen = layer->width * layer->height;
 	layer->data = (char *)calloc(datalen, sizeof(char));
 
-	// TODO: get the encoding and compression
 	char *encoding = get_xml_attribute(data_node, "encoding");
-	if (!strcmp(encoding, "base64")) {
+	if (!encoding) {
+		int i = 0;
+		_AL_LIST *tiles = get_children_for_name(data_node, "tile");
+		_AL_LIST_ITEM *tile_item = _al_list_front(tiles);
+		while (tile_item) {
+			xmlNode *tile_node = (xmlNode*)_al_list_item_data(tile_item);
+			char *gid = get_xml_attribute(tile_node, "gid");
+			layer->data[i] = atoi(gid);
+			i++;
+			tile_item = _al_list_next(tiles, tile_item);
+		}
+	}
+	else if (!strcmp(encoding, "base64")) {
 		char *compression = get_xml_attribute(data_node, "compression");
 		if (compression != NULL) {
 			if (strcmp(compression, "zlib") && strcmp(compression, "gzip")) {
@@ -123,10 +134,6 @@ static int decode_layer_data(xmlNode *data_node, TILED_MAP_LAYER *layer)
 			char *id = strtok((i == 0 ? str : NULL), ",");
 			layer->data[i] = atoi(id);
 		}
-	}
-	else if (encoding == NULL) {
-		fprintf(stderr, "Error: xml-encoded data is not yet supported.\n");
-		return 1;
 	}
 	else {
 		fprintf(stderr, "Error: unknown encoding format '%s'\n", encoding);
