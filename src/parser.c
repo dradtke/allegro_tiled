@@ -34,7 +34,7 @@ static inline _AL_LIST *create_list(size_t capacity)
 /*
  * Decodes map data from a <data> node
  */
-static int decode_layer_data(xmlNode *data_node, TILED_MAP_LAYER *layer)
+static void decode_layer_data(xmlNode *data_node, TILED_MAP_LAYER *layer)
 {
 	char *str = trim((char *)data_node->children->content);
 	int datalen = layer->width * layer->height;
@@ -58,7 +58,7 @@ static int decode_layer_data(xmlNode *data_node, TILED_MAP_LAYER *layer)
 		if (compression != NULL) {
 			if (strcmp(compression, "zlib") && strcmp(compression, "gzip")) {
 				fprintf(stderr, "Error: unknown compression format '%s'\n", compression);
-				return 1;
+				return;
 			}
 
 			int flen = 0;
@@ -76,7 +76,7 @@ static int decode_layer_data(xmlNode *data_node, TILED_MAP_LAYER *layer)
 			data = (char *)calloc(flen, sizeof(char));
 			if (fread(data, sizeof(char), flen, tmp) < flen) {
 				fprintf(stderr, "Error: failed to read in map data\n");
-				return 1;
+				return;
 			}
 
 			// every tile id takes 4 bytes
@@ -105,11 +105,11 @@ static int decode_layer_data(xmlNode *data_node, TILED_MAP_LAYER *layer)
 			int done = 0;
 			int i = 0;
 			while (done < datalen) {
-				int len = strlen(str);
+				int len = strlen(str + done);
 				if (len > CHUNK)
 					len = CHUNK;
 
-				strncpy((char *)in, str, len);
+				strncpy((char *)in, str + done, len);
 				int avail = UnBase64(debased, in, len) / 4;
 				done += avail;
 
@@ -125,7 +125,6 @@ static int decode_layer_data(xmlNode *data_node, TILED_MAP_LAYER *layer)
 					i += 4;
 				}
 			}
-			return 1;
 		}
 	}
 	else if (!strcmp(encoding, "csv")) {
@@ -137,10 +136,7 @@ static int decode_layer_data(xmlNode *data_node, TILED_MAP_LAYER *layer)
 	}
 	else {
 		fprintf(stderr, "Error: unknown encoding format '%s'\n", encoding);
-		return 1;
 	}
-
-	return 0;
 }
 
 /*
