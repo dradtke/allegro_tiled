@@ -23,6 +23,8 @@
 #include <libxml/tree.h>
 #include <zlib.h>
 
+#define MALLOC(x) (x *)al_malloc(sizeof(x))
+
 // map.h
 char tile_id(TILED_MAP_LAYER *layer_ob, int x, int y);
 bool flipped_horizontally(TILED_MAP_LAYER *layer_ob, int x, int y);

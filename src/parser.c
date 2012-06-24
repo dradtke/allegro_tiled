@@ -203,7 +203,7 @@ TILED_MAP *tiled_parse_map(const char *dir, const char *filename)
 	root = xmlDocGetRootElement(doc);
 
 	// Get some basic info
-	map = (TILED_MAP*)malloc(sizeof(TILED_MAP));
+	map = MALLOC(TILED_MAP);
 	map->x = 0;
 	map->y = 0;
 	map->width = atoi(get_xml_attribute(root, "width"));
@@ -212,7 +212,7 @@ TILED_MAP *tiled_parse_map(const char *dir, const char *filename)
 	map->tile_height = atoi(get_xml_attribute(root, "tileheight"));
 	map->orientation = copy(get_xml_attribute(root, "orientation"));
 
-	map->bounds = (TILED_MAP_BOUNDS*)malloc(sizeof(TILED_MAP_BOUNDS));
+	map->bounds = MALLOC(TILED_MAP_BOUNDS);
 	map->bounds->left = 0;
 	map->bounds->top = 0;
 	map->bounds->right = map->width * map->tile_width;
@@ -225,7 +225,7 @@ TILED_MAP *tiled_parse_map(const char *dir, const char *filename)
 	_AL_LIST_ITEM *tileset_item = _al_list_front(tilesets);
 	while (tileset_item) {
 		xmlNode *tileset_node = (xmlNode*)_al_list_item_data(tileset_item);
-		TILED_MAP_TILESET *tileset_ob = (TILED_MAP_TILESET*)malloc(sizeof(TILED_MAP_TILESET));
+		TILED_MAP_TILESET *tileset_ob = MALLOC(TILED_MAP_TILESET);
 		tileset_ob->firstgid = atoi(get_xml_attribute(tileset_node, "firstgid"));
 		tileset_ob->tilewidth = atoi(get_xml_attribute(tileset_node, "tilewidth"));
 		tileset_ob->tileheight = atoi(get_xml_attribute(tileset_node, "tileheight"));
@@ -245,7 +245,7 @@ TILED_MAP *tiled_parse_map(const char *dir, const char *filename)
 		_AL_LIST_ITEM *tile_item = _al_list_front(tiles);
 		while (tile_item) {
 			xmlNode *tile_node = (xmlNode*)_al_list_item_data(tile_item);
-			TILED_MAP_TILE *tile_ob = (TILED_MAP_TILE*)malloc(sizeof(TILED_MAP_TILE));
+			TILED_MAP_TILE *tile_ob = MALLOC(TILED_MAP_TILE);
 			tile_ob->id = tileset_ob->firstgid + atoi(get_xml_attribute(tile_node, "id"));
 			tile_ob->tileset = tileset_ob;
 			tile_ob->bitmap = NULL;
@@ -259,7 +259,7 @@ TILED_MAP *tiled_parse_map(const char *dir, const char *filename)
 			_AL_LIST_ITEM *property_item = _al_list_front(properties);
 			while (property_item) {
 				xmlNode *prop_node = (xmlNode*)_al_list_item_data(property_item);
-				TILED_MAP_TILE_PROPERTY *prop_ob = (TILED_MAP_TILE_PROPERTY*)malloc(sizeof(TILED_MAP_TILE_PROPERTY));
+				TILED_MAP_TILE_PROPERTY *prop_ob = MALLOC(TILED_MAP_TILE_PROPERTY);
 				prop_ob->name = copy(get_xml_attribute(prop_node, "name"));
 				prop_ob->value = copy(get_xml_attribute(prop_node, "value"));
 				_al_list_push_back_ex(tile_ob->properties, prop_ob, dtor_tile_prop);
@@ -287,7 +287,7 @@ TILED_MAP *tiled_parse_map(const char *dir, const char *filename)
 	_AL_LIST_ITEM *layer_item = _al_list_front(layers);
 	while (layer_item) {
 		xmlNode *layer_node = _al_list_item_data(layer_item);
-		TILED_MAP_LAYER *layer_ob = (TILED_MAP_LAYER*)malloc(sizeof(TILED_MAP_LAYER));
+		TILED_MAP_LAYER *layer_ob = MALLOC(TILED_MAP_LAYER);
 		layer_ob->name = copy(get_xml_attribute(layer_node, "name"));
 		layer_ob->width = atoi(get_xml_attribute(layer_node, "width"));
 		layer_ob->height = atoi(get_xml_attribute(layer_node, "height"));
@@ -312,7 +312,7 @@ TILED_MAP *tiled_parse_map(const char *dir, const char *filename)
 				TILED_MAP_TILE *tile_ob = tiled_get_tile_for_id(map, id);
 				if (!tile_ob) {
 					// wasn't defined in the map file, presumably because it had no properties
-					tile_ob = (TILED_MAP_TILE*)malloc(sizeof(TILED_MAP_TILE));
+					tile_ob = MALLOC(TILED_MAP_TILE);
 					tile_ob->id = id;
 					tile_ob->properties = _al_list_create();
 					tile_ob->tileset = NULL;
