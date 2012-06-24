@@ -38,66 +38,90 @@ static int decode_layer_data(xmlNode *data_node, TILED_MAP_LAYER *layer)
 {
 	char *str = trim((char *)data_node->children->content);
 	int datalen = layer->width * layer->height;
+	layer->data = (char *)calloc(datalen, sizeof(char));
 
 	// TODO: get the encoding and compression
 	char *encoding = get_xml_attribute(data_node, "encoding");
 	if (!strcmp(encoding, "base64")) {
 		char *compression = get_xml_attribute(data_node, "compression");
-		if (strcmp(compression, "zlib") && strcmp(compression, "gzip")) {
-			fprintf(stderr, "Error: unknown compression format '%s'\n", compression);
-			return 1;
-		}
-
-		int flen = 0;
-		char *data = NULL;
-		FILE *tmp = tmpfile();
-
-		decompress(str, tmp, compression);
-		fflush(tmp);
-
-		// get file length
-		flen = ftell(tmp);
-
-		// read in the file
-		rewind(tmp);
-		data = (char *)calloc(flen, sizeof(char));
-		if (fread(data, sizeof(char), flen, tmp) < flen) {
-			fprintf(stderr, "Error: failed to read in map data\n");
-			return 1;
-		}
-
-		// every tile id takes 4 bytes
-		layer->data = (char *)calloc(datalen, sizeof(char));
-		int x, y, i;
-		i = 0;
-		for (y = 0; y<layer->height; y++) {
-			for (x = 0; x<layer->width; x++) {
-				int tileid = 0;
-				tileid |= data[i];
-				tileid |= data[i+1] << 8;
-				tileid |= data[i+2] << 16;
-				tileid |= data[i+3] << 24;
-
-				layer->data[i/4] = tileid;
-				i += 4;
+		if (compression != NULL) {
+			if (strcmp(compression, "zlib") && strcmp(compression, "gzip")) {
+				fprintf(stderr, "Error: unknown compression format '%s'\n", compression);
+				return 1;
 			}
-		}
-		//	printf("layer dimensions: %dx%d, data length = %d\n", 
-		//			layer->width, layer->height, flen);
 
-		fclose(tmp);
-		al_free(data);
+			int flen = 0;
+			char *data = NULL;
+			FILE *tmp = tmpfile();
+
+			decompress(str, tmp);
+			fflush(tmp);
+
+			// get file length
+			flen = ftell(tmp);
+
+			// read in the file
+			rewind(tmp);
+			data = (char *)calloc(flen, sizeof(char));
+			if (fread(data, sizeof(char), flen, tmp) < flen) {
+				fprintf(stderr, "Error: failed to read in map data\n");
+				return 1;
+			}
+
+			// every tile id takes 4 bytes
+			int i, j;
+			j = 0;
+			for (i = 0; i<datalen; i++) {
+				int tileid = 0;
+				tileid |= data[j];
+				tileid |= data[j+1] << 8;
+				tileid |= data[j+2] << 16;
+				tileid |= data[j+3] << 24;
+
+				layer->data[j/4] = tileid;
+				j += 4;
+			}
+			//	printf("layer dimensions: %dx%d, data length = %d\n", 
+			//			layer->width, layer->height, flen);
+
+			fclose(tmp);
+			al_free(data);
+		}
+		else {
+			// uncompressed base64
+			unsigned char in[CHUNK];
+			unsigned char debased[CHUNK];
+			int done = 0;
+			int i = 0;
+			while (done < datalen) {
+				int len = strlen(str);
+				if (len > CHUNK)
+					len = CHUNK;
+
+				strncpy((char *)in, str, len);
+				int avail = UnBase64(debased, in, len) / 4;
+				done += avail;
+
+				int j;
+				for (j = 0; j<avail; j++) {
+					int tileid = 0;
+					tileid |= debased[i];
+					tileid |= debased[i+1] << 8;
+					tileid |= debased[i+2] << 16;
+					tileid |= debased[i+3] << 24;
+
+					layer->data[i/4] = tileid;
+					i += 4;
+				}
+			}
+			return 1;
+		}
 	}
 	else if (!strcmp(encoding, "csv")) {
-		layer->data = (char *)calloc(datalen, sizeof(char));
-		int x, y, i;
-		i = 0;
-		for (y = 0; y<layer->height; y++) {
-			for (x = 0; x<layer->width; x++) {
-				char *id = strtok((x == 0 && y == 0 ? str : NULL), ",");
-				layer->data[i] = atoi(id);
-				i++;
-			}
+		int i;
+		for (i = 0; i<datalen; i++) {
+			char *id = strtok((i == 0 ? str : NULL), ",");
+			layer->data[i] = atoi(id);
 		}
 	}
 	else {

@@ -83,9 +83,8 @@ int UnBase64(unsigned char *dest, const unsigned char *src, int srclen)
 /*
  * Decompresses data from a map file
  * Taken from zlib's zpipe.c example, with slight modifications
- * TODO: make sure this works with both zlib and gzip, using the compression parameter if necessary
  */
-int decompress(char *src, FILE *dest, char *compression)
+int decompress(char *src, FILE *dest)
 {
     int ret;
     unsigned have, len;
