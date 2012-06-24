@@ -4,13 +4,13 @@ Currently, the following is supported:
 
 1. Orthogonal maps.
 2. Base64 encoding with gzip, zlib, or no compression.
-3. CSV "encoding."
+3. CSV encoding.
 4. Tile "flipped" flags, both vertically and horizontally.
 
 The following is not yet supported:
 
 1. Isometric maps.
-2. Other compressions and encodings (everything allowed by Tiled will, eventually, be supported).
+2. XML encoding.
 3. Objects.
 
 Compiling the Library
