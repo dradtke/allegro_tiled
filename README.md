@@ -1,5 +1,17 @@
 This library adds support for [Tiled](http://www.mapeditor.org/) maps to the [Allegro](http://alleg.sourceforge.net/) game library. It is more or less functional, but is not quite yet ready for prime time.
 
+Currently, the following is supported:
+
+1. Orthogonal maps.
+2. Zlib compression and base64 encoding.
+3. Tile "flipped" flags, both vertically and horizontally.
+
+The following is not yet supported:
+
+4. Isometric maps.
+5. Other compressions and encodings (everything allowed by Tiled will, eventually, be supported).
+6. Objects.
+
 Compiling the Library
 =====================
 
