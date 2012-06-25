@@ -351,6 +351,58 @@ TILED_MAP *tiled_parse_map(const char *dir, const char *filename)
 
 	_al_list_destroy(layers);
 
+	// Get the objects
+	map->objects = _al_list_create();
+	_AL_LIST *object_groups = get_children_for_name(root, "objectgroup");
+	_AL_LIST_ITEM *group_item = _al_list_front(object_groups);
+	while (group_item) {
+		xmlNode *group_node = _al_list_item_data(group_item);
+		TILED_OBJECT_GROUP *group_ob = MALLOC(TILED_OBJECT_GROUP);
+		group_ob->name = copy(get_xml_attribute(group_node, "name"));
+		group_ob->opacity = atof(get_xml_attribute(group_node, "opacity"));
+		group_ob->ref = 0;
+
+		char *group_visible = get_xml_attribute(group_node, "visible");
+		if (group_visible) group_ob->visible = atoi(group_visible);
+		else group_ob->visible = 1;
+
+		_AL_LIST *objects = get_children_for_name(group_node, "object");
+
+		_AL_LIST_ITEM *object_item = _al_list_front(objects);
+		while (object_item) {
+			xmlNode *object_node = _al_list_item_data(object_item);
+			TILED_OBJECT *object_ob = MALLOC(TILED_OBJECT);
+			object_ob->group = group_ob;
+			object_ob->name = copy(get_xml_attribute(object_node, "name"));
+			object_ob->type = copy(get_xml_attribute(object_node, "type"));
+			object_ob->x = atoi(get_xml_attribute(object_node, "x"));
+			object_ob->y = atoi(get_xml_attribute(object_node, "y"));
+			object_ob->width = atoi(get_xml_attribute(object_node, "width"));
+			object_ob->height = atoi(get_xml_attribute(object_node, "height"));
+
+			char *gid = get_xml_attribute(object_node, "gid");
+			if (gid) object_ob->gid = atoi(gid);
+			else object_ob->gid = 0;
+
+			char *object_visible = get_xml_attribute(object_node, "visible");
+			if (object_visible) object_ob->visible = atoi(object_visible);
+			else object_ob->visible = 1;
+
+			_al_list_push_back_ex(map->objects, object_ob, dtor_map_layer);
+			
+			object_item = _al_list_next(objects, object_item);
+			group_ob->ref++;
+		}
+
+		if (group_ob->ref == 0)
+			tiled_free_object_group(group_ob);
+
+		_al_list_destroy(objects);
+		group_item = _al_list_next(object_groups, group_item);
+	}
+
+	_al_list_destroy(object_groups);
+
 	// Done parsing XML, so let's free the doc
 	xmlFreeDoc(doc);
 

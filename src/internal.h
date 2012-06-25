@@ -29,6 +29,7 @@
 char tile_id(TILED_MAP_LAYER *layer_ob, int x, int y);
 bool flipped_horizontally(TILED_MAP_LAYER *layer_ob, int x, int y);
 bool flipped_vertically(TILED_MAP_LAYER *layer_ob, int x, int y);
+void tiled_free_object_group(TILED_OBJECT_GROUP *group);
 
 // util.h
 char *trim(char *str);

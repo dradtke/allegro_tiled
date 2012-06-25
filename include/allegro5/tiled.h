@@ -34,28 +34,29 @@ TILED_MAP_BOUNDS;
 
 typedef struct
 {
-	int x, y;				// map position
+	int x, y;			// map position
 	int width, height;		// dimensions in tiles
 	int tile_width;			// width of each tile
 	int tile_height;		// height of each tile
 	char *orientation;		// "orthogonal" or ... isometric?
-	TILED_MAP_BOUNDS *bounds; // map boundaries
+	TILED_MAP_BOUNDS *bounds;	// map boundaries
 	_AL_LIST *tilesets;		// list of tilesets
 	_AL_LIST *layers;		// list of layers
 	_AL_LIST *tiles;		// full list of tiles
-	ALLEGRO_BITMAP *backbuffer; // back buffer
+	_AL_LIST *objects;		// list of objects
+	ALLEGRO_BITMAP *backbuffer;	// back buffer
 }
 TILED_MAP;
 
 typedef struct
 {
-	int width;				// width in tiles
-	int height;				// height in tiles
+	int width;			// width in tiles
+	int height;			// height in tiles
 	int datalen;			// length of the decoded data
 	float opacity;			// the layer's opacity
 	int visible;			// 0 for hidden, 1 for visible
-	char *name;				// name of the layer
-	char *data;				// decoded data
+	char *name;			// name of the layer
+	char *data;			// decoded data
 	TILED_MAP *map;			// reference to the map
 }
 TILED_MAP_LAYER;
@@ -66,28 +67,50 @@ typedef struct
 	int tilewidth;			// width of each tile
 	int tileheight;			// height of each tile
 	int width, height;		// total dimensions (in pixels)
-	char *name;				// name
+	char *name;			// name
 	char *source;			// path to this tileset's image source
-	ALLEGRO_BITMAP *bitmap;	// image for this tileset
+	ALLEGRO_BITMAP *bitmap;		// image for this tileset
 	_AL_LIST *tiles;		// list of tiles
 }
 TILED_MAP_TILESET;
 
 typedef struct
 {
-	int id;					// the tile id
-	TILED_MAP_TILESET *tileset; // pointer to its tileset
-	_AL_LIST *properties;	// tile properties
-	ALLEGRO_BITMAP *bitmap; // this tile's image
+	int id;				// the tile id
+	TILED_MAP_TILESET *tileset; 	// pointer to its tileset
+	_AL_LIST *properties;		// tile properties
+	ALLEGRO_BITMAP *bitmap; 	// this tile's image
 }
 TILED_MAP_TILE;
 
 typedef struct
 {
-	char *name;				// the property's name
+	char *name;			// the property's name
 	char *value;			// the property's value
 }
 TILED_MAP_TILE_PROPERTY;
+
+typedef struct
+{
+	char *name;
+	// color?
+	float opacity;
+	bool visible;
+	int ref;			// reference counter
+}
+TILED_OBJECT_GROUP;
+
+typedef struct
+{
+	TILED_OBJECT_GROUP *group;
+	char *name;
+	char *type;
+	int x, y;
+	int width, height;
+	int gid;			// optional, references a tile if it needs an image
+	bool visible;
+}
+TILED_OBJECT;
 //}}}
 
 // draw.h
