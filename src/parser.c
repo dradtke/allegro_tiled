@@ -426,7 +426,10 @@ TILED_MAP *tiled_parse_map(const char *dir, const char *filename)
 
 					int tx = j*(tile_ob->tileset->tilewidth);
 					int ty = i*(tile_ob->tileset->tileheight);
-					int flags = flipped_horizontally(layer_ob, j, i) | flipped_vertically(layer_ob, j, i);
+
+					int flags = 0;
+					if (flipped_horizontally(layer_ob, j, i)) flags |= ALLEGRO_FLIP_HORIZONTAL;
+					if (flipped_vertically(layer_ob, j, i)) flags |= ALLEGRO_FLIP_VERTICAL;
 
 					al_draw_bitmap(tile_ob->bitmap, tx, ty, flags);
 				}
