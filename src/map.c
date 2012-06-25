@@ -80,7 +80,7 @@ void tiled_free_map(TILED_MAP *map)
 	_al_list_destroy(map->tilesets);
 	_al_list_destroy(map->layers);
 	_al_list_destroy(map->tiles);
-	_al_list_destroy(map->objects);
+	// _al_list_destroy(map->objects);
 	al_destroy_bitmap(map->backbuffer);
 	al_free(map);
 }
@@ -94,6 +94,7 @@ void tiled_free_object_group(TILED_OBJECT_GROUP *group)
 void dtor_map_object(void *value, void *user_data)
 {
 	TILED_OBJECT *object_ob = (TILED_OBJECT*)value;
+	
 	object_ob->group->ref--;
 	if (object_ob->group->ref <= 0)
 		tiled_free_object_group(object_ob->group);

@@ -360,15 +360,12 @@ TILED_MAP *tiled_parse_map(const char *dir, const char *filename)
 		TILED_OBJECT_GROUP *group_ob = MALLOC(TILED_OBJECT_GROUP);
 		group_ob->name = copy(get_xml_attribute(group_node, "name"));
 		group_ob->ref = 0;
-		printf("found object group: %s\n", group_ob->name);
 
 		char *group_opacity = get_xml_attribute(group_node, "opacity");
-		if (group_opacity) group_ob->opacity = atof(group_opacity);
-		else group_ob->opacity = 1;
+		group_ob->opacity = (group_opacity ? atof(group_opacity) : 1);
 
 		char *group_visible = get_xml_attribute(group_node, "visible");
-		if (group_visible) group_ob->visible = atoi(group_visible);
-		else group_ob->visible = 1;
+		group_ob->visible = (group_visible ? atoi(group_visible) : 1);
 
 		_AL_LIST *objects = get_children_for_name(group_node, "object");
 
@@ -381,18 +378,20 @@ TILED_MAP *tiled_parse_map(const char *dir, const char *filename)
 			object_ob->type = copy(get_xml_attribute(object_node, "type"));
 			object_ob->x = atoi(get_xml_attribute(object_node, "x"));
 			object_ob->y = atoi(get_xml_attribute(object_node, "y"));
-			object_ob->width = atoi(get_xml_attribute(object_node, "width"));
-			object_ob->height = atoi(get_xml_attribute(object_node, "height"));
+
+			char *object_width = get_xml_attribute(object_node, "width");
+			object_ob->width = (object_width ? atoi(object_width) : 0);
+
+			char *object_height = get_xml_attribute(object_node, "height");
+			object_ob->height = (object_height ? atoi(object_height) : 0);
 
 			char *gid = get_xml_attribute(object_node, "gid");
-			if (gid) object_ob->gid = atoi(gid);
-			else object_ob->gid = 0;
+			object_ob->gid = (gid ? atoi(gid) : 0);
 
 			char *object_visible = get_xml_attribute(object_node, "visible");
-			if (object_visible) object_ob->visible = atoi(object_visible);
-			else object_ob->visible = 1;
+			object_ob->visible = (object_visible ? atoi(object_visible) : 1);
 
-			_al_list_push_back_ex(map->objects, object_ob, dtor_map_layer);
+			_al_list_push_back_ex(map->objects, object_ob, dtor_map_object);
 			
 			object_item = _al_list_next(objects, object_item);
 			group_ob->ref++;
@@ -404,7 +403,6 @@ TILED_MAP *tiled_parse_map(const char *dir, const char *filename)
 		*/
 
 		_al_list_destroy(objects);
-		printf("next group\n");
 		group_item = _al_list_next(object_groups, group_item);
 	}
 

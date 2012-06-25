@@ -60,6 +60,7 @@ int UnBase64(unsigned char *dest, const unsigned char *src, int srclen);
 void dtor_map_tile(void *value, void *user_data);
 void dtor_map_tileset(void *value, void *user_data);
 void dtor_map_layer(void *value, void *user_data);
+void dtor_map_object(void *value, void *user_data);
 void dtor_tile_prop(void *value, void *user_data);
 
 #endif
