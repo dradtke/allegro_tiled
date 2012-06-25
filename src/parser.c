@@ -359,8 +359,12 @@ TILED_MAP *tiled_parse_map(const char *dir, const char *filename)
 		xmlNode *group_node = _al_list_item_data(group_item);
 		TILED_OBJECT_GROUP *group_ob = MALLOC(TILED_OBJECT_GROUP);
 		group_ob->name = copy(get_xml_attribute(group_node, "name"));
-		group_ob->opacity = atof(get_xml_attribute(group_node, "opacity"));
 		group_ob->ref = 0;
+		printf("found object group: %s\n", group_ob->name);
+
+		char *group_opacity = get_xml_attribute(group_node, "opacity");
+		if (group_opacity) group_ob->opacity = atof(group_opacity);
+		else group_ob->opacity = 1;
 
 		char *group_visible = get_xml_attribute(group_node, "visible");
 		if (group_visible) group_ob->visible = atoi(group_visible);
@@ -394,10 +398,13 @@ TILED_MAP *tiled_parse_map(const char *dir, const char *filename)
 			group_ob->ref++;
 		}
 
+		/*
 		if (group_ob->ref == 0)
 			tiled_free_object_group(group_ob);
+		*/
 
 		_al_list_destroy(objects);
+		printf("next group\n");
 		group_item = _al_list_next(object_groups, group_item);
 	}
 

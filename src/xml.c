@@ -25,9 +25,12 @@
 _AL_LIST *get_children_for_name(xmlNode *parent, char *name)
 {
 	_AL_LIST *list = _al_list_create();
-	xmlNode *child = parent->children->next;
+	
+	if (!parent->children)
+		return list;
 
-	while (child != NULL) {
+	xmlNode *child = parent->children->next;
+	while (child) {
 		if (!strcmp((const char*)child->name, name))
 			_al_list_push_back(list, child);
 
