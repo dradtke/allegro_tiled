@@ -126,4 +126,8 @@ void tiled_free_map(TILED_MAP *map);
 TILED_MAP *tiled_parse_map(const char *dir, const char *filename);
 TILED_MAP_TILE *tiled_get_tile_for_pos(TILED_MAP_LAYER *layer, int x, int y);
 
+// util.h
+char *tiled_get_tile_property(TILED_MAP_TILE *tile, char *name);
+char *tiled_get_object_property(TILED_OBJECT *object, char *name);
+
 #endif

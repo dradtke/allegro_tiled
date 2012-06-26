@@ -18,6 +18,34 @@
 #include <allegro5/tiled.h>
 #include "internal.h"
 
+char *tiled_get_tile_property(TILED_MAP_TILE *tile, char *name)
+{
+	_AL_LIST_ITEM *prop_item = _al_list_front(tile->properties);
+	while (prop_item) {
+		TILED_PROPERTY *prop = _al_list_item_data(prop_item);
+		if (!strcmp(prop->name, name))
+			return prop->value;
+
+		prop_item = _al_list_next(tile->properties, prop_item);
+	}
+
+	return NULL;
+}
+
+char *tiled_get_object_property(TILED_OBJECT *object, char *name)
+{
+	_AL_LIST_ITEM *prop_item = _al_list_front(object->properties);
+	while (prop_item) {
+		TILED_PROPERTY *prop = _al_list_item_data(prop_item);
+		if (!strcmp(prop->name, name))
+			return prop->value;
+
+		prop_item = _al_list_next(object->properties, prop_item);
+	}
+
+	return NULL;
+}
+
 /*
  * Trims whitespace from before and after a string
  */
