@@ -23,6 +23,7 @@
 #include <allegro5/internal/aintern_vector.h>
 
 //{{{ map structs
+/*
 typedef struct
 {
 	int left;
@@ -31,15 +32,18 @@ typedef struct
 	int bottom;
 }
 TILED_MAP_BOUNDS;
+*/
 
 typedef struct
 {
 	int x, y;			// map position
 	int width, height;		// dimensions in tiles
-	int tile_width;			// width of each tile
-	int tile_height;		// height of each tile
+	int tile_width;			// width of each tile in pixels
+	int tile_height;		// height of each tile in pixels
+	int pixel_width;		// width of the map in pixels
+	int pixel_height;		// height of the map in pixels
 	char *orientation;		// "orthogonal" or ... isometric?
-	TILED_MAP_BOUNDS *bounds;	// map boundaries
+	//TILED_MAP_BOUNDS *bounds;	// map boundaries
 	_AL_LIST *tilesets;		// list of tilesets
 	_AL_LIST *layers;		// list of layers
 	_AL_LIST *tiles;		// full list of tiles
@@ -126,8 +130,9 @@ void tiled_free_map(TILED_MAP *map);
 TILED_MAP *tiled_parse_map(const char *dir, const char *filename);
 TILED_MAP_TILE *tiled_get_tile_for_pos(TILED_MAP_LAYER *layer, int x, int y);
 
-// util.h
+// api.h
 char *tiled_get_tile_property(TILED_MAP_TILE *tile, char *name);
 char *tiled_get_object_property(TILED_OBJECT *object, char *name);
+void tiled_update_backbuffer(TILED_MAP *map);
 
 #endif

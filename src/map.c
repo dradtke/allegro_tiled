@@ -75,7 +75,7 @@ TILED_MAP_TILE *tiled_get_tile_for_id(TILED_MAP *map, char id)
  */
 void tiled_free_map(TILED_MAP *map)
 {
-	al_free(map->bounds);
+	//al_free(map->bounds);
 	al_free(map->orientation);
 	_al_list_destroy(map->tilesets);
 	_al_list_destroy(map->layers);
