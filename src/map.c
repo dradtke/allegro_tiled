@@ -80,7 +80,7 @@ void tiled_free_map(TILED_MAP *map)
 	_al_list_destroy(map->tilesets);
 	_al_list_destroy(map->layers);
 	_al_list_destroy(map->tiles);
-	// _al_list_destroy(map->objects);
+	_al_list_destroy(map->objects);
 	al_destroy_bitmap(map->backbuffer);
 	al_free(map);
 }
@@ -99,6 +99,7 @@ void dtor_map_object(void *value, void *user_data)
 	if (object_ob->group->ref <= 0)
 		tiled_free_object_group(object_ob->group);
 
+	_al_list_destroy(object_ob->properties);
 	al_free(object_ob->name);
 	al_free(object_ob->type);
 	al_free(object_ob);
@@ -130,9 +131,9 @@ void dtor_map_layer(void *value, void *user_data)
 	al_free(layer_ob);
 }
 
-void dtor_tile_prop(void *value, void *user_data)
+void dtor_prop(void *value, void *user_data)
 {
-	TILED_MAP_TILE_PROPERTY *prop_ob = (TILED_MAP_TILE_PROPERTY*)value;
+	TILED_PROPERTY *prop_ob = (TILED_PROPERTY*)value;
 	al_free(prop_ob->name);
 	al_free(prop_ob->value);
 	al_free(prop_ob);

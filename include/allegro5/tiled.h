@@ -88,7 +88,7 @@ typedef struct
 	char *name;				// the property's name
 	char *value;			// the property's value
 }
-TILED_MAP_TILE_PROPERTY;
+TILED_PROPERTY;
 
 typedef struct
 {
@@ -109,6 +109,7 @@ typedef struct
 	int width, height;
 	bool visible;
 	ALLEGRO_BITMAP *bitmap;
+	_AL_LIST *properties;
 }
 TILED_OBJECT;
 //}}}

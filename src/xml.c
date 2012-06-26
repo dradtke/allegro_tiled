@@ -46,6 +46,9 @@ _AL_LIST *get_children_for_name(xmlNode *parent, char *name)
  */
 xmlNode *get_first_child_for_name(xmlNode *parent, char *name)
 {
+	if (!parent->children)
+		return NULL;
+
 	xmlNode *child = parent->children->next;
 
 	while  (child != NULL) {

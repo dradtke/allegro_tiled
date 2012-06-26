@@ -164,6 +164,28 @@ static void cache_tile_list(TILED_MAP *map)
 	}
 }
 
+static _AL_LIST *parse_properties(xmlNode *node)
+{
+	xmlNode *properties_node = get_first_child_for_name(node, "properties");
+	if (!properties_node)
+		return _al_list_create();
+
+	_AL_LIST *properties_list = get_children_for_name(properties_node, "property");
+	_AL_LIST *props = create_list(_al_list_size(properties_list));
+
+	_AL_LIST_ITEM *property_item = _al_list_front(properties_list);
+	while (property_item) {
+		xmlNode *property_node = _al_list_item_data(property_item);
+		TILED_PROPERTY *prop = MALLOC(TILED_PROPERTY);
+		prop->name = copy(get_xml_attribute(property_node, "name"));
+		prop->value = copy(get_xml_attribute(property_node, "value"));
+		_al_list_push_back_ex(props, prop, dtor_prop);
+		property_item = _al_list_next(properties_list, property_item);
+	}
+
+	return props;
+}
+
 /*
  * Parses a map file
  * Given the path to a map file, returns a new map struct
@@ -247,20 +269,7 @@ TILED_MAP *tiled_parse_map(const char *dir, const char *filename)
 			tile_ob->bitmap = NULL;
 
 			// Get this tile's properties
-			_AL_LIST *properties = get_children_for_name(
-					get_first_child_for_name(tile_node, "properties"),
-					"property");
-			tile_ob->properties = create_list(_al_list_size(properties));
-
-			_AL_LIST_ITEM *property_item = _al_list_front(properties);
-			while (property_item) {
-				xmlNode *prop_node = (xmlNode*)_al_list_item_data(property_item);
-				TILED_MAP_TILE_PROPERTY *prop_ob = MALLOC(TILED_MAP_TILE_PROPERTY);
-				prop_ob->name = copy(get_xml_attribute(prop_node, "name"));
-				prop_ob->value = copy(get_xml_attribute(prop_node, "value"));
-				_al_list_push_back_ex(tile_ob->properties, prop_ob, dtor_tile_prop);
-				property_item = _al_list_next(properties, property_item);
-			}
+			tile_ob->properties = parse_properties(tile_node);
 
 			_al_list_push_back_ex(tileset_ob->tiles, tile_ob, dtor_map_tile);
 			tile_item = _al_list_next(tiles, tile_item);
@@ -393,6 +402,9 @@ TILED_MAP *tiled_parse_map(const char *dir, const char *filename)
 
 			char *object_visible = get_xml_attribute(object_node, "visible");
 			object_ob->visible = (object_visible ? atoi(object_visible) : 1);
+
+			// Get the object's properties
+			object_ob->properties = parse_properties(object_node);
 
 			_al_list_push_back_ex(map->objects, object_ob, dtor_map_object);
 			
