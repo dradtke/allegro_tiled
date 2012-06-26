@@ -118,21 +118,14 @@ typedef struct
 TILED_OBJECT;
 //}}}
 
-// draw.h
+TILED_MAP *tiled_open_map(const char *dir, const char *filename);
 void tiled_draw_map(TILED_MAP *map, int screen_width, int screen_height);
 void tiled_draw_objects(TILED_MAP *map);
-
-// map.h
 TILED_MAP_TILE *tiled_get_tile_for_id(TILED_MAP *map, char id);
-void tiled_free_map(TILED_MAP *map);
-
-// parser.h
-TILED_MAP *tiled_parse_map(const char *dir, const char *filename);
 TILED_MAP_TILE *tiled_get_tile_for_pos(TILED_MAP_LAYER *layer, int x, int y);
-
-// api.h
 char *tiled_get_tile_property(TILED_MAP_TILE *tile, char *name);
 char *tiled_get_object_property(TILED_OBJECT *object, char *name);
 void tiled_update_backbuffer(TILED_MAP *map);
+void tiled_free_map(TILED_MAP *map);
 
 #endif

@@ -191,7 +191,7 @@ static _AL_LIST *parse_properties(xmlNode *node)
  * Given the path to a map file, returns a new map struct
  * The struct must be freed once it's done being used
  */
-TILED_MAP *tiled_parse_map(const char *dir, const char *filename)
+TILED_MAP *tiled_open_map(const char *dir, const char *filename)
 {
 	xmlDoc *doc;
 	xmlNode *root;
