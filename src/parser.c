@@ -316,7 +316,7 @@ TILED_MAP *tiled_parse_map(const char *dir, const char *filename)
 
 					// locate its tilemap
 					_AL_LIST_ITEM *tileset_item = _al_list_front(map->tilesets);
-					while (tileset_item != NULL) {
+					while (tileset_item) {
 						TILED_MAP_TILESET *tileset_ob = _al_list_item_data(tileset_item);
 						if (tileset_ob->firstgid <= id) {
 							if (!tile_ob->tileset || tileset_ob->firstgid > tile_ob->tileset->firstgid) {
@@ -386,7 +386,10 @@ TILED_MAP *tiled_parse_map(const char *dir, const char *filename)
 			object_ob->height = (object_height ? atoi(object_height) : 0);
 
 			char *gid = get_xml_attribute(object_node, "gid");
-			object_ob->gid = (gid ? atoi(gid) : 0);
+			if (gid) {
+				TILED_MAP_TILE *object_tile = tiled_get_tile_for_id(map, atoi(gid));
+				object_ob->bitmap = object_tile->bitmap;
+			}
 
 			char *object_visible = get_xml_attribute(object_node, "visible");
 			object_ob->visible = (object_visible ? atoi(object_visible) : 1);
@@ -397,10 +400,8 @@ TILED_MAP *tiled_parse_map(const char *dir, const char *filename)
 			group_ob->ref++;
 		}
 
-		/*
 		if (group_ob->ref == 0)
 			tiled_free_object_group(group_ob);
-		*/
 
 		_al_list_destroy(objects);
 		group_item = _al_list_next(object_groups, group_item);

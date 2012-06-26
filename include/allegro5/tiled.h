@@ -67,17 +67,17 @@ typedef struct
 	int tilewidth;			// width of each tile
 	int tileheight;			// height of each tile
 	int width, height;		// total dimensions (in pixels)
-	char *name;			// name
+	char *name;				// name
 	char *source;			// path to this tileset's image source
-	ALLEGRO_BITMAP *bitmap;		// image for this tileset
+	ALLEGRO_BITMAP *bitmap;	// image for this tileset
 	_AL_LIST *tiles;		// list of tiles
 }
 TILED_MAP_TILESET;
 
 typedef struct
 {
-	int id;				// the tile id
-	TILED_MAP_TILESET *tileset; 	// pointer to its tileset
+	int id;						// the tile id
+	TILED_MAP_TILESET *tileset;	// pointer to its tileset
 	_AL_LIST *properties;		// tile properties
 	ALLEGRO_BITMAP *bitmap; 	// this tile's image
 }
@@ -85,7 +85,7 @@ TILED_MAP_TILE;
 
 typedef struct
 {
-	char *name;			// the property's name
+	char *name;				// the property's name
 	char *value;			// the property's value
 }
 TILED_MAP_TILE_PROPERTY;
@@ -107,14 +107,15 @@ typedef struct
 	char *type;
 	int x, y;
 	int width, height;
-	int gid;			// optional, references a tile if it needs an image
 	bool visible;
+	ALLEGRO_BITMAP *bitmap;
 }
 TILED_OBJECT;
 //}}}
 
 // draw.h
-void draw_map(TILED_MAP *map, int screen_width, int screen_height);
+void tiled_draw_map(TILED_MAP *map, int screen_width, int screen_height);
+void tiled_draw_objects(TILED_MAP *map);
 
 // map.h
 TILED_MAP_TILE *tiled_get_tile_for_id(TILED_MAP *map, char id);

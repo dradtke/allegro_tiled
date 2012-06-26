@@ -18,8 +18,23 @@
 #include <allegro5/tiled.h>
 #include "internal.h"
 
-void draw_map(TILED_MAP *map, int screen_width, int screen_height)
+void tiled_draw_map(TILED_MAP *map, int screen_width, int screen_height)
 {
 	al_draw_bitmap_region(map->backbuffer, map->x, map->y,
 			screen_width, screen_height, 0, 0, 0);
+}
+
+void tiled_draw_objects(TILED_MAP *map)
+{
+	_AL_LIST *objects = map->objects;
+	_AL_LIST_ITEM *object_item = _al_list_front(objects);
+	while (object_item) {
+		TILED_OBJECT *object = _al_list_item_data(object_item);
+		if (object->bitmap) {
+			// TODO: flip flags?
+			al_draw_bitmap(object->bitmap, object->x, object->y, 0);
+		}
+
+		object_item = _al_list_next(objects, object_item);
+	}
 }
