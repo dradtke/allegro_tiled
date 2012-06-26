@@ -19,31 +19,35 @@
 #include "internal.h"
 
 /*
- * Trims whitespace from before and after a string
+ * Get a property from a tile.
  */
-char *trim(char *str)
+char *tiled_get_tile_property(TILED_MAP_TILE *tile, char *name)
 {
-	char *end;
+	_AL_LIST_ITEM *prop_item = _al_list_front(tile->properties);
+	while (prop_item) {
+		TILED_PROPERTY *prop = _al_list_item_data(prop_item);
+		if (!strcmp(prop->name, name))
+			return prop->value;
 
-	while (isspace(*str)) str++;
-	if (*str == 0) return str;
+		prop_item = _al_list_next(tile->properties, prop_item);
+	}
 
-	end = str + strlen(str) - 1;
-	while (end > str && isspace(*end)) end--;
-
-	*(end+1) = '\0';
-	return str;
+	return NULL;
 }
 
 /*
- * Returns a copy of a string
- * Used to keep XML data that would otherwise be freed
+ * Get a property from an object.
  */
-char *copy(const char *src)
+char *tiled_get_object_property(TILED_OBJECT *object, char *name)
 {
-	int len = strlen(src);
-	char *result = (char *)malloc(sizeof(char) * (len+1));
-	strcpy(result, src);
-	return result;
-}
+	_AL_LIST_ITEM *prop_item = _al_list_front(object->properties);
+	while (prop_item) {
+		TILED_PROPERTY *prop = _al_list_item_data(prop_item);
+		if (!strcmp(prop->name, name))
+			return prop->value;
 
+		prop_item = _al_list_next(object->properties, prop_item);
+	}
+
+	return NULL;
+}
