@@ -16,6 +16,7 @@
 
 #define FPS 60
 #define DEBUG 0
+#define MAP_FOLDER "data/maps"
 
 /*
  * Utility debug method
@@ -30,11 +31,6 @@ void debug(const char *format, ...)
 	va_start(argptr, format);
 	vprintf(format, argptr);
 	printf("\n");
-}
-
-TILED_MAP *open_map(const char *filename)
-{
-	return tiled_parse_map("data/maps", filename);
 }
 
 /*
@@ -107,11 +103,11 @@ int main(int argc, char *argv[])
 	al_start_timer(timer);
 
 	// Parse the map
-	map = open_map("level1.tmx");
+	map = tiled_open_map(MAP_FOLDER, "level1.tmx");
 
 	// Draw the map
 	al_clear_to_color(al_map_rgb(0, 0, 0));
-	draw_map(map, screen_width, screen_height);
+	tiled_draw_map(map, screen_width, screen_height);
 	al_flip_display();
 
 	// Main loop
@@ -133,23 +129,23 @@ int main(int argc, char *argv[])
 					al_get_keyboard_state(&keyboard_state);
 					if (al_key_down(&keyboard_state, ALLEGRO_KEY_RIGHT)) {
 						map->x += 5;
-						if (map->x > map->bounds->right)
-							map->x = map->bounds->right;
+						if (map->x > (map->pixel_width - screen_width))
+							map->x = map->pixel_width - screen_width;
 					}
 					else if (al_key_down(&keyboard_state, ALLEGRO_KEY_LEFT)) {
 						map->x -= 5;
-						if (map->x < map->bounds->left)
-							map->x = map->bounds->left;
+						if (map->x < 0)
+							map->x = 0;
 					}
 					else if (al_key_down(&keyboard_state, ALLEGRO_KEY_UP)) {
 						map->y -= 5;
-						if (map->y < map->bounds->top)
-							map->y = map->bounds->top;
+						if (map->y < 0)
+							map->y = 0;
 					}
 					else if (al_key_down(&keyboard_state, ALLEGRO_KEY_DOWN)) {
 						map->y += 5;
-						if (map->y > map->bounds->bottom)
-							map->y = map->bounds->bottom;
+						if (map->y > (map->pixel_height - screen_height))
+							map->y = map->pixel_height - screen_height;
 					}
 
 					redraw = true;
@@ -183,13 +179,13 @@ int main(int argc, char *argv[])
 				int x = map->x;
 				int y = map->y;
 				tiled_free_map(map);
-				map = open_map("level1.tmx");
+				map = tiled_open_map(MAP_FOLDER, "level1.tmx");
 				map->x = x;
 				map->y = y;
 				reload = false;
 			}
 			else {
-				draw_map(map, screen_width, screen_height);
+				tiled_draw_map(map, screen_width, screen_height);
 			}
 
 			al_flip_display();
