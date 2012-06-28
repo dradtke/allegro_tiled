@@ -15,9 +15,7 @@
  * For more information, visit http://www.gnu.org/copyleft
  */
 
-#include <allegro5/tiled.h>
-#include "internal.h"
-
+#include "parser.h"
 
 /*
  * Small workaround for Allegro's list creation.

@@ -15,8 +15,7 @@
  * For more information, visit http://www.gnu.org/copyleft
  */
 
-#include <allegro5/tiled.h>
-#include "internal.h"
+#include "api.h"
 
 /*
  * Get a property from a tile.

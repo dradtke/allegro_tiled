@@ -15,34 +15,15 @@
  * For more information, visit http://www.gnu.org/copyleft
  */
 
+#ifndef _PARSER_H
+#define _PARSER_H
+
+#include <allegro5/tiled.h>
+#include "map.h"
 #include "util.h"
+#include "xml.h"
+#include "zlib.h"
 
-/*
- * Trims whitespace from before and after a string
- */
-char *trim(char *str)
-{
-	char *end;
+#define MALLOC(x) (x *)al_malloc(sizeof(x))
 
-	while (isspace(*str)) str++;
-	if (*str == 0) return str;
-
-	end = str + strlen(str) - 1;
-	while (end > str && isspace(*end)) end--;
-
-	*(end+1) = '\0';
-	return str;
-}
-
-/*
- * Returns a copy of a string
- * Used to keep XML data that would otherwise be freed
- */
-char *copy(const char *src)
-{
-	int len = strlen(src);
-	char *result = (char *)malloc(sizeof(char) * (len+1));
-	strcpy(result, src);
-	return result;
-}
-
+#endif

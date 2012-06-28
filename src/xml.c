@@ -15,8 +15,7 @@
  * For more information, visit http://www.gnu.org/copyleft
  */
 
-#include <allegro5/tiled.h>
-#include "internal.h"
+#include "xml.h"
 
 /*
  * Given a parent XML node and the name of all desired children,

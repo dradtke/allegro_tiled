@@ -15,8 +15,7 @@
  * For more information, visit http://www.gnu.org/copyleft
  */
 
-#include <allegro5/tiled.h>
-#include "internal.h"
+#include "zlib.h"
 
 static const char  table[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 static const int   BASE64_INPUT_SIZE = 57;

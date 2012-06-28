@@ -15,34 +15,16 @@
  * For more information, visit http://www.gnu.org/copyleft
  */
 
-#include "util.h"
+#ifndef _XML_H
+#define _XML_H
 
-/*
- * Trims whitespace from before and after a string
- */
-char *trim(char *str)
-{
-	char *end;
+#include <allegro5/allegro.h>
+#include <allegro5/tiled.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
 
-	while (isspace(*str)) str++;
-	if (*str == 0) return str;
+_AL_LIST *get_children_for_name(xmlNode *parent, char *name);
+xmlNode *get_first_child_for_name(xmlNode *parent, char *name);
+char *get_xml_attribute(xmlNode *node, char *name);
 
-	end = str + strlen(str) - 1;
-	while (end > str && isspace(*end)) end--;
-
-	*(end+1) = '\0';
-	return str;
-}
-
-/*
- * Returns a copy of a string
- * Used to keep XML data that would otherwise be freed
- */
-char *copy(const char *src)
-{
-	int len = strlen(src);
-	char *result = (char *)malloc(sizeof(char) * (len+1));
-	strcpy(result, src);
-	return result;
-}
-
+#endif

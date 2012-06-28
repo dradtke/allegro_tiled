@@ -15,13 +15,7 @@
  * For more information, visit http://www.gnu.org/copyleft
  */
 
-#include <allegro5/tiled.h>
-#include "internal.h"
-
-// Bits on the far end of the 32-bit global tile ID are used for tile flags
-const unsigned FLIPPED_HORIZONTALLY_FLAG = 0x80000000;
-const unsigned FLIPPED_VERTICALLY_FLAG   = 0x40000000;
-const unsigned FLIPPED_DIAGONALLY_FLAG   = 0x20000000;
+#include "map.h"
 
 static inline char lookup_tile(TILED_MAP_LAYER *layer_ob, int x, int y)
 {

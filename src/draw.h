@@ -15,34 +15,13 @@
  * For more information, visit http://www.gnu.org/copyleft
  */
 
-#include "util.h"
+#ifndef _DRAW_H
+#define _DRAW_H
 
-/*
- * Trims whitespace from before and after a string
- */
-char *trim(char *str)
-{
-	char *end;
+#include <allegro5/allegro.h>
+#include <allegro5/tiled.h>
 
-	while (isspace(*str)) str++;
-	if (*str == 0) return str;
+void tiled_draw_map(TILED_MAP *map, int screen_width, int screen_height);
+void tiled_draw_objects(TILED_MAP *map);
 
-	end = str + strlen(str) - 1;
-	while (end > str && isspace(*end)) end--;
-
-	*(end+1) = '\0';
-	return str;
-}
-
-/*
- * Returns a copy of a string
- * Used to keep XML data that would otherwise be freed
- */
-char *copy(const char *src)
-{
-	int len = strlen(src);
-	char *result = (char *)malloc(sizeof(char) * (len+1));
-	strcpy(result, src);
-	return result;
-}
-
+#endif

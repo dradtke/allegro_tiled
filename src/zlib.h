@@ -15,32 +15,14 @@
  * For more information, visit http://www.gnu.org/copyleft
  */
 
-#ifndef INTERNAL_H
-#define INTERNAL_H
+#ifndef _ZLIB_H
+#define _ZLIB_H
 
-#include <ctype.h>
-#include <libxml/parser.h>
-#include <libxml/tree.h>
+#include <assert.h>
+#include <stdio.h>
+#include <string.h>
 #include <zlib.h>
 
-#define MALLOC(x) (x *)al_malloc(sizeof(x))
-
-// map.h
-char tile_id(TILED_MAP_LAYER *layer_ob, int x, int y);
-bool flipped_horizontally(TILED_MAP_LAYER *layer_ob, int x, int y);
-bool flipped_vertically(TILED_MAP_LAYER *layer_ob, int x, int y);
-void tiled_free_object_group(TILED_OBJECT_GROUP *group);
-
-// util.h
-char *trim(char *str);
-char *copy(const char *str);
-
-// xml.h
-_AL_LIST *get_children_for_name(xmlNode *parent, char *name);
-xmlNode *get_first_child_for_name(xmlNode *parent, char *name);
-char *get_xml_attribute(xmlNode *node, char *name);
-
-// zlib.h
 // Hack to make it work on Windows
 // ???: Is this actually needed?
 #if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
@@ -55,12 +37,5 @@ char *get_xml_attribute(xmlNode *node, char *name);
 
 int decompress(char *src, FILE *dest);
 int UnBase64(unsigned char *dest, const unsigned char *src, int srclen);
-
-// custom list item destructors
-void dtor_map_tile(void *value, void *user_data);
-void dtor_map_tileset(void *value, void *user_data);
-void dtor_map_layer(void *value, void *user_data);
-void dtor_map_object(void *value, void *user_data);
-void dtor_prop(void *value, void *user_data);
 
 #endif

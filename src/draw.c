@@ -15,8 +15,7 @@
  * For more information, visit http://www.gnu.org/copyleft
  */
 
-#include <allegro5/tiled.h>
-#include "internal.h"
+#include "draw.h"
 
 void tiled_draw_map(TILED_MAP *map, int screen_width, int screen_height)
 {
