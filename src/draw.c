@@ -29,11 +29,11 @@ void tiled_draw_objects(TILED_MAP *map)
 	_AL_LIST_ITEM *object_item = _al_list_front(objects);
 	while (object_item) {
 		TILED_OBJECT *object = _al_list_item_data(object_item);
+		object_item = _al_list_next(objects, object_item);
 		if (object->bitmap) {
 			// TODO: flip flags?
-			al_draw_bitmap(object->bitmap, object->x, object->y, 0);
+			int flags = 0;
+			al_draw_bitmap(object->bitmap, object->x, object->y, flags);
 		}
-
-		object_item = _al_list_next(objects, object_item);
 	}
 }

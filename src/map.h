@@ -19,6 +19,7 @@
 #define _MAP_H
 
 #include <allegro5/tiled.h>
+#include <stdio.h>
 
 // Bits on the far end of the 32-bit global tile ID are used for tile flags
 #define FLIPPED_HORIZONTALLY_FLAG	0x80000000
@@ -28,12 +29,13 @@
 char tile_id(TILED_MAP_LAYER *layer_ob, int x, int y);
 bool flipped_horizontally(TILED_MAP_LAYER *layer_ob, int x, int y);
 bool flipped_vertically(TILED_MAP_LAYER *layer_ob, int x, int y);
-void tiled_free_object_group(TILED_OBJECT_GROUP *group);
+void tiled_update_backbuffer(TILED_MAP *map);
 
 void dtor_map_tile(void *value, void *user_data);
 void dtor_map_tileset(void *value, void *user_data);
 void dtor_map_layer(void *value, void *user_data);
 void dtor_map_object(void *value, void *user_data);
+void dtor_map_object_group(void *value, void *user_data);
 void dtor_prop(void *value, void *user_data);
 
 #endif

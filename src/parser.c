@@ -45,10 +45,10 @@ static void decode_layer_data(xmlNode *data_node, TILED_MAP_LAYER *layer)
 		_AL_LIST_ITEM *tile_item = _al_list_front(tiles);
 		while (tile_item) {
 			xmlNode *tile_node = (xmlNode*)_al_list_item_data(tile_item);
+			tile_item = _al_list_next(tiles, tile_item);
 			char *gid = get_xml_attribute(tile_node, "gid");
 			layer->data[i] = atoi(gid);
 			i++;
-			tile_item = _al_list_next(tiles, tile_item);
 		}
 	}
 	else if (!strcmp(encoding, "base64")) {
@@ -148,17 +148,15 @@ static void cache_tile_list(TILED_MAP *map)
 
 	while (tileset_item != NULL) {
 		TILED_MAP_TILESET *tileset_ob = _al_list_item_data(tileset_item);
+		tileset_item = _al_list_next(map->tilesets, tileset_item);
 		_AL_LIST_ITEM *tile_item = _al_list_front(tileset_ob->tiles);
-
 		while (tile_item != NULL) {
 			TILED_MAP_TILE *tile_ob = _al_list_item_data(tile_item);
+			tile_item = _al_list_next(tileset_ob->tiles, tile_item);
 			// this is a cache, so don't specify a destructor
 			// it will get cleaned up with the associated tileset
 			_al_list_push_back(map->tiles, tile_ob);
-			tile_item = _al_list_next(tileset_ob->tiles, tile_item);
 		}
-
-		tileset_item = _al_list_next(map->tilesets, tileset_item);
 	}
 }
 
@@ -174,12 +172,15 @@ static _AL_LIST *parse_properties(xmlNode *node)
 	_AL_LIST_ITEM *property_item = _al_list_front(properties_list);
 	while (property_item) {
 		xmlNode *property_node = _al_list_item_data(property_item);
+		property_item = _al_list_next(properties_list, property_item);
+
 		TILED_PROPERTY *prop = MALLOC(TILED_PROPERTY);
 		prop->name = copy(get_xml_attribute(property_node, "name"));
 		prop->value = copy(get_xml_attribute(property_node, "value"));
 		_al_list_push_back_ex(props, prop, dtor_prop);
-		property_item = _al_list_next(properties_list, property_item);
 	}
+
+	_al_list_destroy(properties_list);
 
 	return props;
 }
@@ -243,6 +244,8 @@ TILED_MAP *tiled_open_map(const char *dir, const char *filename)
 	_AL_LIST_ITEM *tileset_item = _al_list_front(tilesets);
 	while (tileset_item) {
 		xmlNode *tileset_node = (xmlNode*)_al_list_item_data(tileset_item);
+		tileset_item = _al_list_next(tilesets, tileset_item);
+
 		TILED_MAP_TILESET *tileset_ob = MALLOC(TILED_MAP_TILESET);
 		tileset_ob->firstgid = atoi(get_xml_attribute(tileset_node, "firstgid"));
 		tileset_ob->tilewidth = atoi(get_xml_attribute(tileset_node, "tilewidth"));
@@ -263,6 +266,8 @@ TILED_MAP *tiled_open_map(const char *dir, const char *filename)
 		_AL_LIST_ITEM *tile_item = _al_list_front(tiles);
 		while (tile_item) {
 			xmlNode *tile_node = (xmlNode*)_al_list_item_data(tile_item);
+			tile_item = _al_list_next(tiles, tile_item);
+
 			TILED_MAP_TILE *tile_ob = MALLOC(TILED_MAP_TILE);
 			tile_ob->id = tileset_ob->firstgid + atoi(get_xml_attribute(tile_node, "id"));
 			tile_ob->tileset = tileset_ob;
@@ -272,12 +277,10 @@ TILED_MAP *tiled_open_map(const char *dir, const char *filename)
 			tile_ob->properties = parse_properties(tile_node);
 
 			_al_list_push_back_ex(tileset_ob->tiles, tile_ob, dtor_map_tile);
-			tile_item = _al_list_next(tiles, tile_item);
 		}
 
 		_al_list_destroy(tiles);
 		_al_list_push_back_ex(map->tilesets, tileset_ob, dtor_map_tileset);
-		tileset_item = _al_list_next(tilesets, tileset_item);
 	}
 
 	_al_list_destroy(tilesets);
@@ -292,6 +295,8 @@ TILED_MAP *tiled_open_map(const char *dir, const char *filename)
 	_AL_LIST_ITEM *layer_item = _al_list_front(layers);
 	while (layer_item) {
 		xmlNode *layer_node = _al_list_item_data(layer_item);
+		layer_item = _al_list_next(layers, layer_item);
+
 		TILED_MAP_LAYER *layer_ob = MALLOC(TILED_MAP_LAYER);
 		layer_ob->name = copy(get_xml_attribute(layer_node, "name"));
 		layer_ob->width = atoi(get_xml_attribute(layer_node, "width"));
@@ -327,12 +332,12 @@ TILED_MAP *tiled_open_map(const char *dir, const char *filename)
 					_AL_LIST_ITEM *tileset_item = _al_list_front(map->tilesets);
 					while (tileset_item) {
 						TILED_MAP_TILESET *tileset_ob = _al_list_item_data(tileset_item);
+						tileset_item = _al_list_next(map->tilesets, tileset_item);
 						if (tileset_ob->firstgid <= id) {
 							if (!tile_ob->tileset || tileset_ob->firstgid > tile_ob->tileset->firstgid) {
 								tile_ob->tileset = tileset_ob;
 							}
 						}
-						tileset_item = _al_list_next(map->tilesets, tileset_item);
 					}
 
 					_al_list_push_back_ex(map->tiles, tile_ob, dtor_map_tile);
@@ -355,20 +360,21 @@ TILED_MAP *tiled_open_map(const char *dir, const char *filename)
 		}
 
 		_al_list_push_back_ex(map->layers, layer_ob, dtor_map_layer);
-		layer_item = _al_list_next(layers, layer_item);
 	}
 
 	_al_list_destroy(layers);
 
 	// Get the objects
+	map->object_groups = _al_list_create();
 	map->objects = _al_list_create();
 	_AL_LIST *object_groups = get_children_for_name(root, "objectgroup");
 	_AL_LIST_ITEM *group_item = _al_list_front(object_groups);
 	while (group_item) {
 		xmlNode *group_node = _al_list_item_data(group_item);
+		group_item = _al_list_next(object_groups, group_item);
+
 		TILED_OBJECT_GROUP *group_ob = MALLOC(TILED_OBJECT_GROUP);
 		group_ob->name = copy(get_xml_attribute(group_node, "name"));
-		group_ob->ref = 0;
 
 		char *group_opacity = get_xml_attribute(group_node, "opacity");
 		group_ob->opacity = (group_opacity ? atof(group_opacity) : 1);
@@ -381,6 +387,8 @@ TILED_MAP *tiled_open_map(const char *dir, const char *filename)
 		_AL_LIST_ITEM *object_item = _al_list_front(objects);
 		while (object_item) {
 			xmlNode *object_node = _al_list_item_data(object_item);
+			object_item = _al_list_next(objects, object_item);
+
 			TILED_OBJECT *object_ob = MALLOC(TILED_OBJECT);
 			object_ob->group = group_ob;
 			object_ob->name = copy(get_xml_attribute(object_node, "name"));
@@ -407,16 +415,10 @@ TILED_MAP *tiled_open_map(const char *dir, const char *filename)
 			object_ob->properties = parse_properties(object_node);
 
 			_al_list_push_back_ex(map->objects, object_ob, dtor_map_object);
-			
-			object_item = _al_list_next(objects, object_item);
-			group_ob->ref++;
 		}
 
-		if (group_ob->ref == 0)
-			tiled_free_object_group(group_ob);
-
+		_al_list_push_back_ex(map->object_groups, group_ob, dtor_map_object_group);
 		_al_list_destroy(objects);
-		group_item = _al_list_next(object_groups, group_item);
 	}
 
 	_al_list_destroy(object_groups);

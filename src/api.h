@@ -22,4 +22,7 @@
 #include <stdio.h>
 #include "map.h"
 
+char *tiled_get_tile_property(TILED_MAP_TILE *tile, char *name);
+char *tiled_get_object_property(TILED_OBJECT *object, char *name);
+
 #endif

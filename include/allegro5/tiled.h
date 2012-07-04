@@ -47,6 +47,7 @@ typedef struct
 	_AL_LIST *tilesets;		// list of tilesets
 	_AL_LIST *layers;		// list of layers
 	_AL_LIST *tiles;		// full list of tiles
+	_AL_LIST *object_groups;// list of object groups
 	_AL_LIST *objects;		// list of objects
 	ALLEGRO_BITMAP *backbuffer;	// back buffer
 }
@@ -100,7 +101,6 @@ typedef struct
 	// color?
 	float opacity;
 	bool visible;
-	int ref;			// reference counter
 }
 TILED_OBJECT_GROUP;
 

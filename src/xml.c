@@ -30,9 +30,9 @@ _AL_LIST *get_children_for_name(xmlNode *parent, char *name)
 
 	xmlNode *child = parent->children->next;
 	while (child) {
-		if (!strcmp((const char*)child->name, name))
+		if (!strcmp((const char*)child->name, name)) {
 			_al_list_push_back(list, child);
-
+		}
 		child = child->next;
 	}
 
@@ -51,10 +51,11 @@ xmlNode *get_first_child_for_name(xmlNode *parent, char *name)
 	xmlNode *child = parent->children->next;
 
 	while  (child != NULL) {
-		if (!strcmp((const char*)child->name, name))
+		if (!strcmp((const char*)child->name, name)) {
 			return child;
-
-		child = child->next;
+		} else {
+			child = child->next;
+		}
 	}
 
 	return NULL;

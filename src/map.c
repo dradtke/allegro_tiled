@@ -65,34 +65,74 @@ TILED_MAP_TILE *tiled_get_tile_for_id(TILED_MAP *map, char id)
 }
 
 /*
+ * Update the map's backbuffer. This should be done whenever a tile
+ * needs to change in appearance.
+ */
+void tiled_update_backbuffer(TILED_MAP *map)
+{
+	ALLEGRO_BITMAP *orig_backbuffer = al_get_target_bitmap();
+	map->backbuffer = al_create_bitmap(map->pixel_width, map->pixel_height);
+	al_set_target_bitmap(map->backbuffer);
+
+	if (!strcmp(map->orientation, "orthogonal")) {
+		_AL_LIST_ITEM *layer_item = _al_list_front(map->layers);
+		while (layer_item != NULL) {
+			TILED_MAP_LAYER *layer_ob = _al_list_item_data(layer_item);
+			layer_item = _al_list_next(map->layers, layer_item);
+
+			int i, j;
+			for (i = 0; i<layer_ob->height; i++) {
+				for (j = 0; j<layer_ob->width; j++) {
+					char id = tile_id(layer_ob, j, i);
+					TILED_MAP_TILE *tile_ob = tiled_get_tile_for_id(map, id);
+					if (!tile_ob)
+						continue;
+
+					int tx = j*(tile_ob->tileset->tilewidth);
+					int ty = i*(tile_ob->tileset->tileheight);
+
+					int flags = 0;
+					if (flipped_horizontally(layer_ob, j, i)) flags |= ALLEGRO_FLIP_HORIZONTAL;
+					if (flipped_vertically(layer_ob, j, i)) flags |= ALLEGRO_FLIP_VERTICAL;
+
+					al_draw_bitmap(tile_ob->bitmap, tx, ty, flags);
+				}
+			}
+		}
+	} else if (!strcmp(map->orientation, "isometric")) {
+		fprintf(stderr, "Error: sorry, can't draw isometric maps right now. =(\n");
+	} else {
+		fprintf(stderr, "Error: unknown map orientation: %s\n", map->orientation);
+	}
+
+	al_set_target_bitmap(orig_backbuffer);
+}
+
+/*
  * Frees a map struct from memory
  */
 void tiled_free_map(TILED_MAP *map)
 {
-	//al_free(map->bounds);
 	al_free(map->orientation);
 	_al_list_destroy(map->tilesets);
 	_al_list_destroy(map->layers);
 	_al_list_destroy(map->tiles);
 	_al_list_destroy(map->objects);
+	_al_list_destroy(map->object_groups);
 	al_destroy_bitmap(map->backbuffer);
 	al_free(map);
 }
 
-void tiled_free_object_group(TILED_OBJECT_GROUP *group)
+void dtor_map_object_group(void *value, void *user_data)
 {
-	al_free(group->name);
-	al_free(group);
+	TILED_OBJECT_GROUP *group_ob = (TILED_OBJECT_GROUP*)value;
+	al_free(group_ob->name);
+	al_free(group_ob);
 }
 
 void dtor_map_object(void *value, void *user_data)
 {
 	TILED_OBJECT *object_ob = (TILED_OBJECT*)value;
-	
-	object_ob->group->ref--;
-	if (object_ob->group->ref <= 0)
-		tiled_free_object_group(object_ob->group);
-
 	_al_list_destroy(object_ob->properties);
 	al_free(object_ob->name);
 	al_free(object_ob->type);
