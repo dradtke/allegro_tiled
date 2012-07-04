@@ -63,7 +63,7 @@ void tiled_update_backbuffer(TILED_MAP *map)
 			int i, j;
 			for (i = 0; i<layer_ob->height; i++) {
 				for (j = 0; j<layer_ob->width; j++) {
-					char id = tile_id(layer_ob, j, i);
+					char id = tiled_get_single_tile(j, i, layer_ob);
 					TILED_MAP_TILE *tile_ob = tiled_get_tile_for_id(map, id);
 					if (!tile_ob)
 						continue;

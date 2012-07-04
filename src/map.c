@@ -17,19 +17,46 @@
 
 #include "map.h"
 
+/*
+ * Look up the raw data of a tile in the given layer.
+ */
 static inline char lookup_tile(TILED_MAP_LAYER *layer_ob, int x, int y)
 {
 	return layer_ob->data[x+(y*layer_ob->width)];
 }
 
-char tile_id(TILED_MAP_LAYER *layer_ob, int x, int y)
+/*
+ * Same as lookup_tile(), but zeroes out special bits first.
+ */
+char tiled_get_single_tile(int x, int y, TILED_MAP_LAYER *layer_ob)
 {
 	char id = lookup_tile(layer_ob, x, y);
 	id &= ~(FLIPPED_HORIZONTALLY_FLAG
-		   |FLIPPED_VERTICALLY_FLAG
-		   |FLIPPED_DIAGONALLY_FLAG);
+			|FLIPPED_VERTICALLY_FLAG
+			|FLIPPED_DIAGONALLY_FLAG);
 
 	return id;
+}
+
+/*
+ * Get a null-terminated list of tiles at the given location, one per layer.
+ */
+char *tiled_get_tiles(TILED_MAP *map, int x, int y)
+{
+	int layer_count = _al_list_size(map->layers);
+	char* tiles = (char *)malloc(sizeof(char) * (layer_count));
+	tiles[layer_count] = (char)-1;
+
+	int i = 0;
+	_AL_LIST_ITEM *layer_item = _al_list_front(map->layers);
+	while (layer_item) {
+		TILED_MAP_LAYER *layer_ob = (TILED_MAP_LAYER*)_al_list_item_data(layer_item);
+		layer_item = _al_list_next(map->layers, layer_item);
+		tiles[i] = tiled_get_single_tile(x, y, layer_ob);
+		i++;
+	}
+
+	return tiles;
 }
 
 /*
@@ -61,10 +88,11 @@ TILED_MAP_TILE *tiled_get_tile_for_id(TILED_MAP *map, char id)
 	_AL_LIST_ITEM *tile_item = _al_list_front(map->tiles);
 	while (tile_item != NULL) {
 		TILED_MAP_TILE *tile = _al_list_item_data(tile_item);
-		if (tile->id == id)
+		if (tile->id == id) {
 			return tile;
-		else
+		} else {
 			tile_item = _al_list_next(map->tiles, tile_item);
+		}
 	}
 
 	return NULL;
@@ -73,19 +101,23 @@ TILED_MAP_TILE *tiled_get_tile_for_id(TILED_MAP *map, char id)
 /*
  * Get a property from a tile.
  */
-char *tiled_get_tile_property(TILED_MAP_TILE *tile, char *name)
+char *tiled_get_tile_property(TILED_MAP *map, char id, char *name, char *def)
 {
-	_AL_LIST_ITEM *prop_item = _al_list_front(tile->properties);
-	while (prop_item) {
-		TILED_PROPERTY *prop = _al_list_item_data(prop_item);
-		if (!strcmp(prop->name, name)) {
-			return prop->value;
-		} else {
-			prop_item = _al_list_next(tile->properties, prop_item);
+	TILED_MAP_TILE *tile = tiled_get_tile_for_id(map, id);
+
+	if (tile) {
+		_AL_LIST_ITEM *prop_item = _al_list_front(tile->properties);
+		while (prop_item) {
+			TILED_PROPERTY *prop = _al_list_item_data(prop_item);
+			if (!strcmp(prop->name, name)) {
+				return prop->value;
+			} else {
+				prop_item = _al_list_next(tile->properties, prop_item);
+			}
 		}
 	}
 
-	return NULL;
+	return def;
 }
 
 /*
@@ -121,6 +153,9 @@ void tiled_free_map(TILED_MAP *map)
 	al_free(map);
 }
 
+/*
+ * Object group destructor.
+ */
 void dtor_map_object_group(void *value, void *user_data)
 {
 	TILED_OBJECT_GROUP *group_ob = (TILED_OBJECT_GROUP*)value;
@@ -128,6 +163,9 @@ void dtor_map_object_group(void *value, void *user_data)
 	al_free(group_ob);
 }
 
+/*
+ * Object destructor.
+ */
 void dtor_map_object(void *value, void *user_data)
 {
 	TILED_OBJECT *object_ob = (TILED_OBJECT*)value;
@@ -137,6 +175,9 @@ void dtor_map_object(void *value, void *user_data)
 	al_free(object_ob);
 }
 
+/*
+ * Tileset destructor.
+ */
 void dtor_map_tileset(void *value, void *user_data)
 {
 	TILED_MAP_TILESET *tileset_ob = (TILED_MAP_TILESET*)value;
@@ -147,6 +188,9 @@ void dtor_map_tileset(void *value, void *user_data)
 	al_free(tileset_ob);
 }
 
+/*
+ * Tile destructor.
+ */
 void dtor_map_tile(void *value, void *user_data)
 {
 	TILED_MAP_TILE *tile_ob = (TILED_MAP_TILE*)value;
@@ -155,6 +199,9 @@ void dtor_map_tile(void *value, void *user_data)
 	al_free(tile_ob);
 }
 
+/*
+ * Layer destructor.
+ */
 void dtor_map_layer(void *value, void *user_data)
 {
 	TILED_MAP_LAYER *layer_ob = (TILED_MAP_LAYER*)value;
@@ -163,6 +210,9 @@ void dtor_map_layer(void *value, void *user_data)
 	al_free(layer_ob);
 }
 
+/*
+ * Property destructor.
+ */
 void dtor_prop(void *value, void *user_data)
 {
 	TILED_PROPERTY *prop_ob = (TILED_PROPERTY*)value;

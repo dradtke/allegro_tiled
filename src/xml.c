@@ -33,6 +33,7 @@ _AL_LIST *get_children_for_name(xmlNode *parent, char *name)
 		if (!strcmp((const char*)child->name, name)) {
 			_al_list_push_back(list, child);
 		}
+
 		child = child->next;
 	}
 

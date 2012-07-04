@@ -18,6 +18,7 @@
 #ifndef _UTIL_H
 #define _UTIL_H
 
+#include <allegro5/allegro.h>
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>

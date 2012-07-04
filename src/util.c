@@ -18,7 +18,7 @@
 #include "util.h"
 
 /*
- * Trims whitespace from before and after a string
+ * Trims whitespace from before and after a string.
  */
 char *trim(char *str)
 {
@@ -35,13 +35,13 @@ char *trim(char *str)
 }
 
 /*
- * Returns a copy of a string
- * Used to keep XML data that would otherwise be freed
+ * Returns a copy of a string.
+ * Used to keep XML data that would otherwise be freed.
  */
 char *copy(const char *src)
 {
 	int len = strlen(src);
-	char *result = (char *)malloc(sizeof(char) * (len+1));
+	char *result = (char *)al_malloc(sizeof(char) * (len+1));
 	strcpy(result, src);
 	return result;
 }

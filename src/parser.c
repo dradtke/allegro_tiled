@@ -160,6 +160,9 @@ static void cache_tile_list(TILED_MAP *map)
 	}
 }
 
+/*
+ * Parse a <properties> node into a list of property objects.
+ */
 static _AL_LIST *parse_properties(xmlNode *node)
 {
 	xmlNode *properties_node = get_first_child_for_name(node, "properties");
@@ -199,15 +202,16 @@ TILED_MAP *tiled_open_map(const char *dir, const char *filename)
 	unsigned i, j;
 
 	ALLEGRO_PATH *cwd = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
-	ALLEGRO_PATH *path = al_create_path(dir);
+	ALLEGRO_PATH *resources = al_clone_path(cwd);
+	ALLEGRO_PATH *maps = al_create_path(dir);
 
-	al_join_paths(cwd, path);
-	if (!al_change_directory(al_path_cstr(cwd, ALLEGRO_NATIVE_PATH_SEP))) {
+	al_join_paths(resources, maps);
+	if (!al_change_directory(al_path_cstr(resources, ALLEGRO_NATIVE_PATH_SEP))) {
 		fprintf(stderr, "Error: failed to change directory in tiled_parse_map().");
 	}
 
-	al_destroy_path(cwd);
-	al_destroy_path(path);
+	al_destroy_path(resources);
+	al_destroy_path(maps);
 
 	// Read in the data file
 	doc = xmlReadFile(filename, NULL, 0);
@@ -314,7 +318,7 @@ TILED_MAP *tiled_open_map(const char *dir, const char *filename)
 		// Create any missing tile objects
 		for (i = 0; i<layer_ob->height; i++) {
 			for (j = 0; j<layer_ob->width; j++) {
-				char id = tile_id(layer_ob, j, i);
+				char id = tiled_get_single_tile(j, i, layer_ob);
 
 				if (id == 0)
 					continue;
@@ -423,11 +427,10 @@ TILED_MAP *tiled_open_map(const char *dir, const char *filename)
 
 	_al_list_destroy(object_groups);
 
-	// Done parsing XML, so let's free the doc
 	xmlFreeDoc(doc);
-
-	// Create the map's backbuffer
 	tiled_update_backbuffer(map);
-	
+
+	al_change_directory(al_path_cstr(cwd, ALLEGRO_NATIVE_PATH_SEP));
+
 	return map;
 }
