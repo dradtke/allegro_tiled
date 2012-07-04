@@ -35,14 +35,25 @@ void debug(const char *format, ...)
 	printf("\n");
 }
 
+/*
+ * Draw the map and egg.
+ */
 void flip()
 {
 	al_clear_to_color(al_map_rgb(0, 0, 0));
-
 	tiled_draw_map(map, screen_width, screen_height);
 	al_draw_bitmap(egg, egg_x, egg_y, 0);
-
 	al_flip_display();
+}
+
+bool collide(TILED_MAP *map, char id)
+{
+	char *p = tiled_get_tile_property(map, id, "collide", "false");
+	if (!strcmp(p, "true")) {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 /*
@@ -201,8 +212,7 @@ int main(int argc, char *argv[])
 				char *tiles = tiled_get_tiles(map, tile_x, tile_bottom);
 				int i;
 				for (i = 0; tiles[i] > -1; i++) {
-					char *collide = tiled_get_tile_property(map, tiles[i], "collide", "false");
-					if (!strcmp(collide, "true")) {
+					if (collide(map, tiles[i])) {
 						jumping = false;
 						egg_y = (tile_bottom * map->tile_height) - egg_height;
 					}
@@ -223,8 +233,7 @@ int main(int argc, char *argv[])
 			char *tiles_botright = tiled_get_tiles(map, right/map->tile_width, bottom/map->tile_height);
 			bool botright_floating = true;
 			for (i = 0; tiles_botright[i] > -1; i++) {
-				char *collide = tiled_get_tile_property(map, tiles_botright[i], "collide", "false");
-				if (!strcmp(collide, "true")) {
+				if (collide(map, tiles_botright[i])) {
 					botright_floating = false;
 					break;
 				}
@@ -233,7 +242,7 @@ int main(int argc, char *argv[])
 			char *tiles_botleft = tiled_get_tiles(map, left/map->tile_width, bottom/map->tile_height);
 			bool botleft_floating = true;
 			for (i = 0; tiles_botleft[i] > -1; i++) {
-				if (!strcmp(tiled_get_tile_property(map, tiles_botleft[i], "collide", "false"), "true")) {
+				if (collide(map, tiles_botleft[i])) {
 					botleft_floating = false;
 					break;
 				}
