@@ -8,7 +8,7 @@ TARGET  := lib$(LIBNAME).so
 LDFLAGS := -shared -Wl,-soname=$(TARGET)
 SOURCES := $(shell find src/ -type f -name *.c)
 OBJECTS := $(patsubst src/%,build/%,$(SOURCES:.c=.o))
-DEPS := $(OBJECTS:.o=.deps)
+DEPS 	:= $(OBJECTS:.o=.deps)
 
 $(TARGET): $(OBJECTS)
 	@echo "  Linking..."; $(CC) $(LDFLAGS) $^ -o $(TARGET) $(LIBS)
