@@ -1,5 +1,5 @@
 CC      := clang
-TARGET  := ex1
+TARGET  := Example1
 CFLAGS  := -I../../include -g
 LDFLAGS := -L../..
 LIBS    := -lallegro -lallegro_image -lallegro_tiled
