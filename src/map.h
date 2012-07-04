@@ -29,7 +29,8 @@
 char tile_id(TILED_MAP_LAYER *layer_ob, int x, int y);
 bool flipped_horizontally(TILED_MAP_LAYER *layer_ob, int x, int y);
 bool flipped_vertically(TILED_MAP_LAYER *layer_ob, int x, int y);
-void tiled_update_backbuffer(TILED_MAP *map);
+char *tiled_get_tile_property(TILED_MAP_TILE *tile, char *name);
+char *tiled_get_object_property(TILED_OBJECT *object, char *name);
 
 void dtor_map_tile(void *value, void *user_data);
 void dtor_map_tileset(void *value, void *user_data);
