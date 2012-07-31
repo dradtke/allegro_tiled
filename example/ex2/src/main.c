@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_image.h>
-#include <allegro5/tiled.h>
+#include <allegro5/allegro_tiled.h>
 
 #define FPS 60
 #define DEBUG 0
@@ -13,6 +13,7 @@ int screen_width, screen_height;
 TILED_MAP *map;
 ALLEGRO_BITMAP *egg;
 float egg_x, egg_y;
+float map_x, map_y;
 int egg_width, egg_height;
 float move_speed;
 float fall_speed;
@@ -41,14 +42,14 @@ void debug(const char *format, ...)
 void flip()
 {
 	al_clear_to_color(al_map_rgb(0, 0, 0));
-	tiled_draw_map(map, screen_width, screen_height);
+	al_draw_map(map, map_x, map_y, screen_width, screen_height);
 	al_draw_bitmap(egg, egg_x, egg_y, 0);
 	al_flip_display();
 }
 
 bool collide(TILED_MAP *map, char id)
 {
-	char *p = tiled_get_tile_property(map, id, "collide", "false");
+	char *p = al_get_tile_property(al_get_tile_for_id(map, id), "collide", "false");
 	if (!strcmp(p, "true")) {
 		return true;
 	} else {
@@ -127,7 +128,8 @@ int main(int argc, char *argv[])
 	al_start_timer(timer);
 
 	// Parse the map
-	map = tiled_open_map(MAP_FOLDER, "level1.tmx");
+	map = al_open_map(MAP_FOLDER, "level1.tmx");
+	map_x = 0, map_y = 0;
 
 	if (!(egg = al_load_bitmap("data/sprites/egg.png"))) {
 		fprintf(stderr, "Failed to load egg sprite.\n");
@@ -209,7 +211,7 @@ int main(int argc, char *argv[])
 			if (fall_speed > 0) {
 				int tile_x = egg_x / map->tile_width;
 				int tile_bottom = (new_y + egg_height) / map->tile_height;
-				char *tiles = tiled_get_tiles(map, tile_x, tile_bottom);
+				char *tiles = al_get_tiles(map, tile_x, tile_bottom);
 				int i;
 				for (i = 0; tiles[i] > -1; i++) {
 					if (collide(map, tiles[i])) {
@@ -230,7 +232,7 @@ int main(int argc, char *argv[])
 			int bottom = egg_y + egg_height + 1;
 
 			int i;
-			char *tiles_botright = tiled_get_tiles(map, right/map->tile_width, bottom/map->tile_height);
+			char *tiles_botright = al_get_tiles(map, right/map->tile_width, bottom/map->tile_height);
 			bool botright_floating = true;
 			for (i = 0; tiles_botright[i] > -1; i++) {
 				if (collide(map, tiles_botright[i])) {
@@ -239,7 +241,7 @@ int main(int argc, char *argv[])
 				}
 			}
 
-			char *tiles_botleft = tiled_get_tiles(map, left/map->tile_width, bottom/map->tile_height);
+			char *tiles_botleft = al_get_tiles(map, left/map->tile_width, bottom/map->tile_height);
 			bool botleft_floating = true;
 			for (i = 0; tiles_botleft[i] > -1; i++) {
 				if (collide(map, tiles_botleft[i])) {
@@ -266,7 +268,7 @@ int main(int argc, char *argv[])
 
 	// Clean up and return
 	al_destroy_bitmap(egg);
-	tiled_free_map(map);
+	al_free_map(map);
 	al_destroy_display(display);
 	al_destroy_event_queue(event_queue);
 	return 0;
