@@ -40,4 +40,4 @@ Running the Example
 
 To run one of the examples, compile the module, cd to the example's root folder and use `make run` to compile and run it. Here's the first example in action:
 
-![screenshot](https://github.com/dradtke/Allegro-Tiled/raw/master/example/ex1/screenshot.png)
+![screenshot](https://github.com/dradtke/allegro_tiled/raw/master/example/ex1/screenshot.png)
