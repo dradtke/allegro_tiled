@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_image.h>
-#include <allegro5/tiled.h>
+#include <allegro5/allegro_tiled.h>
 
 #define FPS 60
 #define DEBUG 0
