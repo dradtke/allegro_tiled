@@ -180,7 +180,15 @@ static _AL_LIST *parse_properties(xmlNode *node)
 
 		TILED_PROPERTY *prop = MALLOC(TILED_PROPERTY);
 		prop->name = copy(get_xml_attribute(property_node, "name"));
-		prop->value = copy(get_xml_attribute(property_node, "value"));
+
+		char *value = get_xml_attribute(property_node, "value");
+		if (!value) {
+			value = (char*)xmlNodeGetContent(property_node);
+			printf("found property contained inside element: name = %s, value = %s\n",
+					prop->name, value);
+		}
+
+		prop->value = copy(value);
 		_al_list_push_back_ex(props, prop, dtor_prop);
 	}
 
