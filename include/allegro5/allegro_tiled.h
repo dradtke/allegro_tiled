@@ -72,16 +72,16 @@ typedef struct
 	int tilewidth;			// width of each tile
 	int tileheight;			// height of each tile
 	int width, height;		// total dimensions (in pixels)
-	char *name;				// name
+	char *name;			// name
 	char *source;			// path to this tileset's image source
-	ALLEGRO_BITMAP *bitmap;	// image for this tileset
+	ALLEGRO_BITMAP *bitmap;		// image for this tileset
 	_AL_LIST *tiles;		// list of tiles
 }
 TILED_MAP_TILESET;
 
 typedef struct
 {
-	int id;						// the tile id
+	int id;				// the tile id
 	TILED_MAP_TILESET *tileset;	// pointer to its tileset
 	_AL_LIST *properties;		// tile properties
 	ALLEGRO_BITMAP *bitmap; 	// this tile's image
@@ -90,7 +90,7 @@ TILED_MAP_TILE;
 
 typedef struct
 {
-	char *name;				// the property's name
+	char *name;			// the property's name
 	char *value;			// the property's value
 }
 TILED_PROPERTY;
@@ -118,15 +118,57 @@ typedef struct
 TILED_OBJECT;
 //}}}
 
-TILED_MAP *tiled_open_map(const char *dir, const char *filename);
-void tiled_draw_map(TILED_MAP *map, int screen_width, int screen_height);
-void tiled_draw_objects(TILED_MAP *map);
-TILED_MAP_TILE *tiled_get_tile_for_id(TILED_MAP *map, char id);
-char tiled_get_single_tile(int x, int y, TILED_MAP_LAYER *layer_ob);
-char *tiled_get_tiles(TILED_MAP *map, int x, int y);
-char *tiled_get_tile_property(TILED_MAP *map, char id, char *name, char *def);
-char *tiled_get_object_property(TILED_OBJECT *object, char *name);
-void tiled_update_backbuffer(TILED_MAP *map);
-void tiled_free_map(TILED_MAP *map);
+/*
+ * Opens a map-file, parsing it into a TILED_MAP struct.
+ * This should be freed with al_free_map() when no longer needd.
+ */
+TILED_MAP *al_open_map(const char *dir, const char *filename);
+
+/*
+ * Draws the map onto the target bitmap at the given position.
+ */
+void al_draw_map(TILED_MAP *map, float x, float y, int screen_width, int screen_height);
+
+/*
+ * Draw all defined objects onto the target bitmap.
+ */
+void al_draw_objects(TILED_MAP *map);
+
+/*
+ * Given a tile's id, returns the corresponding TILED_MAP_TILE struct
+ * for a tile with that id.
+ */
+TILED_MAP_TILE *al_get_tile_for_id(TILED_MAP *map, char id);
+
+/*
+ * Get the id of the tile at (x,y) on the given layer.
+ */
+char al_get_single_tile(TILED_MAP_LAYER *layer, int x, int y);
+
+/*
+ * Get a list of tile id's at (x,y) on the given map, one per layer.
+ */
+char *al_get_tiles(TILED_MAP *map, int x, int y);
+
+/*
+ * Get a property from a tile, returning some default value if not found.
+ */
+char *al_get_tile_property(TILED_MAP_TILE *tile, char *name, char *def);
+
+/*
+ * Get a property from an object, returning some default value if not found.
+ */
+char *al_get_object_property(TILED_OBJECT *object, char *name, char *def);
+
+/*
+ * Update the map's backbuffer. This should be done whenever a tile needs
+ * to change in appearance.
+ */
+void al_update_backbuffer(TILED_MAP *map);
+
+/*
+ * Free the map struct (and all associated structs) from memory.
+ */
+void al_free_map(TILED_MAP *map);
 
 #endif

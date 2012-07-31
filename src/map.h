@@ -18,7 +18,7 @@
 #ifndef _MAP_H
 #define _MAP_H
 
-#include <allegro5/tiled.h>
+#include <allegro5/allegro_tiled.h>
 #include <stdio.h>
 
 // Bits on the far end of the 32-bit global tile ID are used for tile flags
@@ -26,12 +26,12 @@
 #define FLIPPED_VERTICALLY_FLAG		0x40000000
 #define FLIPPED_DIAGONALLY_FLAG		0x20000000
 
-char tiled_get_single_tile(int x, int y, TILED_MAP_LAYER *layer_ob);
-char* tiled_get_tiles(TILED_MAP *map, int x, int y);
-bool flipped_horizontally(TILED_MAP_LAYER *layer_ob, int x, int y);
-bool flipped_vertically(TILED_MAP_LAYER *layer_ob, int x, int y);
-char *tiled_get_tile_property(TILED_MAP *map, char id, char *name, char *def);
-char *tiled_get_object_property(TILED_OBJECT *object, char *name);
+char al_get_single_tile(TILED_MAP_LAYER *layer, int x, int y);
+char* al_get_tiles(TILED_MAP *map, int x, int y);
+bool flipped_horizontally(TILED_MAP_LAYER *layer, int x, int y);
+bool flipped_vertically(TILED_MAP_LAYER *layer, int x, int y);
+char *al_get_tile_property(TILED_MAP_TILE *tile, char *name, char *def);
+char *al_get_object_property(TILED_OBJECT *object, char *name, char *def);
 
 void dtor_map_tile(void *value, void *user_data);
 void dtor_map_tileset(void *value, void *user_data);

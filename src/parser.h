@@ -18,7 +18,7 @@
 #ifndef _PARSER_H
 #define _PARSER_H
 
-#include <allegro5/tiled.h>
+#include <allegro5/allegro_tiled.h>
 #include "map.h"
 #include "util.h"
 #include "xml.h"

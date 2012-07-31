@@ -23,10 +23,11 @@
  */
 static inline _AL_LIST *create_list(size_t capacity)
 {
-	if (capacity == 0)
+	if (capacity == 0) {
 		return _al_list_create();
-	else
+	} else {
 		return _al_list_create_static(capacity);
+	}
 }
 
 /*
@@ -147,15 +148,15 @@ static void cache_tile_list(TILED_MAP *map)
 	_AL_LIST_ITEM *tileset_item = _al_list_front(map->tilesets);
 
 	while (tileset_item != NULL) {
-		TILED_MAP_TILESET *tileset_ob = _al_list_item_data(tileset_item);
+		TILED_MAP_TILESET *tileset = _al_list_item_data(tileset_item);
 		tileset_item = _al_list_next(map->tilesets, tileset_item);
-		_AL_LIST_ITEM *tile_item = _al_list_front(tileset_ob->tiles);
+		_AL_LIST_ITEM *tile_item = _al_list_front(tileset->tiles);
 		while (tile_item != NULL) {
-			TILED_MAP_TILE *tile_ob = _al_list_item_data(tile_item);
-			tile_item = _al_list_next(tileset_ob->tiles, tile_item);
+			TILED_MAP_TILE *tile = _al_list_item_data(tile_item);
+			tile_item = _al_list_next(tileset->tiles, tile_item);
 			// this is a cache, so don't specify a destructor
 			// it will get cleaned up with the associated tileset
-			_al_list_push_back(map->tiles, tile_ob);
+			_al_list_push_back(map->tiles, tile);
 		}
 	}
 }
@@ -193,7 +194,7 @@ static _AL_LIST *parse_properties(xmlNode *node)
  * Given the path to a map file, returns a new map struct
  * The struct must be freed once it's done being used
  */
-TILED_MAP *tiled_open_map(const char *dir, const char *filename)
+TILED_MAP *al_open_map(const char *dir, const char *filename)
 {
 	xmlDoc *doc;
 	xmlNode *root;
@@ -207,7 +208,7 @@ TILED_MAP *tiled_open_map(const char *dir, const char *filename)
 
 	al_join_paths(resources, maps);
 	if (!al_change_directory(al_path_cstr(resources, ALLEGRO_NATIVE_PATH_SEP))) {
-		fprintf(stderr, "Error: failed to change directory in tiled_parse_map().");
+		fprintf(stderr, "Error: failed to change directory in al_parse_map().");
 	}
 
 	al_destroy_path(resources);
@@ -250,41 +251,41 @@ TILED_MAP *tiled_open_map(const char *dir, const char *filename)
 		xmlNode *tileset_node = (xmlNode*)_al_list_item_data(tileset_item);
 		tileset_item = _al_list_next(tilesets, tileset_item);
 
-		TILED_MAP_TILESET *tileset_ob = MALLOC(TILED_MAP_TILESET);
-		tileset_ob->firstgid = atoi(get_xml_attribute(tileset_node, "firstgid"));
-		tileset_ob->tilewidth = atoi(get_xml_attribute(tileset_node, "tilewidth"));
-		tileset_ob->tileheight = atoi(get_xml_attribute(tileset_node, "tileheight"));
-		tileset_ob->name = copy(get_xml_attribute(tileset_node, "name"));
+		TILED_MAP_TILESET *tileset = MALLOC(TILED_MAP_TILESET);
+		tileset->firstgid = atoi(get_xml_attribute(tileset_node, "firstgid"));
+		tileset->tilewidth = atoi(get_xml_attribute(tileset_node, "tilewidth"));
+		tileset->tileheight = atoi(get_xml_attribute(tileset_node, "tileheight"));
+		tileset->name = copy(get_xml_attribute(tileset_node, "name"));
 
 		// Get this tileset's image
 		xmlNode *image_node = get_first_child_for_name(tileset_node, "image");
-		tileset_ob->width = atoi(get_xml_attribute(image_node, "width"));
-		tileset_ob->height = atoi(get_xml_attribute(image_node, "height"));
-		tileset_ob->source = copy(get_xml_attribute(image_node, "source"));
-		tileset_ob->bitmap = al_load_bitmap(tileset_ob->source);
+		tileset->width = atoi(get_xml_attribute(image_node, "width"));
+		tileset->height = atoi(get_xml_attribute(image_node, "height"));
+		tileset->source = copy(get_xml_attribute(image_node, "source"));
+		tileset->bitmap = al_load_bitmap(tileset->source);
 
 		// Get this tileset's tiles
 		_AL_LIST *tiles = get_children_for_name(tileset_node, "tile");
-		tileset_ob->tiles = create_list(_al_list_size(tiles));
+		tileset->tiles = create_list(_al_list_size(tiles));
 
 		_AL_LIST_ITEM *tile_item = _al_list_front(tiles);
 		while (tile_item) {
 			xmlNode *tile_node = (xmlNode*)_al_list_item_data(tile_item);
 			tile_item = _al_list_next(tiles, tile_item);
 
-			TILED_MAP_TILE *tile_ob = MALLOC(TILED_MAP_TILE);
-			tile_ob->id = tileset_ob->firstgid + atoi(get_xml_attribute(tile_node, "id"));
-			tile_ob->tileset = tileset_ob;
-			tile_ob->bitmap = NULL;
+			TILED_MAP_TILE *tile = MALLOC(TILED_MAP_TILE);
+			tile->id = tileset->firstgid + atoi(get_xml_attribute(tile_node, "id"));
+			tile->tileset = tileset;
+			tile->bitmap = NULL;
 
 			// Get this tile's properties
-			tile_ob->properties = parse_properties(tile_node);
+			tile->properties = parse_properties(tile_node);
 
-			_al_list_push_back_ex(tileset_ob->tiles, tile_ob, dtor_map_tile);
+			_al_list_push_back_ex(tileset->tiles, tile, dtor_map_tile);
 		}
 
 		_al_list_destroy(tiles);
-		_al_list_push_back_ex(map->tilesets, tileset_ob, dtor_map_tileset);
+		_al_list_push_back_ex(map->tilesets, tileset, dtor_map_tileset);
 	}
 
 	_al_list_destroy(tilesets);
@@ -301,60 +302,60 @@ TILED_MAP *tiled_open_map(const char *dir, const char *filename)
 		xmlNode *layer_node = _al_list_item_data(layer_item);
 		layer_item = _al_list_next(layers, layer_item);
 
-		TILED_MAP_LAYER *layer_ob = MALLOC(TILED_MAP_LAYER);
-		layer_ob->name = copy(get_xml_attribute(layer_node, "name"));
-		layer_ob->width = atoi(get_xml_attribute(layer_node, "width"));
-		layer_ob->height = atoi(get_xml_attribute(layer_node, "height"));
-		layer_ob->map = map;
+		TILED_MAP_LAYER *layer = MALLOC(TILED_MAP_LAYER);
+		layer->name = copy(get_xml_attribute(layer_node, "name"));
+		layer->width = atoi(get_xml_attribute(layer_node, "width"));
+		layer->height = atoi(get_xml_attribute(layer_node, "height"));
+		layer->map = map;
 
 		char *layer_visible = get_xml_attribute(layer_node, "visible");
-		layer_ob->visible = (layer_visible != NULL ? atoi(layer_visible) : 1);
+		layer->visible = (layer_visible != NULL ? atoi(layer_visible) : 1);
 
 		char *layer_opacity = get_xml_attribute(layer_node, "opacity");
-		layer_ob->opacity = (layer_opacity != NULL ? atof(layer_opacity) : 1.0);
+		layer->opacity = (layer_opacity != NULL ? atof(layer_opacity) : 1.0);
 
-		decode_layer_data(get_first_child_for_name(layer_node, "data"), layer_ob);
+		decode_layer_data(get_first_child_for_name(layer_node, "data"), layer);
 
 		// Create any missing tile objects
-		for (i = 0; i<layer_ob->height; i++) {
-			for (j = 0; j<layer_ob->width; j++) {
-				char id = tiled_get_single_tile(j, i, layer_ob);
+		for (i = 0; i<layer->height; i++) {
+			for (j = 0; j<layer->width; j++) {
+				char id = al_get_single_tile(layer, j, i);
 
 				if (id == 0)
 					continue;
 
-				TILED_MAP_TILE *tile_ob = tiled_get_tile_for_id(map, id);
-				if (!tile_ob) {
+				TILED_MAP_TILE *tile = al_get_tile_for_id(map, id);
+				if (!tile) {
 					// wasn't defined in the map file, presumably because it had no properties
-					tile_ob = MALLOC(TILED_MAP_TILE);
-					tile_ob->id = id;
-					tile_ob->properties = _al_list_create();
-					tile_ob->tileset = NULL;
-					tile_ob->bitmap = NULL;
+					tile = MALLOC(TILED_MAP_TILE);
+					tile->id = id;
+					tile->properties = _al_list_create();
+					tile->tileset = NULL;
+					tile->bitmap = NULL;
 
 					// locate its tilemap
 					_AL_LIST_ITEM *tileset_item = _al_list_front(map->tilesets);
 					while (tileset_item) {
-						TILED_MAP_TILESET *tileset_ob = _al_list_item_data(tileset_item);
+						TILED_MAP_TILESET *tileset = _al_list_item_data(tileset_item);
 						tileset_item = _al_list_next(map->tilesets, tileset_item);
-						if (tileset_ob->firstgid <= id) {
-							if (!tile_ob->tileset || tileset_ob->firstgid > tile_ob->tileset->firstgid) {
-								tile_ob->tileset = tileset_ob;
+						if (tileset->firstgid <= id) {
+							if (!tile->tileset || tileset->firstgid > tile->tileset->firstgid) {
+								tile->tileset = tileset;
 							}
 						}
 					}
 
-					_al_list_push_back_ex(map->tiles, tile_ob, dtor_map_tile);
+					_al_list_push_back_ex(map->tiles, tile, dtor_map_tile);
 				}
 
 				// create this tile's bitmap if it hasn't been yet
-				if (!tile_ob->bitmap) {
-					TILED_MAP_TILESET *tileset = tile_ob->tileset;
-					int id = tile_ob->id - tileset->firstgid;
+				if (!tile->bitmap) {
+					TILED_MAP_TILESET *tileset = tile->tileset;
+					int id = tile->id - tileset->firstgid;
 					int width = tileset->width / tileset->tilewidth;
 					int x = (id % width) * tileset->tilewidth;
 					int y = (id / width) * tileset->tileheight;
-					tile_ob->bitmap = al_create_sub_bitmap(
+					tile->bitmap = al_create_sub_bitmap(
 							tileset->bitmap,
 							x, y,
 							tileset->tilewidth,
@@ -363,7 +364,7 @@ TILED_MAP *tiled_open_map(const char *dir, const char *filename)
 			}
 		}
 
-		_al_list_push_back_ex(map->layers, layer_ob, dtor_map_layer);
+		_al_list_push_back_ex(map->layers, layer, dtor_map_layer);
 	}
 
 	_al_list_destroy(layers);
@@ -377,14 +378,14 @@ TILED_MAP *tiled_open_map(const char *dir, const char *filename)
 		xmlNode *group_node = _al_list_item_data(group_item);
 		group_item = _al_list_next(object_groups, group_item);
 
-		TILED_OBJECT_GROUP *group_ob = MALLOC(TILED_OBJECT_GROUP);
-		group_ob->name = copy(get_xml_attribute(group_node, "name"));
+		TILED_OBJECT_GROUP *group = MALLOC(TILED_OBJECT_GROUP);
+		group->name = copy(get_xml_attribute(group_node, "name"));
 
 		char *group_opacity = get_xml_attribute(group_node, "opacity");
-		group_ob->opacity = (group_opacity ? atof(group_opacity) : 1);
+		group->opacity = (group_opacity ? atof(group_opacity) : 1);
 
 		char *group_visible = get_xml_attribute(group_node, "visible");
-		group_ob->visible = (group_visible ? atoi(group_visible) : 1);
+		group->visible = (group_visible ? atoi(group_visible) : 1);
 
 		_AL_LIST *objects = get_children_for_name(group_node, "object");
 
@@ -393,42 +394,42 @@ TILED_MAP *tiled_open_map(const char *dir, const char *filename)
 			xmlNode *object_node = _al_list_item_data(object_item);
 			object_item = _al_list_next(objects, object_item);
 
-			TILED_OBJECT *object_ob = MALLOC(TILED_OBJECT);
-			object_ob->group = group_ob;
-			object_ob->name = copy(get_xml_attribute(object_node, "name"));
-			object_ob->type = copy(get_xml_attribute(object_node, "type"));
-			object_ob->x = atoi(get_xml_attribute(object_node, "x"));
-			object_ob->y = atoi(get_xml_attribute(object_node, "y"));
+			TILED_OBJECT *object = MALLOC(TILED_OBJECT);
+			object->group = group;
+			object->name = copy(get_xml_attribute(object_node, "name"));
+			object->type = copy(get_xml_attribute(object_node, "type"));
+			object->x = atoi(get_xml_attribute(object_node, "x"));
+			object->y = atoi(get_xml_attribute(object_node, "y"));
 
 			char *object_width = get_xml_attribute(object_node, "width");
-			object_ob->width = (object_width ? atoi(object_width) : 0);
+			object->width = (object_width ? atoi(object_width) : 0);
 
 			char *object_height = get_xml_attribute(object_node, "height");
-			object_ob->height = (object_height ? atoi(object_height) : 0);
+			object->height = (object_height ? atoi(object_height) : 0);
 
 			char *gid = get_xml_attribute(object_node, "gid");
 			if (gid) {
-				TILED_MAP_TILE *object_tile = tiled_get_tile_for_id(map, atoi(gid));
-				object_ob->bitmap = object_tile->bitmap;
+				TILED_MAP_TILE *object_tile = al_get_tile_for_id(map, atoi(gid));
+				object->bitmap = object_tile->bitmap;
 			}
 
 			char *object_visible = get_xml_attribute(object_node, "visible");
-			object_ob->visible = (object_visible ? atoi(object_visible) : 1);
+			object->visible = (object_visible ? atoi(object_visible) : 1);
 
 			// Get the object's properties
-			object_ob->properties = parse_properties(object_node);
+			object->properties = parse_properties(object_node);
 
-			_al_list_push_back_ex(map->objects, object_ob, dtor_map_object);
+			_al_list_push_back_ex(map->objects, object, dtor_map_object);
 		}
 
-		_al_list_push_back_ex(map->object_groups, group_ob, dtor_map_object_group);
+		_al_list_push_back_ex(map->object_groups, group, dtor_map_object_group);
 		_al_list_destroy(objects);
 	}
 
 	_al_list_destroy(object_groups);
 
 	xmlFreeDoc(doc);
-	tiled_update_backbuffer(map);
+	al_update_backbuffer(map);
 
 	al_change_directory(al_path_cstr(cwd, ALLEGRO_NATIVE_PATH_SEP));
 

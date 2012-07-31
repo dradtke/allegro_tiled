@@ -19,12 +19,12 @@
 #define _DRAW_H
 
 #include <allegro5/allegro.h>
-#include <allegro5/tiled.h>
+#include <allegro5/allegro_tiled.h>
 #include <stdio.h>
 #include "map.h"
 
-void tiled_draw_map(TILED_MAP *map, int screen_width, int screen_height);
-void tiled_draw_objects(TILED_MAP *map);
-void tiled_update_backbuffer(TILED_MAP *map);
+void al_draw_map(TILED_MAP *map, float x, float y, int screen_width, int screen_height);
+void al_draw_objects(TILED_MAP *map);
+void al_update_backbuffer(TILED_MAP *map);
 
 #endif

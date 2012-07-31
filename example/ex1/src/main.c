@@ -48,6 +48,7 @@ int main(int argc, char *argv[])
 	bool redraw = true;
 	bool reload = false;
 
+	int map_x = 0, map_y = 0;
 	int screen_width = 640;
 	int screen_height = 480;
 
@@ -103,11 +104,11 @@ int main(int argc, char *argv[])
 	al_start_timer(timer);
 
 	// Parse the map
-	map = tiled_open_map(MAP_FOLDER, "level1.tmx");
+	map = al_open_map(MAP_FOLDER, "level1.tmx");
 
 	// Draw the map
 	al_clear_to_color(al_map_rgb(0, 0, 0));
-	tiled_draw_map(map, screen_width, screen_height);
+	al_draw_map(map, map_x, map_y, screen_width, screen_height);
 	al_flip_display();
 
 	// Main loop
@@ -128,24 +129,24 @@ int main(int argc, char *argv[])
 					// is an arrow key being held?
 					al_get_keyboard_state(&keyboard_state);
 					if (al_key_down(&keyboard_state, ALLEGRO_KEY_RIGHT)) {
-						map->x += 5;
-						if (map->x > (map->pixel_width - screen_width))
-							map->x = map->pixel_width - screen_width;
+						map_x += 5;
+						if (map_x > (map->pixel_width - screen_width))
+							map_x = map->pixel_width - screen_width;
 					}
 					else if (al_key_down(&keyboard_state, ALLEGRO_KEY_LEFT)) {
-						map->x -= 5;
-						if (map->x < 0)
-							map->x = 0;
+						map_x -= 5;
+						if (map_x < 0)
+							map_x = 0;
 					}
 					else if (al_key_down(&keyboard_state, ALLEGRO_KEY_UP)) {
-						map->y -= 5;
-						if (map->y < 0)
-							map->y = 0;
+						map_y -= 5;
+						if (map_y < 0)
+							map_y = 0;
 					}
 					else if (al_key_down(&keyboard_state, ALLEGRO_KEY_DOWN)) {
-						map->y += 5;
-						if (map->y > (map->pixel_height - screen_height))
-							map->y = map->pixel_height - screen_height;
+						map_y += 5;
+						if (map_y > (map->pixel_height - screen_height))
+							map_y = map->pixel_height - screen_height;
 					}
 
 					redraw = true;
@@ -176,16 +177,16 @@ int main(int argc, char *argv[])
 			// If we need to reload, do it
 			// Otherwise, redraw
 			if (reload) {
-				int x = map->x;
-				int y = map->y;
-				tiled_free_map(map);
-				map = tiled_open_map(MAP_FOLDER, "level1.tmx");
-				map->x = x;
-				map->y = y;
+				int x = map_x;
+				int y = map_y;
+				al_free_map(map);
+				map = al_open_map(MAP_FOLDER, "level1.tmx");
+				map_x = x;
+				map_y = y;
 				reload = false;
 			}
 			else {
-				tiled_draw_map(map, screen_width, screen_height);
+				al_draw_map(map, map_x, map_y, screen_width, screen_height);
 			}
 
 			al_flip_display();
@@ -194,7 +195,7 @@ int main(int argc, char *argv[])
 	}
 
 	// Clean up and return
-	tiled_free_map(map);
+	al_free_map(map);
 	al_destroy_display(display);
 	al_destroy_event_queue(event_queue);
 	return 0;

@@ -19,7 +19,7 @@
 #define _XML_H
 
 #include <allegro5/allegro.h>
-#include <allegro5/tiled.h>
+#include <allegro5/allegro_tiled.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
