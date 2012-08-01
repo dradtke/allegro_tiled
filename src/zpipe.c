@@ -22,7 +22,7 @@
 
 #include "zpipe.h"
 
-int inf(FILE *source, FILE *dest)
+int inf(ALLEGRO_FILE *source, ALLEGRO_FILE *dest)
 {
 	int ret;
 	unsigned have;
@@ -42,8 +42,8 @@ int inf(FILE *source, FILE *dest)
 
 	/* decompress until deflate stream ends or end of file */
 	do {
-		strm.avail_in = fread(in, 1, CHUNK, source);
-		if (ferror(source)) {
+		strm.avail_in = al_fread(source, in, CHUNK);
+		if (al_ferror(source)) {
 			(void)inflateEnd(&strm);
 			return Z_ERRNO;
 		}
@@ -66,7 +66,7 @@ int inf(FILE *source, FILE *dest)
 					return ret;
 			}
 			have = CHUNK - strm.avail_out;
-			if (fwrite(out, 1, have, dest) != have || ferror(dest)) {
+			if (al_fwrite(dest, out, have) != have || al_ferror(dest)) {
 				(void)inflateEnd(&strm);
 				return Z_ERRNO;
 			}

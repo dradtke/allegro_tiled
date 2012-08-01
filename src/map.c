@@ -90,7 +90,7 @@ TILED_MAP_TILE *al_get_tile_for_id(TILED_MAP *map, char id)
 		return NULL;
 	}
 
-	return (TILED_MAP_TILE*)g_hash_table_lookup(map->tiles, (gpointer)id);
+	return (TILED_MAP_TILE*)g_hash_table_lookup(map->tiles, GINT_TO_POINTER(id));
 }
 
 /*

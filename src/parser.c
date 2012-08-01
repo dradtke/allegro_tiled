@@ -39,13 +39,13 @@ static inline _AL_LIST *create_list(size_t capacity)
  */
 static void decode_layer_data(xmlNode *data_node, TILED_MAP_LAYER *layer)
 {
-	char *str = trim((char *)data_node->children->content);
-	int datalen = layer->width * layer->height;
-	layer->data = (char *)calloc(datalen, sizeof(char));
+	gchar *str = trim((gchar *)data_node->children->content);
+	gint datalen = layer->width * layer->height;
+	layer->data = (gchar *)calloc(datalen, sizeof(gchar));
 
 	char *encoding = get_xml_attribute(data_node, "encoding");
 	if (!encoding) {
-		int i = 0;
+		gint i = 0;
 		GSList *tiles = get_children_for_name(data_node, "tile");
 		GSList *tile_item = tiles;
 		while (tile_item) {
@@ -72,33 +72,34 @@ static void decode_layer_data(xmlNode *data_node, TILED_MAP_LAYER *layer)
 			}
 
 			// set up files used by zlib to decompress the data
-			char *tmpsrc = tmpnam(NULL);
-			FILE *ftmpsrc = fopen(tmpsrc, "w+b");
-			fwrite(rawdata, sizeof(guchar), rawlen, ftmpsrc);
-			ftmpsrc = freopen(tmpsrc, "r", ftmpsrc);
-			FILE *ftmpdest = tmpfile();
+			ALLEGRO_PATH *srcpath;
+			ALLEGRO_FILE *datasrc = al_make_temp_file("XXXXXX", &srcpath);
+			al_fwrite(datasrc, rawdata, rawlen);
+			al_fclose(datasrc);
+			datasrc = al_fopen(al_path_cstr(srcpath, ALLEGRO_NATIVE_PATH_SEP), "rb");
+			ALLEGRO_FILE *datadest = al_make_temp_file("XXXXXX", NULL);
 
 			// decompress and print an error if it failed
-			int status = inf(ftmpsrc, ftmpdest);
+			gint status = inf(datasrc, datadest);
 			if (status)
 				zerr(status);
 
 			// flush data and get the file length
-			fflush(ftmpdest);
-			int len = ftell(ftmpdest);
+			al_fflush(datadest);
+			gint len = al_fsize(datadest);
 
 			// read in the file
-			rewind(ftmpdest);
-			char *data = (char *)calloc(len, sizeof(char));
-			if (fread(data, sizeof(char), len, ftmpdest) != len) {
+			al_fseek(datadest, 0, ALLEGRO_SEEK_SET);
+			gchar *data = (gchar *)calloc(len, sizeof(char));
+			if (al_fread(datadest, data, len) != len) {
 				fprintf(stderr, "Error: failed to read in map data\n");
 				return;
 			}
 
 			// every tile id takes 4 bytes
-			int i;
+			gint i;
 			for (i = 0; i<len; i += 4) {
-				int tileid = 0;
+				gint tileid = 0;
 				tileid |= data[i];
 				tileid |= data[i+1] << 8;
 				tileid |= data[i+2] << 16;
@@ -109,15 +110,15 @@ static void decode_layer_data(xmlNode *data_node, TILED_MAP_LAYER *layer)
 			/*	printf("layer dimensions: %dx%d, data length = %d\n", 
 						layer->width, layer->height, len); */
 
-			fclose(ftmpsrc);
-			fclose(ftmpdest);
+			al_fclose(datasrc);
+			al_fclose(datadest);
 			al_free(data);
 		}
 		else {
 			// TODO: verify that this still works
-			int i;
+			gint i;
 			for (i = 0; i<rawlen; i += 4) {
-				int tileid = 0;
+				gint tileid = 0;
 				tileid |= rawdata[i];
 				tileid |= rawdata[i+1] << 8;
 				tileid |= rawdata[i+2] << 16;
@@ -130,7 +131,7 @@ static void decode_layer_data(xmlNode *data_node, TILED_MAP_LAYER *layer)
 		g_free(rawdata);
 	}
 	else if (!strcmp(encoding, "csv")) {
-		int i;
+		gint i;
 		for (i = 0; i<datalen; i++) {
 			char *id = strtok((i == 0 ? str : NULL), ",");
 			layer->data[i] = atoi(id);
@@ -158,7 +159,7 @@ static void cache_tile_list(TILED_MAP *map)
 			TILED_MAP_TILE *tile = (TILED_MAP_TILE*)tile_item->data;
 			tile_item = g_slist_next(tile_item);
 			// associate the tile's id with its TILED_TILE struct
-			g_hash_table_insert(map->tiles, (gpointer)tile->id, tile);
+			g_hash_table_insert(map->tiles, GINT_TO_POINTER(tile->id), tile);
 		}
 	}
 }
@@ -361,16 +362,16 @@ TILED_MAP *al_open_map(const char *dir, const char *filename)
 					}
 
 					// TODO: add a destructor?
-					g_hash_table_insert(map->tiles, (gpointer)tile->id, tile);
+					g_hash_table_insert(map->tiles, GINT_TO_POINTER(tile->id), tile);
 				}
 
 				// create this tile's bitmap if it hasn't been yet
 				if (!tile->bitmap) {
 					TILED_MAP_TILESET *tileset = tile->tileset;
-					int id = tile->id - tileset->firstgid;
-					int width = tileset->width / tileset->tilewidth;
-					int x = (id % width) * tileset->tilewidth;
-					int y = (id / width) * tileset->tileheight;
+					gint id = tile->id - tileset->firstgid;
+					gint width = tileset->width / tileset->tilewidth;
+					gint x = (id % width) * tileset->tilewidth;
+					gint y = (id / width) * tileset->tileheight;
 					tile->bitmap = al_create_sub_bitmap(
 							tileset->bitmap,
 							x, y,

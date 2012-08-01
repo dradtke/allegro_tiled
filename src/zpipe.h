@@ -18,6 +18,7 @@
 #ifndef _ZPIPE_H
 #define _ZPIPE_H
 
+#include <allegro5/allegro.h>
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -35,7 +36,7 @@
 
 #define CHUNK 16384
 
-int inf(FILE *source, FILE *dest);
+int inf(ALLEGRO_FILE *source, ALLEGRO_FILE *dest);
 void zerr(int ret);
 
 #endif
