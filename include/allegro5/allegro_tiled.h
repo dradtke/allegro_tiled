@@ -19,8 +19,6 @@
 #define ALLEGRO_TILED_H
 
 #include <allegro5/allegro.h>
-#include <allegro5/internal/aintern_list.h>
-#include <allegro5/internal/aintern_vector.h>
 #include <glib.h>
 
 //{{{ map structs
