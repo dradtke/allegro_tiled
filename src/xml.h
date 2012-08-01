@@ -22,6 +22,7 @@
 #include <allegro5/allegro_tiled.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
+#include <glib.h>
 
 GSList *get_children_for_name(xmlNode *parent, char *name);
 xmlNode *get_first_child_for_name(xmlNode *parent, char *name);

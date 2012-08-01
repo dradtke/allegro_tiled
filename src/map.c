@@ -95,6 +95,7 @@ TILED_MAP_TILE *al_get_tile_for_id(TILED_MAP *map, char id)
 
 /*
  * Get a property from a tile.
+ * TODO: switch the property list to a hash table or something
  */
 char *al_get_tile_property(TILED_MAP_TILE *tile, char *name, char *def)
 {
@@ -115,6 +116,7 @@ char *al_get_tile_property(TILED_MAP_TILE *tile, char *name, char *def)
 
 /*
  * Get a property from an object.
+ * TODO: switch the property list to a hash table or something
  */
 char *al_get_object_property(TILED_OBJECT *object, char *name, char *def)
 {
@@ -133,6 +135,22 @@ char *al_get_object_property(TILED_OBJECT *object, char *name, char *def)
 	return def;
 }
 
+/*
+ * Accessors.
+ */
+int al_map_get_pixel_width(TILED_MAP *map)
+{
+	return map->pixel_width;
+}
+
+int al_map_get_pixel_height(TILED_MAP *map)
+{
+	return map->pixel_height;
+}
+
+/*
+ * Destructors.
+ */
 static void _al_free_property(gpointer data)
 {
 	TILED_PROPERTY *prop = (TILED_PROPERTY*)data;

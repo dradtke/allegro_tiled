@@ -105,6 +105,8 @@ int main(int argc, char *argv[])
 
 	// Parse the map
 	map = al_open_map(MAP_FOLDER, "level1.tmx");
+	int map_total_width = al_map_get_pixel_width(map);
+	int map_total_height = al_map_get_pixel_height(map);
 
 	// Draw the map
 	al_clear_to_color(al_map_rgb(0, 0, 0));
@@ -130,8 +132,8 @@ int main(int argc, char *argv[])
 					al_get_keyboard_state(&keyboard_state);
 					if (al_key_down(&keyboard_state, ALLEGRO_KEY_RIGHT)) {
 						map_x += 5;
-						if (map_x > (map->pixel_width - screen_width))
-							map_x = map->pixel_width - screen_width;
+						if (map_x > (map_total_width - screen_width))
+							map_x = map_total_width - screen_width;
 					}
 					else if (al_key_down(&keyboard_state, ALLEGRO_KEY_LEFT)) {
 						map_x -= 5;
@@ -145,8 +147,8 @@ int main(int argc, char *argv[])
 					}
 					else if (al_key_down(&keyboard_state, ALLEGRO_KEY_DOWN)) {
 						map_y += 5;
-						if (map_y > (map->pixel_height - screen_height))
-							map_y = map->pixel_height - screen_height;
+						if (map_y > (map_total_height - screen_height))
+							map_y = map_total_height - screen_height;
 					}
 
 					redraw = true;

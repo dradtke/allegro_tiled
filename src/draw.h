@@ -21,6 +21,7 @@
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_tiled.h>
 #include <stdio.h>
+#include "data.h"
 #include "map.h"
 
 void al_draw_map(TILED_MAP *map, float x, float y, int screen_width, int screen_height);
