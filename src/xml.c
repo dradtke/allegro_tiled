@@ -13,6 +13,10 @@
  * Lesser General Public License for more details.
  *
  * For more information, visit http://www.gnu.org/copyleft
+ *
+ *                               ---
+ *
+ * Helper methods for parsing XML with libxml2.
  */
 
 #include "xml.h"

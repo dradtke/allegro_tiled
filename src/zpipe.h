@@ -13,40 +13,29 @@
  * Lesser General Public License for more details.
  *
  * For more information, visit http://www.gnu.org/copyleft
- *
- *                               ---
- *
- * Miscellaneous utility methods.
  */
 
-#include "util.h"
+#ifndef _ZPIPE_H
+#define _ZPIPE_H
 
-/*
- * Trims whitespace from before and after a string.
- */
-char *trim(char *str)
-{
-	char *end;
+#include <assert.h>
+#include <stdio.h>
+#include <string.h>
+#include <zlib.h>
 
-	while (isspace(*str)) str++;
-	if (*str == 0) return str;
+// Hack to make it work on Windows
+// ???: Is this actually needed?
+#if defined(MSDOS) || defined(OS2) || defined(WIN32) || defined(__CYGWIN__)
+#  include <fcntl.h>
+#  include <io.h>
+#  define SET_BINARY_MODE(file) setmode(fileno(file), O_BINARY)
+#else
+#  define SET_BINARY_MODE(file)
+#endif
 
-	end = str + strlen(str) - 1;
-	while (end > str && isspace(*end)) end--;
+#define CHUNK 16384
 
-	*(end+1) = '\0';
-	return str;
-}
+int inf(FILE *source, FILE *dest);
+void zerr(int ret);
 
-/*
- * Returns a copy of a string.
- * Used to keep XML data that would otherwise be freed.
- */
-char *copy(const char *src)
-{
-	int len = strlen(src);
-	char *result = (char *)al_malloc(sizeof(char) * (len+1));
-	strcpy(result, src);
-	return result;
-}
-
+#endif

@@ -13,6 +13,10 @@
  * Lesser General Public License for more details.
  *
  * For more information, visit http://www.gnu.org/copyleft
+ *
+ *                               ---
+ *
+ * Various map-related utility methods.
  */
 
 #include "map.h"

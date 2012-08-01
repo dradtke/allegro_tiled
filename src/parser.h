@@ -19,10 +19,11 @@
 #define _PARSER_H
 
 #include <allegro5/allegro_tiled.h>
+#include <glib.h>
 #include "map.h"
 #include "util.h"
 #include "xml.h"
-#include "zlib.h"
+#include "zpipe.h"
 
 #define MALLOC(x) (x *)al_malloc(sizeof(x))
 

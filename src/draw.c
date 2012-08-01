@@ -13,6 +13,10 @@
  * Lesser General Public License for more details.
  *
  * For more information, visit http://www.gnu.org/copyleft
+ *
+ *                               ---
+ *
+ * Helper methods for drawing the parsed map.
  */
 
 #include "draw.h"

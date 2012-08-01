@@ -13,6 +13,10 @@
  * Lesser General Public License for more details.
  *
  * For more information, visit http://www.gnu.org/copyleft
+ *
+ *                               ---
+ *
+ * Methods for reading and parsing map files.
  */
 
 #include "parser.h"
@@ -53,6 +57,11 @@ static void decode_layer_data(xmlNode *data_node, TILED_MAP_LAYER *layer)
 		}
 	}
 	else if (!strcmp(encoding, "base64")) {
+		// decompress
+		gsize rawlen;
+		guchar *rawdata = g_base64_decode(str, &rawlen);
+
+		// check the compression
 		char *compression = get_xml_attribute(data_node, "compression");
 		if (compression != NULL) {
 			if (strcmp(compression, "zlib") && strcmp(compression, "gzip")) {
@@ -60,71 +69,63 @@ static void decode_layer_data(xmlNode *data_node, TILED_MAP_LAYER *layer)
 				return;
 			}
 
-			int flen = 0;
-			char *data = NULL;
-			FILE *tmp = tmpfile();
+			// set up files used by zlib to decompress the data
+			char *tmpsrc = tmpnam(NULL);
+			FILE *ftmpsrc = fopen(tmpsrc, "w+b");
+			fwrite(rawdata, sizeof(guchar), rawlen, ftmpsrc);
+			ftmpsrc = freopen(tmpsrc, "r", ftmpsrc);
+			FILE *ftmpdest = tmpfile();
 
-			decompress(str, tmp);
-			fflush(tmp);
+			// decompress and print an error if it failed
+			int status = inf(ftmpsrc, ftmpdest);
+			if (status)
+				zerr(status);
 
-			// get file length
-			flen = ftell(tmp);
+			// flush data and get the file length
+			fflush(ftmpdest);
+			int len = ftell(ftmpdest);
 
 			// read in the file
-			rewind(tmp);
-			data = (char *)calloc(flen, sizeof(char));
-			if (fread(data, sizeof(char), flen, tmp) < flen) {
+			rewind(ftmpdest);
+			char *data = (char *)calloc(len, sizeof(char));
+			if (fread(data, sizeof(char), len, ftmpdest) != len) {
 				fprintf(stderr, "Error: failed to read in map data\n");
 				return;
 			}
 
 			// every tile id takes 4 bytes
-			int i, j;
-			j = 0;
-			for (i = 0; i<datalen; i++) {
+			int i;
+			for (i = 0; i<len; i += 4) {
 				int tileid = 0;
-				tileid |= data[j];
-				tileid |= data[j+1] << 8;
-				tileid |= data[j+2] << 16;
-				tileid |= data[j+3] << 24;
+				tileid |= data[i];
+				tileid |= data[i+1] << 8;
+				tileid |= data[i+2] << 16;
+				tileid |= data[i+3] << 24;
 
-				layer->data[j/4] = tileid;
-				j += 4;
+				layer->data[i/4] = tileid;
 			}
 			//	printf("layer dimensions: %dx%d, data length = %d\n", 
-			//			layer->width, layer->height, flen);
+			//			layer->width, layer->height, len);
 
-			fclose(tmp);
+			fclose(ftmpsrc);
+			fclose(ftmpdest);
 			al_free(data);
 		}
 		else {
-			// uncompressed base64
-			unsigned char in[CHUNK];
-			unsigned char debased[CHUNK];
-			int done = 0;
-			int i = 0;
-			while (done < datalen) {
-				int len = strlen(str + done);
-				if (len > CHUNK)
-					len = CHUNK;
+			// TODO: verify that this still works
+			int i;
+			for (i = 0; i<rawlen; i += 4) {
+				int tileid = 0;
+				tileid |= rawdata[i];
+				tileid |= rawdata[i+1] << 8;
+				tileid |= rawdata[i+2] << 16;
+				tileid |= rawdata[i+3] << 24;
 
-				strncpy((char *)in, str + done, len);
-				int avail = UnBase64(debased, in, len) / 4;
-				done += avail;
-
-				int j;
-				for (j = 0; j<avail; j++) {
-					int tileid = 0;
-					tileid |= debased[i];
-					tileid |= debased[i+1] << 8;
-					tileid |= debased[i+2] << 16;
-					tileid |= debased[i+3] << 24;
-
-					layer->data[i/4] = tileid;
-					i += 4;
-				}
+				layer->data[i/4] = tileid;
 			}
 		}
+
+		g_free(rawdata);
 	}
 	else if (!strcmp(encoding, "csv")) {
 		int i;
