@@ -27,6 +27,7 @@ Make sure the following dependencies are installed:
  * allegro\_image
  * xml2
  * zlib
+ * glib
 
 Then simply run `make` in the root folder to compile it.
 
