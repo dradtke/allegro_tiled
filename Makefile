@@ -1,6 +1,6 @@
 CC  	:= clang
 LIBNAME := allegro_tiled
-PKGS	:= allegro-5.0 allegro_image-5.0 libxml-2.0 zlib
+PKGS	:= allegro-5.0 allegro_image-5.0 libxml-2.0 zlib glib-2.0
 CFLAGS  := -g -fPIC -Wall -Iinclude `pkg-config --cflags $(PKGS)`
 LIBS    := `pkg-config --libs $(PKGS)`
 
