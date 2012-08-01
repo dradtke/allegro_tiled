@@ -23,7 +23,7 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
-_AL_LIST *get_children_for_name(xmlNode *parent, char *name);
+GSList *get_children_for_name(xmlNode *parent, char *name);
 xmlNode *get_first_child_for_name(xmlNode *parent, char *name);
 char *get_xml_attribute(xmlNode *node, char *name);
 

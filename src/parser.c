@@ -24,7 +24,6 @@
 /*
  * Small workaround for Allegro's list creation.
  * _al_list_create_static() doesn't work for lists of size 0.
- */
 static inline _AL_LIST *create_list(size_t capacity)
 {
 	if (capacity == 0) {
@@ -33,6 +32,7 @@ static inline _AL_LIST *create_list(size_t capacity)
 		return _al_list_create_static(capacity);
 	}
 }
+*/
 
 /*
  * Decodes map data from a <data> node
@@ -46,15 +46,17 @@ static void decode_layer_data(xmlNode *data_node, TILED_MAP_LAYER *layer)
 	char *encoding = get_xml_attribute(data_node, "encoding");
 	if (!encoding) {
 		int i = 0;
-		_AL_LIST *tiles = get_children_for_name(data_node, "tile");
-		_AL_LIST_ITEM *tile_item = _al_list_front(tiles);
+		GSList *tiles = get_children_for_name(data_node, "tile");
+		GSList *tile_item = tiles;
 		while (tile_item) {
-			xmlNode *tile_node = (xmlNode*)_al_list_item_data(tile_item);
-			tile_item = _al_list_next(tiles, tile_item);
+			xmlNode *tile_node = (xmlNode*)tile_item->data;
+			tile_item = g_slist_next(tile_item);
 			char *gid = get_xml_attribute(tile_node, "gid");
 			layer->data[i] = atoi(gid);
 			i++;
 		}
+
+		g_slist_free(tiles);
 	}
 	else if (!strcmp(encoding, "base64")) {
 		// decompress
@@ -104,8 +106,8 @@ static void decode_layer_data(xmlNode *data_node, TILED_MAP_LAYER *layer)
 
 				layer->data[i/4] = tileid;
 			}
-			//	printf("layer dimensions: %dx%d, data length = %d\n", 
-			//			layer->width, layer->height, len);
+			/*	printf("layer dimensions: %dx%d, data length = %d\n", 
+						layer->width, layer->height, len); */
 
 			fclose(ftmpsrc);
 			fclose(ftmpdest);
@@ -145,19 +147,18 @@ static void decode_layer_data(xmlNode *data_node, TILED_MAP_LAYER *layer)
  */
 static void cache_tile_list(TILED_MAP *map)
 {
-	map->tiles = create_list(0);
-	_AL_LIST_ITEM *tileset_item = _al_list_front(map->tilesets);
+	map->tiles = g_hash_table_new(NULL, NULL);
+	GSList *tileset_item = map->tilesets;
 
 	while (tileset_item != NULL) {
-		TILED_MAP_TILESET *tileset = _al_list_item_data(tileset_item);
-		tileset_item = _al_list_next(map->tilesets, tileset_item);
-		_AL_LIST_ITEM *tile_item = _al_list_front(tileset->tiles);
+		TILED_MAP_TILESET *tileset = (TILED_MAP_TILESET*)tileset_item->data;
+		tileset_item = g_slist_next(tileset_item);
+		GSList *tile_item = tileset->tiles;
 		while (tile_item != NULL) {
-			TILED_MAP_TILE *tile = _al_list_item_data(tile_item);
-			tile_item = _al_list_next(tileset->tiles, tile_item);
-			// this is a cache, so don't specify a destructor
-			// it will get cleaned up with the associated tileset
-			_al_list_push_back(map->tiles, tile);
+			TILED_MAP_TILE *tile = (TILED_MAP_TILE*)tile_item->data;
+			tile_item = g_slist_next(tile_item);
+			// associate the tile's id with its TILED_TILE struct
+			g_hash_table_insert(map->tiles, (gpointer)tile->id, tile);
 		}
 	}
 }
@@ -165,19 +166,20 @@ static void cache_tile_list(TILED_MAP *map)
 /*
  * Parse a <properties> node into a list of property objects.
  */
-static _AL_LIST *parse_properties(xmlNode *node)
+static GSList *parse_properties(xmlNode *node)
 {
 	xmlNode *properties_node = get_first_child_for_name(node, "properties");
-	if (!properties_node)
-		return _al_list_create();
+	if (!properties_node) {
+		return NULL;
+	}
 
-	_AL_LIST *properties_list = get_children_for_name(properties_node, "property");
-	_AL_LIST *props = create_list(_al_list_size(properties_list));
+	GSList *properties_list = get_children_for_name(properties_node, "property");
+	GSList *props = NULL;
 
-	_AL_LIST_ITEM *property_item = _al_list_front(properties_list);
+	GSList *property_item = properties_list;
 	while (property_item) {
-		xmlNode *property_node = _al_list_item_data(property_item);
-		property_item = _al_list_next(properties_list, property_item);
+		xmlNode *property_node = (xmlNode*)property_item->data;
+		property_item = g_slist_next(property_item);
 
 		TILED_PROPERTY *prop = MALLOC(TILED_PROPERTY);
 		prop->name = copy(get_xml_attribute(property_node, "name"));
@@ -185,15 +187,14 @@ static _AL_LIST *parse_properties(xmlNode *node)
 		char *value = get_xml_attribute(property_node, "value");
 		if (!value) {
 			value = (char*)xmlNodeGetContent(property_node);
-			printf("found property contained inside element: name = %s, value = %s\n",
-					prop->name, value);
 		}
 
 		prop->value = copy(value);
-		_al_list_push_back_ex(props, prop, dtor_prop);
+		// TODO: add a destructor
+		props = g_slist_prepend(props, prop);
 	}
 
-	_al_list_destroy(properties_list);
+	g_slist_free(properties_list);
 
 	return props;
 }
@@ -252,13 +253,13 @@ TILED_MAP *al_open_map(const char *dir, const char *filename)
 	//map->bounds->bottom = map->height * map->tile_height;
 
 	// Get the tilesets
-	_AL_LIST *tilesets = get_children_for_name(root, "tileset");
-	map->tilesets = create_list(_al_list_size(tilesets));
+	GSList *tilesets = get_children_for_name(root, "tileset");
+	map->tilesets = NULL;
 
-	_AL_LIST_ITEM *tileset_item = _al_list_front(tilesets);
+	GSList *tileset_item = tilesets;
 	while (tileset_item) {
-		xmlNode *tileset_node = (xmlNode*)_al_list_item_data(tileset_item);
-		tileset_item = _al_list_next(tilesets, tileset_item);
+		xmlNode *tileset_node = (xmlNode*)tileset_item->data;
+		tileset_item = g_slist_next(tileset_item);
 
 		TILED_MAP_TILESET *tileset = MALLOC(TILED_MAP_TILESET);
 		tileset->firstgid = atoi(get_xml_attribute(tileset_node, "firstgid"));
@@ -274,13 +275,13 @@ TILED_MAP *al_open_map(const char *dir, const char *filename)
 		tileset->bitmap = al_load_bitmap(tileset->source);
 
 		// Get this tileset's tiles
-		_AL_LIST *tiles = get_children_for_name(tileset_node, "tile");
-		tileset->tiles = create_list(_al_list_size(tiles));
+		GSList *tiles = get_children_for_name(tileset_node, "tile");
+		tileset->tiles = NULL;
 
-		_AL_LIST_ITEM *tile_item = _al_list_front(tiles);
+		GSList *tile_item = tiles;
 		while (tile_item) {
-			xmlNode *tile_node = (xmlNode*)_al_list_item_data(tile_item);
-			tile_item = _al_list_next(tiles, tile_item);
+			xmlNode *tile_node = (xmlNode*)tile_item->data;
+			tile_item = g_slist_next(tile_item);
 
 			TILED_MAP_TILE *tile = MALLOC(TILED_MAP_TILE);
 			tile->id = tileset->firstgid + atoi(get_xml_attribute(tile_node, "id"));
@@ -290,26 +291,31 @@ TILED_MAP *al_open_map(const char *dir, const char *filename)
 			// Get this tile's properties
 			tile->properties = parse_properties(tile_node);
 
-			_al_list_push_back_ex(tileset->tiles, tile, dtor_map_tile);
+			// TODO: add a destructor
+			tileset->tiles = g_slist_prepend(tileset->tiles, tile);
 		}
 
-		_al_list_destroy(tiles);
-		_al_list_push_back_ex(map->tilesets, tileset, dtor_map_tileset);
+		g_slist_free(tiles);
+		//tileset->tiles = g_slist_reverse(tileset->tiles);
+
+		// TODO: add a destructor
+		map->tilesets = g_slist_prepend(map->tilesets, tileset);
 	}
 
-	_al_list_destroy(tilesets);
+	g_slist_free(tilesets);
+	//map->tilesets = g_slist_reverse(map->tilesets);
 
 	// Create the map's master list of tiles
 	cache_tile_list(map);
 
 	// Get the layers
-	_AL_LIST *layers = get_children_for_name(root, "layer");
-	map->layers = create_list(_al_list_size(layers));
+	GSList *layers = get_children_for_name(root, "layer");
+	map->layers = NULL;
 
-	_AL_LIST_ITEM *layer_item = _al_list_front(layers);
+	GSList *layer_item = layers;
 	while (layer_item) {
-		xmlNode *layer_node = _al_list_item_data(layer_item);
-		layer_item = _al_list_next(layers, layer_item);
+		xmlNode *layer_node = (xmlNode*)layer_item->data;
+		layer_item = g_slist_next(layer_item);
 
 		TILED_MAP_LAYER *layer = MALLOC(TILED_MAP_LAYER);
 		layer->name = copy(get_xml_attribute(layer_node, "name"));
@@ -338,15 +344,15 @@ TILED_MAP *al_open_map(const char *dir, const char *filename)
 					// wasn't defined in the map file, presumably because it had no properties
 					tile = MALLOC(TILED_MAP_TILE);
 					tile->id = id;
-					tile->properties = _al_list_create();
+					tile->properties = NULL;
 					tile->tileset = NULL;
 					tile->bitmap = NULL;
 
 					// locate its tilemap
-					_AL_LIST_ITEM *tileset_item = _al_list_front(map->tilesets);
+					GSList *tileset_item = map->tilesets;
 					while (tileset_item) {
-						TILED_MAP_TILESET *tileset = _al_list_item_data(tileset_item);
-						tileset_item = _al_list_next(map->tilesets, tileset_item);
+						TILED_MAP_TILESET *tileset = (TILED_MAP_TILESET*)tileset_item->data;
+						tileset_item = g_slist_next(tileset_item);
 						if (tileset->firstgid <= id) {
 							if (!tile->tileset || tileset->firstgid > tile->tileset->firstgid) {
 								tile->tileset = tileset;
@@ -354,7 +360,8 @@ TILED_MAP *al_open_map(const char *dir, const char *filename)
 						}
 					}
 
-					_al_list_push_back_ex(map->tiles, tile, dtor_map_tile);
+					// TODO: add a destructor?
+					g_hash_table_insert(map->tiles, (gpointer)tile->id, tile);
 				}
 
 				// create this tile's bitmap if it hasn't been yet
@@ -373,19 +380,21 @@ TILED_MAP *al_open_map(const char *dir, const char *filename)
 			}
 		}
 
-		_al_list_push_back_ex(map->layers, layer, dtor_map_layer);
+		map->layers = g_slist_prepend(map->layers, layer);
 	}
 
-	_al_list_destroy(layers);
+	g_slist_free(layers);
+	//map->layers = g_slist_reverse(map->layers);
 
 	// Get the objects
-	map->object_groups = _al_list_create();
-	map->objects = _al_list_create();
-	_AL_LIST *object_groups = get_children_for_name(root, "objectgroup");
-	_AL_LIST_ITEM *group_item = _al_list_front(object_groups);
+	map->object_groups = NULL;
+	map->objects = NULL;
+	GSList *object_groups = get_children_for_name(root, "objectgroup");
+
+	GSList *group_item = object_groups;
 	while (group_item) {
-		xmlNode *group_node = _al_list_item_data(group_item);
-		group_item = _al_list_next(object_groups, group_item);
+		xmlNode *group_node = (xmlNode*)group_item->data;
+		group_item = g_slist_next(group_item);
 
 		TILED_OBJECT_GROUP *group = MALLOC(TILED_OBJECT_GROUP);
 		group->name = copy(get_xml_attribute(group_node, "name"));
@@ -396,12 +405,12 @@ TILED_MAP *al_open_map(const char *dir, const char *filename)
 		char *group_visible = get_xml_attribute(group_node, "visible");
 		group->visible = (group_visible ? atoi(group_visible) : 1);
 
-		_AL_LIST *objects = get_children_for_name(group_node, "object");
+		GSList *objects = get_children_for_name(group_node, "object");
 
-		_AL_LIST_ITEM *object_item = _al_list_front(objects);
+		GSList *object_item = objects;
 		while (object_item) {
-			xmlNode *object_node = _al_list_item_data(object_item);
-			object_item = _al_list_next(objects, object_item);
+			xmlNode *object_node = (xmlNode*)object_item->data;
+			object_item = g_slist_next(object_item);
 
 			TILED_OBJECT *object = MALLOC(TILED_OBJECT);
 			object->group = group;
@@ -428,14 +437,16 @@ TILED_MAP *al_open_map(const char *dir, const char *filename)
 			// Get the object's properties
 			object->properties = parse_properties(object_node);
 
-			_al_list_push_back_ex(map->objects, object, dtor_map_object);
+			// TODO: add a destructor
+			map->objects = g_slist_prepend(map->objects, object);
 		}
 
-		_al_list_push_back_ex(map->object_groups, group, dtor_map_object_group);
-		_al_list_destroy(objects);
+		// TODO: add a destructor
+		map->object_groups = g_slist_prepend(map->object_groups, group);
+		g_slist_free(objects);
 	}
 
-	_al_list_destroy(object_groups);
+	g_slist_free(object_groups);
 
 	xmlFreeDoc(doc);
 	al_update_backbuffer(map);

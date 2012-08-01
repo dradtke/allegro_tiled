@@ -34,11 +34,10 @@ void al_draw_map(TILED_MAP *map, float x, float y, int screen_width, int screen_
  */
 void al_draw_objects(TILED_MAP *map)
 {
-	_AL_LIST *objects = map->objects;
-	_AL_LIST_ITEM *object_item = _al_list_front(objects);
-	while (object_item) {
-		TILED_OBJECT *object = _al_list_item_data(object_item);
-		object_item = _al_list_next(objects, object_item);
+	GSList *objects = map->objects;
+	while (objects) {
+		TILED_OBJECT *object = (TILED_OBJECT*)objects->data;
+		objects = g_slist_next(objects);
 		if (object->bitmap) {
 			// TODO: flip flags?
 			int flags = 0;
@@ -58,10 +57,10 @@ void al_update_backbuffer(TILED_MAP *map)
 	al_set_target_bitmap(map->backbuffer);
 
 	if (!strcmp(map->orientation, "orthogonal")) {
-		_AL_LIST_ITEM *layer_item = _al_list_front(map->layers);
-		while (layer_item != NULL) {
-			TILED_MAP_LAYER *layer = _al_list_item_data(layer_item);
-			layer_item = _al_list_next(map->layers, layer_item);
+		GSList *layers = map->layers;
+		while (layers) {
+			TILED_MAP_LAYER *layer = (TILED_MAP_LAYER*)layers->data;
+			layers = g_slist_next(layers);
 
 			int i, j;
 			for (i = 0; i<layer->height; i++) {

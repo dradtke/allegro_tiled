@@ -25,9 +25,9 @@
  * Given a parent XML node and the name of all desired children,
  * returns a list of all children with that name
  */
-_AL_LIST *get_children_for_name(xmlNode *parent, char *name)
+GSList *get_children_for_name(xmlNode *parent, char *name)
 {
-	_AL_LIST *list = _al_list_create();
+	GSList *list = NULL;
 	
 	if (!parent->children)
 		return list;
@@ -35,7 +35,7 @@ _AL_LIST *get_children_for_name(xmlNode *parent, char *name)
 	xmlNode *child = parent->children->next;
 	while (child) {
 		if (!strcmp((const char*)child->name, name)) {
-			_al_list_push_back(list, child);
+			list = g_slist_prepend(list, child);
 		}
 
 		child = child->next;

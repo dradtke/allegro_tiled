@@ -21,6 +21,7 @@
 #include <allegro5/allegro.h>
 #include <allegro5/internal/aintern_list.h>
 #include <allegro5/internal/aintern_vector.h>
+#include <glib.h>
 
 //{{{ map structs
 /*
@@ -43,12 +44,11 @@ typedef struct
 	int pixel_width;		// width of the map in pixels
 	int pixel_height;		// height of the map in pixels
 	char *orientation;		// "orthogonal" or ... isometric?
-	//TILED_MAP_BOUNDS *bounds;	// map boundaries
-	_AL_LIST *tilesets;		// list of tilesets
-	_AL_LIST *layers;		// list of layers
-	_AL_LIST *tiles;		// full list of tiles
-	_AL_LIST *object_groups;// list of object groups
-	_AL_LIST *objects;		// list of objects
+	GSList *tilesets;		// list of tilesets
+	GSList *layers;			// list of layers
+	GSList *object_groups;	// list of object groups
+	GSList *objects;		// list of objects
+	GHashTable *tiles;		// full list of tiles
 	ALLEGRO_BITMAP *backbuffer;	// back buffer
 }
 TILED_MAP;
@@ -75,7 +75,7 @@ typedef struct
 	char *name;			// name
 	char *source;			// path to this tileset's image source
 	ALLEGRO_BITMAP *bitmap;		// image for this tileset
-	_AL_LIST *tiles;		// list of tiles
+	GSList *tiles;		// list of tiles
 }
 TILED_MAP_TILESET;
 
@@ -83,7 +83,7 @@ typedef struct
 {
 	int id;				// the tile id
 	TILED_MAP_TILESET *tileset;	// pointer to its tileset
-	_AL_LIST *properties;		// tile properties
+	GSList *properties;		// tile properties
 	ALLEGRO_BITMAP *bitmap; 	// this tile's image
 }
 TILED_MAP_TILE;
@@ -113,7 +113,7 @@ typedef struct
 	int width, height;
 	bool visible;
 	ALLEGRO_BITMAP *bitmap;
-	_AL_LIST *properties;
+	GSList *properties;
 }
 TILED_OBJECT;
 //}}}
