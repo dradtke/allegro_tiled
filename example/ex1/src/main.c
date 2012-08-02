@@ -105,8 +105,8 @@ int main(int argc, char *argv[])
 
 	// Parse the map
 	map = al_open_map(MAP_FOLDER, "level1.tmx");
-	int map_total_width = al_map_get_pixel_width(map);
-	int map_total_height = al_map_get_pixel_height(map);
+	int map_total_width = al_map_get_width(map) * al_map_get_tile_width(map);
+	int map_total_height = al_map_get_height(map) * al_map_get_tile_height(map);
 
 	// Draw the map
 	al_clear_to_color(al_map_rgb(0, 0, 0));
