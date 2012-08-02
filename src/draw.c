@@ -24,7 +24,7 @@
 /*
  * Draw the map's backbuffer to the target bitmap.
  */
-void al_draw_map(TILED_MAP *map, float x, float y, int screen_width, int screen_height)
+void al_draw_map(ALLEGRO_MAP *map, float x, float y, int screen_width, int screen_height)
 {
 	al_draw_bitmap_region(map->backbuffer, x, y, screen_width, screen_height, 0, 0, 0);
 }
@@ -32,11 +32,11 @@ void al_draw_map(TILED_MAP *map, float x, float y, int screen_width, int screen_
 /*
  * Draw all defined objects to the target bitmap.
  */
-void al_draw_objects(TILED_MAP *map)
+void al_draw_objects(ALLEGRO_MAP *map)
 {
 	GSList *objects = map->objects;
 	while (objects) {
-		TILED_OBJECT *object = (TILED_OBJECT*)objects->data;
+		ALLEGRO_MAP_OBJECT *object = (ALLEGRO_MAP_OBJECT*)objects->data;
 		objects = g_slist_next(objects);
 		if (object->bitmap) {
 			// TODO: flip flags?
@@ -50,7 +50,7 @@ void al_draw_objects(TILED_MAP *map)
  * Update the map's backbuffer. This should be done whenever a tile
  * needs to change in appearance.
  */
-void al_update_backbuffer(TILED_MAP *map)
+void al_update_backbuffer(ALLEGRO_MAP *map)
 {
 	ALLEGRO_BITMAP *orig_backbuffer = al_get_target_bitmap();
 	map->backbuffer = al_create_bitmap(map->pixel_width, map->pixel_height);
@@ -59,14 +59,14 @@ void al_update_backbuffer(TILED_MAP *map)
 	if (!strcmp(map->orientation, "orthogonal")) {
 		GSList *layers = map->layers;
 		while (layers) {
-			TILED_MAP_LAYER *layer = (TILED_MAP_LAYER*)layers->data;
+			ALLEGRO_MAP_LAYER *layer = (ALLEGRO_MAP_LAYER*)layers->data;
 			layers = g_slist_next(layers);
 
 			int i, j;
 			for (i = 0; i<layer->height; i++) {
 				for (j = 0; j<layer->width; j++) {
 					char id = al_get_single_tile(layer, j, i);
-					TILED_MAP_TILE *tile = al_get_tile_for_id(map, id);
+					ALLEGRO_MAP_TILE *tile = al_get_tile_for_id(map, id);
 					if (!tile)
 						continue;
 

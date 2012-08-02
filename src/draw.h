@@ -24,8 +24,8 @@
 #include "data.h"
 #include "map.h"
 
-void al_draw_map(TILED_MAP *map, float x, float y, int screen_width, int screen_height);
-void al_draw_objects(TILED_MAP *map);
-void al_update_backbuffer(TILED_MAP *map);
+void al_draw_map(ALLEGRO_MAP *map, float x, float y, int screen_width, int screen_height);
+void al_draw_objects(ALLEGRO_MAP *map);
+void al_update_backbuffer(ALLEGRO_MAP *map);
 
 #endif

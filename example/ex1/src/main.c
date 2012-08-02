@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 	ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 	ALLEGRO_TIMER *timer = NULL;
 	ALLEGRO_KEYBOARD_STATE keyboard_state;
-	TILED_MAP *map;
+	ALLEGRO_MAP *map;
 
 	bool running = true;
 	bool redraw = true;

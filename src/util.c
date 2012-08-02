@@ -38,15 +38,3 @@ char *trim(char *str)
 	return str;
 }
 
-/*
- * Returns a copy of a string.
- * Used to keep XML data that would otherwise be freed.
- */
-char *copy(const char *src)
-{
-	int len = strlen(src);
-	char *result = (char *)al_malloc(sizeof(char) * (len+1));
-	strcpy(result, src);
-	return result;
-}
-

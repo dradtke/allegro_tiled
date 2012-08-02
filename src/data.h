@@ -5,7 +5,7 @@
 #include <allegro5/allegro_tiled.h>
 #include <glib.h>
 
-struct _TILED_MAP
+struct _ALLEGRO_MAP
 {
 	int x, y;                   // map position
 	int width, height;          // dimensions in tiles
@@ -22,7 +22,7 @@ struct _TILED_MAP
     ALLEGRO_BITMAP *backbuffer; // back buffer
 };
 
-struct _TILED_MAP_LAYER
+struct _ALLEGRO_MAP_LAYER
 {
 	int width;                  // width in tiles
 	int height;                 // height in tiles
@@ -31,10 +31,10 @@ struct _TILED_MAP_LAYER
 	int visible;                // 0 for hidden, 1 for visible
 	char *name;                 // name of the layer
 	char *data;                 // decoded data
-	TILED_MAP *map;             // reference to the map
+	ALLEGRO_MAP *map;             // reference to the map
 };
 
-struct _TILED_MAP_TILESET
+struct _ALLEGRO_MAP_TILESET
 {
 	int firstgid;               // first global id
 	int tilewidth;              // width of each tile
@@ -46,21 +46,15 @@ struct _TILED_MAP_TILESET
 	GSList *tiles;              // list of tiles
 };
 
-struct _TILED_MAP_TILE
+struct _ALLEGRO_MAP_TILE
 {
-	int id;                     // the tile id
-	TILED_MAP_TILESET *tileset; // pointer to its tileset
-	GSList *properties;         // tile properties
-	ALLEGRO_BITMAP *bitmap;     // this tile's image
+	int id;                       // the tile id
+	ALLEGRO_MAP_TILESET *tileset; // pointer to its tileset
+	GHashTable *properties;       // tile properties
+	ALLEGRO_BITMAP *bitmap;       // this tile's image
 };
 
-struct _TILED_PROPERTY
-{
-	char *name;                 // the property's name
-	char *value;                // the property's value
-};
-
-struct _TILED_OBJECT_GROUP
+struct _ALLEGRO_MAP_OBJECT_GROUP
 {
 	char *name;
 	// color?
@@ -68,16 +62,16 @@ struct _TILED_OBJECT_GROUP
 	bool visible;
 };
 
-struct _TILED_OBJECT
+struct _ALLEGRO_MAP_OBJECT
 {
-	TILED_OBJECT_GROUP *group;
+	ALLEGRO_MAP_OBJECT_GROUP *group;
 	char *name;
 	char *type;
 	int x, y;
 	int width, height;
 	bool visible;
 	ALLEGRO_BITMAP *bitmap;
-	GSList *properties;
+	GHashTable *properties;
 };
 
 #endif

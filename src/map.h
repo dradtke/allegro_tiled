@@ -27,15 +27,15 @@
 #define FLIPPED_VERTICALLY_FLAG		0x40000000
 #define FLIPPED_DIAGONALLY_FLAG		0x20000000
 
-char al_get_single_tile(TILED_MAP_LAYER *layer, int x, int y);
-char* al_get_tiles(TILED_MAP *map, int x, int y);
-bool flipped_horizontally(TILED_MAP_LAYER *layer, int x, int y);
-bool flipped_vertically(TILED_MAP_LAYER *layer, int x, int y);
-char *al_get_tile_property(TILED_MAP_TILE *tile, char *name, char *def);
-char *al_get_object_property(TILED_OBJECT *object, char *name, char *def);
+char al_get_single_tile(ALLEGRO_MAP_LAYER *layer, int x, int y);
+char* al_get_tiles(ALLEGRO_MAP *map, int x, int y);
+bool flipped_horizontally(ALLEGRO_MAP_LAYER *layer, int x, int y);
+bool flipped_vertically(ALLEGRO_MAP_LAYER *layer, int x, int y);
+char *al_get_tile_property(ALLEGRO_MAP_TILE *tile, char *name, char *def);
+char *al_get_object_property(ALLEGRO_MAP_OBJECT *object, char *name, char *def);
 
-int al_map_get_pixel_width(TILED_MAP *map);
-int al_map_get_pixel_height(TILED_MAP *map);
+int al_map_get_pixel_width(ALLEGRO_MAP *map);
+int al_map_get_pixel_height(ALLEGRO_MAP *map);
 
 void dtor_map_tile(void *value, void *user_data);
 void dtor_map_tileset(void *value, void *user_data);
