@@ -24,7 +24,6 @@ typedef struct _ALLEGRO_MAP                ALLEGRO_MAP;
 typedef struct _ALLEGRO_MAP_LAYER          ALLEGRO_MAP_LAYER;
 typedef struct _ALLEGRO_MAP_TILESET        ALLEGRO_MAP_TILESET;
 typedef struct _ALLEGRO_MAP_TILE           ALLEGRO_MAP_TILE;
-typedef struct _ALLEGRO_MAP_PROPERTY       ALLEGRO_MAP_PROPERTY;
 typedef struct _ALLEGRO_MAP_OBJECT_GROUP   ALLEGRO_MAP_OBJECT_GROUP;
 typedef struct _ALLEGRO_MAP_OBJECT         ALLEGRO_MAP_OBJECT;
 
