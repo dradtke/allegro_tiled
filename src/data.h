@@ -7,12 +7,9 @@
 
 struct _ALLEGRO_MAP
 {
-	int x, y;                   // map position
 	int width, height;          // dimensions in tiles
 	int tile_width;             // width of each tile in pixels
 	int tile_height;            // height of each tile in pixels
-	int pixel_width;            // width of the map in pixels
-	int pixel_height;           // height of the map in pixels
     char *orientation;          // "orthogonal" or ... isometric?
     GSList *tilesets;           // list of tilesets
     GSList *layers;             // list of layers
@@ -31,7 +28,7 @@ struct _ALLEGRO_MAP_LAYER
 	int visible;                // 0 for hidden, 1 for visible
 	char *name;                 // name of the layer
 	char *data;                 // decoded data
-	ALLEGRO_MAP *map;             // reference to the map
+	ALLEGRO_MAP *map;           // reference to the map
 };
 
 struct _ALLEGRO_MAP_TILESET

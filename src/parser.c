@@ -242,8 +242,6 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 	map->tile_width = atoi(get_xml_attribute(root, "tilewidth"));
 	map->tile_height = atoi(get_xml_attribute(root, "tileheight"));
 	map->orientation = g_strdup(get_xml_attribute(root, "orientation"));
-	map->pixel_width = map->width * map->tile_width;
-	map->pixel_height = map->height * map->tile_height;
 
 	//map->bounds = MALLOC(ALLEGRO_MAP_BOUNDS);
 	//map->bounds->left = 0;

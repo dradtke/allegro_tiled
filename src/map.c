@@ -120,19 +120,6 @@ char *al_get_object_property(ALLEGRO_MAP_OBJECT *object, char *name, char *def)
 }
 
 /*
- * Accessors.
- */
-int al_map_get_pixel_width(ALLEGRO_MAP *map)
-{
-	return map->pixel_width;
-}
-
-int al_map_get_pixel_height(ALLEGRO_MAP *map)
-{
-	return map->pixel_height;
-}
-
-/*
  * Destructors.
  */
 

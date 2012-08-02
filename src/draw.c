@@ -53,7 +53,7 @@ void al_draw_objects(ALLEGRO_MAP *map)
 void al_update_backbuffer(ALLEGRO_MAP *map)
 {
 	ALLEGRO_BITMAP *orig_backbuffer = al_get_target_bitmap();
-	map->backbuffer = al_create_bitmap(map->pixel_width, map->pixel_height);
+	map->backbuffer = al_create_bitmap(map->width * map->tile_width, map->height * map->tile_height);
 	al_set_target_bitmap(map->backbuffer);
 
 	if (!strcmp(map->orientation, "orthogonal")) {
