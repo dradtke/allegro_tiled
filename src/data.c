@@ -21,22 +21,100 @@
 
 #include "data.h"
 
-int al_map_get_width(ALLEGRO_MAP *map)
+/*
+ * Get the map's width in tiles.
+ */
+int al_get_map_width(ALLEGRO_MAP *map)
 {
 	return map->width;
 }
 
-int al_map_get_height(ALLEGRO_MAP *map)
+/*
+ * Get the map's height in tiles.
+ */
+int al_get_map_height(ALLEGRO_MAP *map)
 {
 	return map->height;
 }
 
-int al_map_get_tile_width(ALLEGRO_MAP *map)
+/*
+ * Get the individual tile width.
+ */
+int al_get_tile_width(ALLEGRO_MAP *map)
 {
 	return map->tile_width;
 }
 
-int al_map_get_tile_height(ALLEGRO_MAP *map)
+/*
+ * Get the individual tile height.
+ */
+int al_get_tile_height(ALLEGRO_MAP *map)
 {
 	return map->tile_height;
+}
+
+/*
+ * Get the map's orientation.
+ * Should be either "orthogonal" or "isometric".
+ */
+char *al_get_map_orientation(ALLEGRO_MAP *map)
+{
+	return map->orientation;
+}
+
+/*
+ * Get the map's layer corresponding to the given name.
+ */
+ALLEGRO_MAP_LAYER *al_get_map_layer(ALLEGRO_MAP *map, char *name)
+{
+	GSList *layers = map->layers;
+	while (layers) {
+		ALLEGRO_MAP_LAYER *layer = (ALLEGRO_MAP_LAYER*)layers->data;
+		if (!strcmp(layer->name, name)) {
+			return layer;
+		}
+		layers = g_slist_next(layers);
+	}
+
+	return NULL;
+}
+
+/**
+ * Get the layer's width in tiles.
+ */
+int al_get_layer_width(ALLEGRO_MAP_LAYER *layer)
+{
+	return layer->width;
+}
+
+/**
+ * Get the layer's height in tiles.
+ */
+int al_get_layer_height(ALLEGRO_MAP_LAYER *layer)
+{
+	return layer->height;
+}
+
+/*
+ * Get the layer's opacity, should be between 0 and 1.
+ */
+float al_get_layer_opacity(ALLEGRO_MAP_LAYER *layer)
+{
+	return layer->opacity;
+}
+
+/*
+ * Returns true if this layer is visible.
+ */
+bool al_get_layer_visible(ALLEGRO_MAP_LAYER *layer)
+{
+	return layer->visible;
+}
+
+/*
+ * Get the layer's name.
+ */
+char *al_get_layer_name(ALLEGRO_MAP_LAYER *layer)
+{
+	return layer->name;
 }

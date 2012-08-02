@@ -176,6 +176,5 @@ void al_free_map(ALLEGRO_MAP *map)
 	g_slist_free_full(map->objects, &_al_free_object);
 	g_slist_free_full(map->object_groups, &_al_free_object_group);
 	g_hash_table_unref(map->tiles);
-	al_destroy_bitmap(map->backbuffer);
 	al_free(map);
 }

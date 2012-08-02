@@ -22,11 +22,88 @@
 #include "draw.h"
 
 /*
- * Draw the map's backbuffer to the target bitmap.
+ * Private orthogonal map-drawing method.
  */
-void al_draw_map(ALLEGRO_MAP *map, float x, float y, int screen_width, int screen_height)
+static void al_draw_orthogonal_map(ALLEGRO_MAP *map, ALLEGRO_COLOR tint, float sx, float sy, float sw, float sh, float dx, float dy, int flags)
 {
-	al_draw_bitmap_region(map->backbuffer, x, y, screen_width, screen_height, 0, 0, 0);
+	GSList *layers = map->layers;
+	while (layers) {
+		ALLEGRO_MAP_LAYER *layer = (ALLEGRO_MAP_LAYER*)layers->data;
+		layers = g_slist_next(layers);
+
+		if (!layer->visible) {
+			continue;
+		}
+
+		float r, g, b, a;
+		al_unmap_rgba_f(tint, &r, &g, &b, &a);
+		ALLEGRO_COLOR color = al_map_rgba_f(r, g, b, a * layer->opacity);
+
+		int mx, my;
+		int ystart = sy / map->tile_height, yend = (sy + sh) / map->tile_height;
+		int xstart = sx / map->tile_width, xend = (sx + sw) / map->tile_width;
+		for (my = ystart; my <= yend; my++) {
+			for (mx = xstart; mx <= xend; mx++) {
+				char id = al_get_single_tile(layer, mx, my);
+				ALLEGRO_MAP_TILE *tile = al_get_tile_for_id(map, id);
+
+				if (!tile) {
+					continue;
+				}
+
+				float x = mx*(map->tile_width) - sx + dx;
+				float y = my*(map->tile_height) - sy + dy;
+
+				int flags = 0;
+				if (flipped_horizontally(layer, mx, my)) flags |= ALLEGRO_FLIP_HORIZONTAL;
+				if (flipped_vertically(layer, mx, my)) flags |= ALLEGRO_FLIP_VERTICAL;
+
+				al_draw_tinted_bitmap(tile->bitmap, color, x, y, flags);
+			}
+		}
+	}
+}
+
+/*
+ * Draw the whole map to the target backbuffer at the given location using the given tint.
+ * NOTE: the tint will not override the layer opacity property; the two alpha values are combined.
+ */
+void al_draw_tinted_map(ALLEGRO_MAP *map, ALLEGRO_COLOR tint, float dx, float dy, int flags)
+{
+	if (!strcmp(map->orientation, "orthogonal")) {
+		al_draw_orthogonal_map(map, tint, 0, 0, map->width * map->tile_width, map->height * map->tile_width, dx, dy, flags);
+	} else {
+		fprintf(stderr, "Error: can't draw map with orientation \"%s\"\n", map->orientation);
+	}
+}
+
+/*
+ * Draw the whole map to the target backbuffer at the given location.
+ */
+void al_draw_map(ALLEGRO_MAP *map, float dx, float dy, int flags)
+{
+	al_draw_tinted_map(map, al_map_rgba_f(1, 1, 1, 1), dx, dy, flags);
+}
+
+/*
+ * Draw a region of the map to the target backbuffer using the given tint.
+ * NOTE: the tint will not override the layer opacity property; the two alpha values are combined.
+ */
+void al_draw_tinted_map_region(ALLEGRO_MAP *map, ALLEGRO_COLOR tint, float sx, float sy, float sw, float sh, float dx, float dy, int flags)
+{
+	if (!strcmp(map->orientation, "orthogonal")) {
+		al_draw_orthogonal_map(map, tint, sx, sy, sw, sh, dx, dy, flags);
+	} else {
+		fprintf(stderr, "Error: can't draw map with orientation \"%s\"\n", map->orientation);
+	}
+}
+
+/*
+ * Draw a region of the map to the target backbuffer.
+ */
+void al_draw_map_region(ALLEGRO_MAP *map, float sx, float sy, float sw, float sh, float dx, float dy, int flags)
+{
+	al_draw_tinted_map_region(map, al_map_rgba_f(1, 1, 1, 1), sx, sy, sw, sh, dx, dy, flags);
 }
 
 /*
@@ -44,48 +121,4 @@ void al_draw_objects(ALLEGRO_MAP *map)
 			al_draw_bitmap(object->bitmap, object->x, object->y, flags);
 		}
 	}
-}
-
-/*
- * Update the map's backbuffer. This should be done whenever a tile
- * needs to change in appearance.
- */
-void al_update_backbuffer(ALLEGRO_MAP *map)
-{
-	ALLEGRO_BITMAP *orig_backbuffer = al_get_target_bitmap();
-	map->backbuffer = al_create_bitmap(map->width * map->tile_width, map->height * map->tile_height);
-	al_set_target_bitmap(map->backbuffer);
-
-	if (!strcmp(map->orientation, "orthogonal")) {
-		GSList *layers = map->layers;
-		while (layers) {
-			ALLEGRO_MAP_LAYER *layer = (ALLEGRO_MAP_LAYER*)layers->data;
-			layers = g_slist_next(layers);
-
-			int i, j;
-			for (i = 0; i<layer->height; i++) {
-				for (j = 0; j<layer->width; j++) {
-					char id = al_get_single_tile(layer, j, i);
-					ALLEGRO_MAP_TILE *tile = al_get_tile_for_id(map, id);
-					if (!tile)
-						continue;
-
-					int tx = j*(tile->tileset->tilewidth);
-					int ty = i*(tile->tileset->tileheight);
-
-					int flags = 0;
-					if (flipped_horizontally(layer, j, i)) flags |= ALLEGRO_FLIP_HORIZONTAL;
-					if (flipped_vertically(layer, j, i)) flags |= ALLEGRO_FLIP_VERTICAL;
-
-					al_draw_bitmap(tile->bitmap, tx, ty, flags);
-				}
-			}
-		}
-	} else if (!strcmp(map->orientation, "isometric")) {
-		fprintf(stderr, "Error: sorry, can't draw isometric maps right now. =(\n");
-	} else {
-		fprintf(stderr, "Error: unknown map orientation: %s\n", map->orientation);
-	}
-
-	al_set_target_bitmap(orig_backbuffer);
 }

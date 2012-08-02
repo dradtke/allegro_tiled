@@ -317,7 +317,6 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 		layer->name = g_strdup(get_xml_attribute(layer_node, "name"));
 		layer->width = atoi(get_xml_attribute(layer_node, "width"));
 		layer->height = atoi(get_xml_attribute(layer_node, "height"));
-		layer->map = map;
 
 		char *layer_visible = get_xml_attribute(layer_node, "visible");
 		layer->visible = (layer_visible != NULL ? atoi(layer_visible) : 1);
@@ -448,7 +447,6 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 	g_slist_free(object_groups);
 
 	xmlFreeDoc(doc);
-	al_update_backbuffer(map);
 
 	al_change_directory(al_path_cstr(cwd, ALLEGRO_NATIVE_PATH_SEP));
 

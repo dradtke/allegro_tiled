@@ -105,12 +105,12 @@ int main(int argc, char *argv[])
 
 	// Parse the map
 	map = al_open_map(MAP_FOLDER, "level1.tmx");
-	int map_total_width = al_map_get_width(map) * al_map_get_tile_width(map);
-	int map_total_height = al_map_get_height(map) * al_map_get_tile_height(map);
+	int map_total_width = al_get_map_width(map) * al_get_tile_width(map);
+	int map_total_height = al_get_map_height(map) * al_get_tile_height(map);
 
 	// Draw the map
 	al_clear_to_color(al_map_rgb(0, 0, 0));
-	al_draw_map(map, map_x, map_y, screen_width, screen_height);
+	al_draw_map_region(map, map_x, map_y, screen_width, screen_height, 0, 0, 0);
 	al_flip_display();
 
 	// Main loop
@@ -188,7 +188,7 @@ int main(int argc, char *argv[])
 				reload = false;
 			}
 			else {
-				al_draw_map(map, map_x, map_y, screen_width, screen_height);
+				al_draw_map_region(map, map_x, map_y, screen_width, screen_height, 0, 0, 0);
 			}
 
 			al_flip_display();

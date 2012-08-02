@@ -11,24 +11,21 @@ struct _ALLEGRO_MAP
 	int tile_width;             // width of each tile in pixels
 	int tile_height;            // height of each tile in pixels
     char *orientation;          // "orthogonal" or ... isometric?
-    GSList *tilesets;           // list of tilesets
     GSList *layers;             // list of layers
+    GSList *tilesets;           // list of tilesets
     GSList *object_groups;      // list of object groups
     GSList *objects;            // list of objects
     GHashTable *tiles;          // full list of tiles
-    ALLEGRO_BITMAP *backbuffer; // back buffer
 };
 
 struct _ALLEGRO_MAP_LAYER
 {
 	int width;                  // width in tiles
 	int height;                 // height in tiles
-	int datalen;                // length of the decoded data
 	float opacity;              // the layer's opacity
-	int visible;                // 0 for hidden, 1 for visible
+	bool visible;               // 0 for hidden, 1 for visible
 	char *name;                 // name of the layer
 	char *data;                 // decoded data
-	ALLEGRO_MAP *map;           // reference to the map
 };
 
 struct _ALLEGRO_MAP_TILESET
@@ -71,9 +68,11 @@ struct _ALLEGRO_MAP_OBJECT
 	GHashTable *properties;
 };
 
-int al_map_get_width(ALLEGRO_MAP *map);
-int al_map_get_height(ALLEGRO_MAP *map);
-int al_map_get_tile_width(ALLEGRO_MAP *map);
-int al_map_get_tile_height(ALLEGRO_MAP *map);
+int al_get_map_width(ALLEGRO_MAP *map);
+int al_get_map_height(ALLEGRO_MAP *map);
+int al_get_map_height(ALLEGRO_MAP *map);
+int al_get_tile_height(ALLEGRO_MAP *map);
+char *al_get_map_orientation(ALLEGRO_MAP *map);
+ALLEGRO_MAP_LAYER *al_get_map_layer(ALLEGRO_MAP *map, char *name);
 
 #endif

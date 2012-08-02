@@ -24,8 +24,10 @@
 #include "data.h"
 #include "map.h"
 
-void al_draw_map(ALLEGRO_MAP *map, float x, float y, int screen_width, int screen_height);
+void al_draw_tinted_map(ALLEGRO_MAP *map, ALLEGRO_COLOR tint, float dx, float dy, int flags);
+void al_draw_map(ALLEGRO_MAP *map, float dx, float dy, int flags);
+void al_draw_tinted_map_region(ALLEGRO_MAP *map, ALLEGRO_COLOR tint, float sx, float sy, float sw, float sh, float dx, float dy, int flags);
+void al_draw_map_region(ALLEGRO_MAP *map, float sx, float sy, float sw, float sh, float dx, float dy, int flags);
 void al_draw_objects(ALLEGRO_MAP *map);
-void al_update_backbuffer(ALLEGRO_MAP *map);
 
 #endif
