@@ -37,6 +37,9 @@ void al_draw_tinted_map(ALLEGRO_MAP *map, ALLEGRO_COLOR tint, float dx, float dy
 void al_draw_map(ALLEGRO_MAP *map, float dx, float dy, int flags);
 void al_draw_tinted_map_region(ALLEGRO_MAP *map, ALLEGRO_COLOR tint, float sx, float sy, float sw, float sh, float dx, float dy, int flags);
 void al_draw_map_region(ALLEGRO_MAP *map, float sx, float sy, float sw, float sh, float dx, float dy, int flags);
+void al_draw_layer_for_name(ALLEGRO_MAP *map, char *name, float dx, float dy, int flags);
+void al_draw_tinted_layer_region_for_name(ALLEGRO_MAP *map, char *name, ALLEGRO_COLOR tint, float sx, float sy, float sw, float sh, float dx, float dy, int flags);
+void al_draw_layer_region_for_name(ALLEGRO_MAP *map, char *name, float sx, float sy, float sw, float sh, float dx, float dy, int flags);
 
 /*
  * Draw all defined objects onto the target bitmap.

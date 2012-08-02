@@ -21,6 +21,40 @@
 
 #include "draw.h"
 
+static void al_draw_orthogonal_layer(ALLEGRO_MAP_LAYER *layer, ALLEGRO_MAP *map, ALLEGRO_COLOR tint, float sx, float sy, float sw, float sh, float dx, float dy, int flags)
+{
+	if (!layer->visible) {
+		return;
+	}
+
+	float r, g, b, a;
+	al_unmap_rgba_f(tint, &r, &g, &b, &a);
+	ALLEGRO_COLOR color = al_map_rgba_f(r, g, b, a * layer->opacity);
+
+	int mx, my;
+	int ystart = sy / map->tile_height, yend = (sy + sh) / map->tile_height;
+	int xstart = sx / map->tile_width, xend = (sx + sw) / map->tile_width;
+	for (my = ystart; my <= yend; my++) {
+		for (mx = xstart; mx <= xend; mx++) {
+			char id = al_get_single_tile(layer, mx, my);
+			ALLEGRO_MAP_TILE *tile = al_get_tile_for_id(map, id);
+
+			if (!tile) {
+				continue;
+			}
+
+			float x = mx*(map->tile_width) - sx + dx;
+			float y = my*(map->tile_height) - sy + dy;
+
+			int flags = 0;
+			if (flipped_horizontally(layer, mx, my)) flags |= ALLEGRO_FLIP_HORIZONTAL;
+			if (flipped_vertically(layer, mx, my)) flags |= ALLEGRO_FLIP_VERTICAL;
+
+			al_draw_tinted_bitmap(tile->bitmap, color, x, y, flags);
+		}
+	}
+}
+
 /*
  * Private orthogonal map-drawing method.
  */
@@ -29,38 +63,8 @@ static void al_draw_orthogonal_map(ALLEGRO_MAP *map, ALLEGRO_COLOR tint, float s
 	GSList *layers = map->layers;
 	while (layers) {
 		ALLEGRO_MAP_LAYER *layer = (ALLEGRO_MAP_LAYER*)layers->data;
+		al_draw_orthogonal_layer(layer, map, tint, sx, sy, sw, sh, dx, dy, flags);
 		layers = g_slist_next(layers);
-
-		if (!layer->visible) {
-			continue;
-		}
-
-		float r, g, b, a;
-		al_unmap_rgba_f(tint, &r, &g, &b, &a);
-		ALLEGRO_COLOR color = al_map_rgba_f(r, g, b, a * layer->opacity);
-
-		int mx, my;
-		int ystart = sy / map->tile_height, yend = (sy + sh) / map->tile_height;
-		int xstart = sx / map->tile_width, xend = (sx + sw) / map->tile_width;
-		for (my = ystart; my <= yend; my++) {
-			for (mx = xstart; mx <= xend; mx++) {
-				char id = al_get_single_tile(layer, mx, my);
-				ALLEGRO_MAP_TILE *tile = al_get_tile_for_id(map, id);
-
-				if (!tile) {
-					continue;
-				}
-
-				float x = mx*(map->tile_width) - sx + dx;
-				float y = my*(map->tile_height) - sy + dy;
-
-				int flags = 0;
-				if (flipped_horizontally(layer, mx, my)) flags |= ALLEGRO_FLIP_HORIZONTAL;
-				if (flipped_vertically(layer, mx, my)) flags |= ALLEGRO_FLIP_VERTICAL;
-
-				al_draw_tinted_bitmap(tile->bitmap, color, x, y, flags);
-			}
-		}
 	}
 }
 
@@ -83,6 +87,42 @@ void al_draw_tinted_map(ALLEGRO_MAP *map, ALLEGRO_COLOR tint, float dx, float dy
 void al_draw_map(ALLEGRO_MAP *map, float dx, float dy, int flags)
 {
 	al_draw_tinted_map(map, al_map_rgba_f(1, 1, 1, 1), dx, dy, flags);
+}
+
+/*
+ * Draw a layer to the target backbuffer using the given tint.
+ */
+void al_draw_tinted_layer_for_name(ALLEGRO_MAP *map, char *name, ALLEGRO_COLOR tint, float dx, float dy, int flags)
+{
+	al_draw_orthogonal_layer(al_get_layer_for_name(map, name), map, tint, 0, 0, map->width * map->tile_width, map->height * map->tile_height, dx, dy, flags);
+}
+
+/*
+ * Draw the whole layer to the target backbuffer at the given location.
+ */
+void al_draw_layer_for_name(ALLEGRO_MAP *map, char *name, float dx, float dy, int flags)
+{
+	al_draw_tinted_layer_for_name(map, name, al_map_rgba_f(1, 1, 1, 1), dx, dy, flags);
+}
+
+/*
+ * Draw, tinted, a region of the layer with the given name.
+ */
+void al_draw_tinted_layer_region_for_name(ALLEGRO_MAP *map, char *name, ALLEGRO_COLOR tint, float sx, float sy, float sw, float sh, float dx, float dy, int flags)
+{
+	if (!strcmp(map->orientation, "orthogonal")) {
+		al_draw_orthogonal_layer(al_get_layer_for_name(map, name), map, tint, sx, sy, sw, sh, dx, dy, flags);
+	} else {
+		fprintf(stderr, "Error: can't draw layer with orientation \"%s\"\n", map->orientation);
+	}
+}
+
+/*
+ * Draw a region of the layer with the given name.
+ */
+void al_draw_layer_region_for_name(ALLEGRO_MAP *map, char *name, float sx, float sy, float sw, float sh, float dx, float dy, int flags)
+{
+	al_draw_tinted_layer_region_for_name(map, name, al_map_rgba_f(1, 1, 1, 1), sx, sy, sw, sh, dx, dy, flags);
 }
 
 /*

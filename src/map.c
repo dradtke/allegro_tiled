@@ -120,6 +120,24 @@ char *al_get_object_property(ALLEGRO_MAP_OBJECT *object, char *name, char *def)
 }
 
 /*
+ * Get the layer with the corresponding name.
+ */
+ALLEGRO_MAP_LAYER *al_get_layer_for_name(ALLEGRO_MAP *map, char *name)
+{
+	GSList *layers = map->layers;
+	while (layers) {
+		ALLEGRO_MAP_LAYER *layer = (ALLEGRO_MAP_LAYER*)layers->data;
+		if (!strcmp(layer->name, name)) {
+			return layer;
+		} else {
+			layers = g_slist_next(layers);
+		}
+	}
+
+	return NULL;
+}
+
+/*
  * Destructors.
  */
 
