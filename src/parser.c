@@ -235,8 +235,6 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 
 	// Get some basic info
 	map = MALLOC(ALLEGRO_MAP);
-	map->x = 0;
-	map->y = 0;
 	map->width = atoi(get_xml_attribute(root, "width"));
 	map->height = atoi(get_xml_attribute(root, "height"));
 	map->tile_width = atoi(get_xml_attribute(root, "tilewidth"));
