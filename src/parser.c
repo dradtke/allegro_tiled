@@ -75,8 +75,9 @@ static void decode_layer_data(xmlNode *data_node, ALLEGRO_MAP_LAYER *layer)
 			ALLEGRO_PATH *srcpath;
 			ALLEGRO_FILE *datasrc = al_make_temp_file("XXXXXX", &srcpath);
 			al_fwrite(datasrc, rawdata, rawlen);
-			al_fclose(datasrc);
-			datasrc = al_fopen(al_path_cstr(srcpath, ALLEGRO_NATIVE_PATH_SEP), "rb");
+			al_fseek(datasrc, 0, ALLEGRO_SEEK_SET);
+			//al_fclose(datasrc);
+			//datasrc = al_fopen(al_path_cstr(srcpath, ALLEGRO_NATIVE_PATH_SEP), "rb");
 			ALLEGRO_FILE *datadest = al_make_temp_file("XXXXXX", NULL);
 
 			// decompress and print an error if it failed
