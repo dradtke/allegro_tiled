@@ -71,4 +71,9 @@ struct _ALLEGRO_MAP_OBJECT
 	GHashTable *properties;
 };
 
+int al_map_get_width(ALLEGRO_MAP *map);
+int al_map_get_height(ALLEGRO_MAP *map);
+int al_map_get_tile_width(ALLEGRO_MAP *map);
+int al_map_get_tile_height(ALLEGRO_MAP *map);
+
 #endif

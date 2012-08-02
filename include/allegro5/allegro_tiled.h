@@ -79,6 +79,14 @@ char *al_get_object_property(ALLEGRO_MAP_OBJECT *object, char *name, char *def);
 void al_update_backbuffer(ALLEGRO_MAP *map);
 
 /*
+ * Accessors. Their names should be pretty self-explanatory.
+ */
+int al_map_get_width(ALLEGRO_MAP *map);
+int al_map_get_height(ALLEGRO_MAP *map);
+int al_map_get_tile_width(ALLEGRO_MAP *map);
+int al_map_get_tile_height(ALLEGRO_MAP *map);
+
+/*
  * Free the map struct (and all associated structs) from memory.
  */
 void al_free_map(ALLEGRO_MAP *map);
