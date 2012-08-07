@@ -45,6 +45,31 @@ GSList *get_children_for_name(xmlNode *parent, char *name)
 }
 
 /*
+ * Alternate version that allows two possible names to be specified.
+ * Tile/object layers have different node names ("layer" vs "objectgroup"),
+ * but their order needs to be preserved. This method is a workaround
+ * for that.
+ */
+GSList *get_children_for_either_name(xmlNode *parent, char *name1, char *name2)
+{
+	GSList *list = NULL;
+	
+	if (!parent->children)
+		return list;
+
+	xmlNode *child = parent->children->next;
+	while (child) {
+		if (!strcmp((const char*)child->name, name1) || !strcmp((const char*)child->name, name2)) {
+			list = g_slist_prepend(list, child);
+		}
+
+		child = child->next;
+	}
+
+	return list;
+}
+
+/*
  * Given a parent XML node and the name of the desired child,
  * locates and returns the first child with that name
  */

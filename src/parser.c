@@ -171,15 +171,14 @@ static void cache_tile_list(ALLEGRO_MAP *map)
  */
 static GHashTable *parse_properties(xmlNode *node)
 {
+	GHashTable *props = g_hash_table_new_full(NULL, &g_str_equal, &g_free, &g_free);
+
 	xmlNode *properties_node = get_first_child_for_name(node, "properties");
 	if (!properties_node) {
-		return NULL;
+		return props;
 	}
 
 	GSList *properties_list = get_children_for_name(properties_node, "property");
-	// TODO: check if we need to specify the destructor
-	GHashTable *props = g_hash_table_new_full(NULL, &g_str_equal, g_free, g_free);
-
 	GSList *property_item = properties_list;
 	while (property_item) {
 		xmlNode *property_node = (xmlNode*)property_item->data;
@@ -305,7 +304,7 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 	cache_tile_list(map);
 
 	// Get the layers
-	GSList *layers = get_children_for_name(root, "layer");
+	GSList *layers = get_children_for_either_name(root, "layer", "objectgroup");
 	map->layers = NULL;
 
 	GSList *layer_item = layers;
@@ -315,8 +314,7 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 
 		ALLEGRO_MAP_LAYER *layer = MALLOC(ALLEGRO_MAP_LAYER);
 		layer->name = g_strdup(get_xml_attribute(layer_node, "name"));
-		layer->width = atoi(get_xml_attribute(layer_node, "width"));
-		layer->height = atoi(get_xml_attribute(layer_node, "height"));
+		layer->properties = parse_properties(layer_node);
 
 		char *layer_visible = get_xml_attribute(layer_node, "visible");
 		layer->visible = (layer_visible != NULL ? atoi(layer_visible) : 1);
@@ -324,130 +322,130 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 		char *layer_opacity = get_xml_attribute(layer_node, "opacity");
 		layer->opacity = (layer_opacity != NULL ? atof(layer_opacity) : 1.0);
 
-		decode_layer_data(get_first_child_for_name(layer_node, "data"), layer);
+		if (!strcmp((const char*)layer_node->name, "layer")) {
+			layer->type = TILE_LAYER;
+			layer->width = atoi(get_xml_attribute(layer_node, "width"));
+			layer->height = atoi(get_xml_attribute(layer_node, "height"));
+			decode_layer_data(get_first_child_for_name(layer_node, "data"), layer);
 
-		// Create any missing tile objects
-		for (i = 0; i<layer->height; i++) {
-			for (j = 0; j<layer->width; j++) {
-				char id = al_get_single_tile(layer, j, i);
+			// Create any missing tile objects
+			for (i = 0; i<layer->height; i++) {
+				for (j = 0; j<layer->width; j++) {
+					char id = al_get_single_tile(layer, j, i);
 
-				if (id == 0)
-					continue;
+					if (id == 0)
+						continue;
 
-				ALLEGRO_MAP_TILE *tile = al_get_tile_for_id(map, id);
-				if (!tile) {
-					// wasn't defined in the map file, presumably because it had no properties
-					tile = MALLOC(ALLEGRO_MAP_TILE);
-					tile->id = id;
-					tile->properties = g_hash_table_new(NULL, NULL);
-					tile->tileset = NULL;
-					tile->bitmap = NULL;
+					ALLEGRO_MAP_TILE *tile = al_get_tile_for_id(map, id);
+					if (!tile) {
+						// wasn't defined in the map file, presumably because it had no properties
+						tile = MALLOC(ALLEGRO_MAP_TILE);
+						tile->id = id;
+						tile->properties = g_hash_table_new(NULL, NULL);
+						tile->tileset = NULL;
+						tile->bitmap = NULL;
 
-					// locate its tilemap
-					GSList *tilesets = map->tilesets;
-					ALLEGRO_MAP_TILESET *tileset_ref;
-					while (tilesets) {
-						ALLEGRO_MAP_TILESET *tileset = (ALLEGRO_MAP_TILESET*)tilesets->data;
-						tilesets = g_slist_next(tilesets);
-						if (tileset->firstgid <= id) {
-							if (!tile->tileset || tileset->firstgid > tile->tileset->firstgid) {
-								tileset_ref = tileset;
+						// locate its tilemap
+						GSList *tilesets = map->tilesets;
+						ALLEGRO_MAP_TILESET *tileset_ref;
+						while (tilesets) {
+							ALLEGRO_MAP_TILESET *tileset = (ALLEGRO_MAP_TILESET*)tilesets->data;
+							tilesets = g_slist_next(tilesets);
+							if (tileset->firstgid <= id) {
+								if (!tile->tileset || tileset->firstgid > tile->tileset->firstgid) {
+									tileset_ref = tileset;
+								}
 							}
+
 						}
 
+						tile->tileset = tileset_ref;
+						tileset_ref->tiles = g_slist_prepend(tileset_ref->tiles, tile);
+						g_hash_table_insert(map->tiles, GINT_TO_POINTER(tile->id), tile);
 					}
 
-					tile->tileset = tileset_ref;
-					tileset_ref->tiles = g_slist_prepend(tileset_ref->tiles, tile);
-					g_hash_table_insert(map->tiles, GINT_TO_POINTER(tile->id), tile);
-				}
-
-				// create this tile's bitmap if it hasn't been yet
-				if (!tile->bitmap) {
-					ALLEGRO_MAP_TILESET *tileset = tile->tileset;
-					int id = tile->id - tileset->firstgid;
-					int width = tileset->width / tileset->tilewidth;
-					int x = (id % width) * tileset->tilewidth;
-					int y = (id / width) * tileset->tileheight;
-					tile->bitmap = al_create_sub_bitmap(
-							tileset->bitmap,
-							x, y,
-							tileset->tilewidth,
-							tileset->tileheight);
+					// create this tile's bitmap if it hasn't been yet
+					if (!tile->bitmap) {
+						ALLEGRO_MAP_TILESET *tileset = tile->tileset;
+						int id = tile->id - tileset->firstgid;
+						int width = tileset->width / tileset->tilewidth;
+						int x = (id % width) * tileset->tilewidth;
+						int y = (id / width) * tileset->tileheight;
+						tile->bitmap = al_create_sub_bitmap(
+								tileset->bitmap,
+								x, y,
+								tileset->tilewidth,
+								tileset->tileheight);
+					}
 				}
 			}
+		} else if (!strcmp((const char*)layer_node->name, "objectgroup")) {
+			layer->type = OBJECT_LAYER;
+			layer->objects = NULL;
+			// TODO: color?
+			GSList *objects = get_children_for_name(layer_node, "object");
+			GSList *object_item = objects;
+			while (object_item) {
+				xmlNode *object_node = (xmlNode*)object_item->data;
+				object_item = g_slist_next(object_item);
+
+				ALLEGRO_MAP_OBJECT *object = MALLOC(ALLEGRO_MAP_OBJECT);
+				object->layer = layer;
+				object->name = g_strdup(get_xml_attribute(object_node, "name"));
+				object->type = g_strdup(get_xml_attribute(object_node, "type"));
+				object->x = atoi(get_xml_attribute(object_node, "x"));
+				object->y = atoi(get_xml_attribute(object_node, "y"));
+
+				char *object_width = get_xml_attribute(object_node, "width");
+				object->width = (object_width ? atoi(object_width) : 0);
+
+				char *object_height = get_xml_attribute(object_node, "height");
+				object->height = (object_height ? atoi(object_height) : 0);
+
+				char *gid = get_xml_attribute(object_node, "gid");
+				if (gid) {
+					object->gid = atoi(gid);
+				}
+
+				char *object_visible = get_xml_attribute(object_node, "visible");
+				object->visible = (object_visible ? atoi(object_visible) : 1);
+
+				// Get the object's properties
+				object->properties = parse_properties(object_node);
+				layer->objects = g_slist_prepend(layer->objects, object);
+			}
+		} else {
+			fprintf(stderr, "Error: found invalid layer node \"%s\"\n", layer_node->name);
+			continue;
 		}
 
 		map->layers = g_slist_prepend(map->layers, layer);
 	}
 
 	g_slist_free(layers);
-	//map->layers = g_slist_reverse(map->layers);
-
-	// Get the objects
-	map->object_groups = NULL;
-	map->objects = NULL;
-	GSList *object_groups = get_children_for_name(root, "objectgroup");
-
-	GSList *group_item = object_groups;
-	while (group_item) {
-		xmlNode *group_node = (xmlNode*)group_item->data;
-		group_item = g_slist_next(group_item);
-
-		ALLEGRO_MAP_OBJECT_GROUP *group = MALLOC(ALLEGRO_MAP_OBJECT_GROUP);
-		group->name = g_strdup(get_xml_attribute(group_node, "name"));
-
-		char *group_opacity = get_xml_attribute(group_node, "opacity");
-		group->opacity = (group_opacity ? atof(group_opacity) : 1);
-
-		char *group_visible = get_xml_attribute(group_node, "visible");
-		group->visible = (group_visible ? atoi(group_visible) : 1);
-
-		GSList *objects = get_children_for_name(group_node, "object");
-
-		GSList *object_item = objects;
-		while (object_item) {
-			xmlNode *object_node = (xmlNode*)object_item->data;
-			object_item = g_slist_next(object_item);
-
-			ALLEGRO_MAP_OBJECT *object = MALLOC(ALLEGRO_MAP_OBJECT);
-			object->group = group;
-			object->name = g_strdup(get_xml_attribute(object_node, "name"));
-			object->type = g_strdup(get_xml_attribute(object_node, "type"));
-			object->x = atoi(get_xml_attribute(object_node, "x"));
-			object->y = atoi(get_xml_attribute(object_node, "y"));
-
-			char *object_width = get_xml_attribute(object_node, "width");
-			object->width = (object_width ? atoi(object_width) : 0);
-
-			char *object_height = get_xml_attribute(object_node, "height");
-			object->height = (object_height ? atoi(object_height) : 0);
-
-			char *gid = get_xml_attribute(object_node, "gid");
-			if (gid) {
-				ALLEGRO_MAP_TILE *object_tile = al_get_tile_for_id(map, atoi(gid));
-				object->bitmap = object_tile->bitmap;
-			}
-
-			char *object_visible = get_xml_attribute(object_node, "visible");
-			object->visible = (object_visible ? atoi(object_visible) : 1);
-
-			// Get the object's properties
-			object->properties = parse_properties(object_node);
-
-			// TODO: add a destructor
-			map->objects = g_slist_prepend(map->objects, object);
+	
+	// If any objects have a tile gid, cache their image
+	layer_item = map->layers;
+	while (layer_item) {
+		ALLEGRO_MAP_LAYER *layer = (ALLEGRO_MAP_LAYER*)layer_item->data;
+		layer_item = g_slist_next(layer_item);
+		if (layer->type != OBJECT_LAYER) {
+			continue;
 		}
 
-		// TODO: add a destructor
-		map->object_groups = g_slist_prepend(map->object_groups, group);
-		g_slist_free(objects);
+		GSList *object_item = layer->objects;
+		while (object_item) {
+			ALLEGRO_MAP_OBJECT *object = (ALLEGRO_MAP_OBJECT*)object_item->data;
+			object_item = g_slist_next(object_item);
+			if (object->gid) {
+				object->bitmap = al_get_tile_for_id(map, object->gid)->bitmap;
+				object->width = map->tile_width;
+				object->height = map->tile_height;
+			}
+		}
 	}
 
-	g_slist_free(object_groups);
-
 	xmlFreeDoc(doc);
-
 	al_change_directory(al_path_cstr(cwd, ALLEGRO_NATIVE_PATH_SEP));
 
 	return map;

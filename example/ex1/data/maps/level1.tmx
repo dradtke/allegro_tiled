@@ -68,7 +68,7 @@
  </layer>
  <layer name="Blocks 1" width="75" height="40">
   <data encoding="base64" compression="zlib">
-   eJzt19kKgCAURVFTG/7/izPoSRxCvQ60F1ySCLNjCioFAAAAAAAAyDORNoD5PWvWelfgL7YBhTqnq2v0IBaxuzpGD2IRZJVnMpV63nYaI8pJzVHuPwF6m2k/io0ldH/G9ZPa+2vot1rTkfaqtJLJyu9Taj560Uomq1CfUnPSg59Tq2+I9Vnyri/n6xHn+5WKrMiKrMhqtroB+e8CUw==
+   eJzt19sKgCAQRVHTbv//xfnQkzga6XjBvWBIIiY7VqAxAAAAAAAAgD4njAGMzwlHYAVbh0KZy9fdexKTOHydvScxCbLKc5lKXY/x7Up9c+8JsDLpu4udH/H7Sf37S9i3arPCeFbW6GQV9tRaj1as0ckq1lNrTVoIc6r1DFLPP/f6sr/usb+fqciKrMiKrEarB8ZAAkM=
   </data>
  </layer>
  <layer name="Blocks 2" width="75" height="40">
@@ -76,5 +76,9 @@
    eJzt0LkJADAQA8FL/PRfsa8E4cQYZkC52CoAAAAAACCxevv1iU+M3nx94hNa5bTKaZXTKqdVTisAAAC4dwA74QBd
   </data>
  </layer>
- <objectgroup name="Hello" width="75" height="40"/>
+ <objectgroup name="Objects" width="75" height="40">
+  <object gid="4" x="32" y="320"/>
+  <object gid="4" x="64" y="320"/>
+  <object gid="4" x="112" y="496"/>
+ </objectgroup>
 </map>

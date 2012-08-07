@@ -20,6 +20,11 @@
 
 #include <allegro5/allegro.h>
 
+enum LayerType {
+	TILE_LAYER,
+	OBJECT_LAYER
+};
+
 typedef struct _ALLEGRO_MAP                ALLEGRO_MAP;
 typedef struct _ALLEGRO_MAP_LAYER          ALLEGRO_MAP_LAYER;
 typedef struct _ALLEGRO_MAP_TILESET        ALLEGRO_MAP_TILESET;

@@ -34,6 +34,10 @@ static inline char lookup_tile(ALLEGRO_MAP_LAYER *layer, int x, int y)
  */
 char al_get_single_tile(ALLEGRO_MAP_LAYER *layer, int x, int y)
 {
+	if (layer->type != TILE_LAYER) {
+		return 0;
+	}
+
 	char id = lookup_tile(layer, x, y);
 	id &= ~(FLIPPED_HORIZONTALLY_FLAG
 			|FLIPPED_VERTICALLY_FLAG
@@ -159,28 +163,28 @@ static void _al_free_tileset(gpointer data)
 	al_free(tileset);
 }
 
+static void _al_free_object(gpointer data)
+{
+	ALLEGRO_MAP_OBJECT *object = (ALLEGRO_MAP_OBJECT*)data;
+	if (!object)
+		return;
+	al_free(object->name);
+	al_free(object->type);
+	g_hash_table_unref(object->properties);
+	al_free(object);
+}
+
 static void _al_free_layer(gpointer data)
 {
 	ALLEGRO_MAP_LAYER *layer = (ALLEGRO_MAP_LAYER*)data;
 	al_free(layer->name);
-	al_free(layer->data);
+	if (layer->type == TILE_LAYER) {
+		al_free(layer->data);
+	} else if (layer->type == OBJECT_LAYER) {
+		g_slist_free_full(layer->objects, &_al_free_object);
+	}
+	g_hash_table_unref(layer->properties);
 	al_free(layer);
-}
-
-static void _al_free_object(gpointer data)
-{
-	ALLEGRO_MAP_OBJECT *object = (ALLEGRO_MAP_OBJECT*)data;
-	g_hash_table_unref(object->properties);
-	al_free(object->name);
-	al_free(object->type);
-	al_free(object);
-}
-
-static void _al_free_object_group(gpointer data)
-{
-	ALLEGRO_MAP_OBJECT_GROUP *group = (ALLEGRO_MAP_OBJECT_GROUP*)data;
-	al_free(group->name);
-	al_free(group);
 }
 
 /*
@@ -191,8 +195,6 @@ void al_free_map(ALLEGRO_MAP *map)
 	al_free(map->orientation);
 	g_slist_free_full(map->tilesets, &_al_free_tileset);
 	g_slist_free_full(map->layers, &_al_free_layer);
-	g_slist_free_full(map->objects, &_al_free_object);
-	g_slist_free_full(map->object_groups, &_al_free_object_group);
 	g_hash_table_unref(map->tiles);
 	al_free(map);
 }
