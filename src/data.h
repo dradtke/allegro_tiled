@@ -30,6 +30,7 @@ struct _ALLEGRO_MAP_LAYER
 	char *name;                 // name of the layer
 	char *data;                 // decoded data (tile layer only)
 	GSList *objects;            // objects (object layer only)
+	int object_count;           // number of objects (object layer only)
 	GHashTable *properties;     // properties
 };
 

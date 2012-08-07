@@ -39,7 +39,7 @@ static inline _AL_LIST *create_list(size_t capacity)
  */
 static void decode_layer_data(xmlNode *data_node, ALLEGRO_MAP_LAYER *layer)
 {
-	char *str = trim((char *)data_node->children->content);
+	char *str = g_strstrip((char *)data_node->children->content);
 	int datalen = layer->width * layer->height;
 	layer->data = (char *)calloc(datalen, sizeof(char));
 
@@ -327,10 +327,11 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 			// Create any missing tile objects
 			for (i = 0; i<layer->height; i++) {
 				for (j = 0; j<layer->width; j++) {
-					char id = al_get_single_tile(layer, j, i);
+					char id = al_get_single_tile_id(layer, j, i);
 
-					if (id == 0)
+					if (id == 0) {
 						continue;
+					}
 
 					ALLEGRO_MAP_TILE *tile = al_get_tile_for_id(map, id);
 					if (!tile) {
@@ -380,6 +381,7 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 		} else if (!strcmp((const char*)layer_node->name, "objectgroup")) {
 			layer->type = OBJECT_LAYER;
 			layer->objects = NULL;
+			layer->object_count = 0;
 			// TODO: color?
 			GSList *objects = get_children_for_name(layer_node, "object");
 			GSList *object_item = objects;
@@ -411,6 +413,7 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 				// Get the object's properties
 				object->properties = parse_properties(object_node);
 				layer->objects = g_slist_prepend(layer->objects, object);
+				layer->object_count++;
 			}
 			map->object_layer_count++;
 			map->object_layers = g_slist_prepend(map->object_layers, layer);
