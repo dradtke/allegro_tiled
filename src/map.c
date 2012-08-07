@@ -53,17 +53,15 @@ char al_get_single_tile(ALLEGRO_MAP_LAYER *layer, int x, int y)
  */
 char *al_get_tiles(ALLEGRO_MAP *map, int x, int y)
 {
-	int layer_count = g_slist_length(map->layers);
-	char* tiles = (char *)malloc(sizeof(char) * (layer_count));
-	tiles[layer_count] = (char)-1;
+	char* tiles = (char *)malloc(sizeof(char) * (map->tile_layer_count));
+	tiles[map->tile_layer_count] = (char)-1;
 
-	int i = 0;
-	GSList *layers = map->layers;
-	while (layers) {
+	int i;
+	GSList *layers = map->tile_layers;
+	for (i = 0; layers; i++) {
 		ALLEGRO_MAP_LAYER *layer = (ALLEGRO_MAP_LAYER*)layers->data;
 		layers = g_slist_next(layers);
 		tiles[i] = al_get_single_tile(layer, x, y);
-		i++;
 	}
 
 	return tiles;
@@ -141,60 +139,12 @@ ALLEGRO_MAP_LAYER *al_get_layer_for_name(ALLEGRO_MAP *map, char *name)
 	return NULL;
 }
 
+ALLEGRO_MAP_OBJECT *al_get_object_for_name(ALLEGRO_MAP *map, char *name)
+{
+	return NULL;
+}
+
 /*
  * Destructors.
  */
 
-static void _al_free_tile(gpointer data)
-{
-	ALLEGRO_MAP_TILE *tile = (ALLEGRO_MAP_TILE*)data;
-	g_hash_table_unref(tile->properties);
-	al_destroy_bitmap(tile->bitmap);
-	al_free(tile);
-}
-
-static void _al_free_tileset(gpointer data)
-{
-	ALLEGRO_MAP_TILESET *tileset = (ALLEGRO_MAP_TILESET*)data;
-	al_free(tileset->name);
-	al_free(tileset->source);
-	g_slist_free_full(tileset->tiles, &_al_free_tile);
-	al_destroy_bitmap(tileset->bitmap);
-	al_free(tileset);
-}
-
-static void _al_free_object(gpointer data)
-{
-	ALLEGRO_MAP_OBJECT *object = (ALLEGRO_MAP_OBJECT*)data;
-	if (!object)
-		return;
-	al_free(object->name);
-	al_free(object->type);
-	g_hash_table_unref(object->properties);
-	al_free(object);
-}
-
-static void _al_free_layer(gpointer data)
-{
-	ALLEGRO_MAP_LAYER *layer = (ALLEGRO_MAP_LAYER*)data;
-	al_free(layer->name);
-	if (layer->type == TILE_LAYER) {
-		al_free(layer->data);
-	} else if (layer->type == OBJECT_LAYER) {
-		g_slist_free_full(layer->objects, &_al_free_object);
-	}
-	g_hash_table_unref(layer->properties);
-	al_free(layer);
-}
-
-/*
- * Frees a map struct from memory
- */
-void al_free_map(ALLEGRO_MAP *map)
-{
-	al_free(map->orientation);
-	g_slist_free_full(map->tilesets, &_al_free_tileset);
-	g_slist_free_full(map->layers, &_al_free_layer);
-	g_hash_table_unref(map->tiles);
-	al_free(map);
-}

@@ -240,12 +240,8 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 	map->tile_width = atoi(get_xml_attribute(root, "tilewidth"));
 	map->tile_height = atoi(get_xml_attribute(root, "tileheight"));
 	map->orientation = g_strdup(get_xml_attribute(root, "orientation"));
-
-	//map->bounds = MALLOC(ALLEGRO_MAP_BOUNDS);
-	//map->bounds->left = 0;
-	//map->bounds->top = 0;
-	//map->bounds->right = map->width * map->tile_width;
-	//map->bounds->bottom = map->height * map->tile_height;
+	map->tile_layer_count = 0;
+	map->object_layer_count = 0;
 
 	// Get the tilesets
 	GSList *tilesets = get_children_for_name(root, "tileset");
@@ -379,6 +375,8 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 					}
 				}
 			}
+			map->tile_layer_count++;
+			map->tile_layers = g_slist_prepend(map->tile_layers, layer);
 		} else if (!strcmp((const char*)layer_node->name, "objectgroup")) {
 			layer->type = OBJECT_LAYER;
 			layer->objects = NULL;
@@ -414,6 +412,8 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 				object->properties = parse_properties(object_node);
 				layer->objects = g_slist_prepend(layer->objects, object);
 			}
+			map->object_layer_count++;
+			map->object_layers = g_slist_prepend(map->object_layers, layer);
 		} else {
 			fprintf(stderr, "Error: found invalid layer node \"%s\"\n", layer_node->name);
 			continue;
@@ -433,15 +433,17 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 			continue;
 		}
 
-		GSList *object_item = layer->objects;
-		while (object_item) {
-			ALLEGRO_MAP_OBJECT *object = (ALLEGRO_MAP_OBJECT*)object_item->data;
-			object_item = g_slist_next(object_item);
-			if (object->gid) {
-				object->bitmap = al_get_tile_for_id(map, object->gid)->bitmap;
-				object->width = map->tile_width;
-				object->height = map->tile_height;
+		GSList *objects = layer->objects;
+		while (objects) {
+			ALLEGRO_MAP_OBJECT *object = (ALLEGRO_MAP_OBJECT*)objects->data;
+			objects = g_slist_next(objects);
+			if (!object->gid) {
+				continue;
 			}
+
+			object->bitmap = al_get_tile_for_id(map, object->gid)->bitmap;
+			object->width = map->tile_width;
+			object->height = map->tile_height;
 		}
 	}
 
