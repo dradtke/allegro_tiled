@@ -10,8 +10,6 @@ al_draw_map(map, 0, 0, 0); // (map, dx, dy, flags)
 
 Additional methods are provided to draw one map layer at a time and/or draw only a particular section. Layers, tilesets, tiles, and objects are all given types, with methods that make them easy to access and use.
 
-They say that a picture is worth a thousand words:
-
 ![screenshot](https://github.com/dradtke/allegro_tiled/raw/master/example/screenshot.png)
 
 Currently, the following is supported:
