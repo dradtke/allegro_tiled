@@ -40,7 +40,7 @@ Make sure the following dependencies are installed:
  * zlib
  * glib
 
-Then simply run `make` in the root folder to compile it. To run the example, cd to the examples folder and type `make run`. Use the arrow keys to scroll and Space to reload the map file.
+Then simply run `make` in the root folder to compile it, and optionally `sudo make [install|uninstall]` to handle (un)installation. To run the example, cd to the examples folder and type `make run`. Use the arrow keys to scroll and Space to reload the map file.
 
 On Other Platorms:
 ------------------
