@@ -10,6 +10,11 @@ SOURCES := $(shell find src/ -type f -name *.c)
 OBJECTS := $(patsubst src/%,build/%,$(SOURCES:.c=.o))
 DEPS 	:= $(OBJECTS:.o=.deps)
 
+PREFIX	= /usr/local
+LIBDIR	= $(PREFIX)/lib
+
+all: $(TARGET)
+
 $(TARGET): $(OBJECTS)
 	@echo "  Linking..."; $(CC) $(LDFLAGS) $^ -o $(TARGET) $(LIBS)
 
@@ -17,11 +22,15 @@ build/%.o: src/%.c
 	@mkdir -p build/
 	@echo "  CC $<"; $(CC) $(CFLAGS) -MD -MF $(@:.o=.deps) -c -o $@ $<
 
-compile: $(TARGET)
+install: all
+	@echo "  Installing..."; install -D -m 0644 "$(TARGET)" "$(DESTDIR)$(LIBDIR)/$(TARGET)"
+
+uninstall:
+	@echo "  Uninstalling..."; $(RM) "$(DESTDIR)$(LIBDIR)/$(TARGET)"
 
 clean:
 	@echo "  Cleaning..."; $(RM) -r build/ $(TARGET)
 
 -include $(DEPS)
 
-.PHONY: clean compile
+.PHONY: all clean install uninstall
