@@ -25,6 +25,7 @@
 #include <glib.h>
 
 GSList *get_children_for_name(xmlNode *parent, char *name);
+GSList *get_children_for_either_name(xmlNode *parent, char *name1, char *name2);
 xmlNode *get_first_child_for_name(xmlNode *parent, char *name);
 char *get_xml_attribute(xmlNode *node, char *name);
 

@@ -84,6 +84,8 @@ int main(int argc, char *argv[])
 	if (!display) {
 		fprintf(stderr, "Failed to create display.\n");
 		return 1;
+	} else {
+		al_set_window_title(display, "Hello Tiled!");
 	}
 
 	// Create the event queue
