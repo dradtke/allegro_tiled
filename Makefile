@@ -32,8 +32,9 @@ install: all
 	@echo "  Installing..."
 	@install -D -m 0644 "$(TARGET)" "$(DESTDIR)$(LIBDIR)/$(TARGET)"
 	@install -D -m 0644 "include/$(HEADER)" "$(DESTDIR)$(INCDIR)/$(HEADER)"
-	@cat "misc/$(PCFILE)" | sed 's#@PREFIX@#$(PREFIX)#g' > "$(TMPDIR)/$(PCFILE)"
-	@install -D -m 0644 "$(TMPDIR)/$(PCFILE)" "$(DESTDIR)$(LIBDIR)/pkgconfig/$(PCFILE)"
+	@cat "misc/$(PCFILE)" | sed 's#@PREFIX@#$(PREFIX)#g' > "$(DESTDIR)$(TMPDIR)/$(PCFILE)"
+	@install -D -m 0644 "$(DESTDIR)$(TMPDIR)/$(PCFILE)" "$(DESTDIR)$(LIBDIR)/pkgconfig/$(PCFILE)"
+	@$(RM) "$(DESTDIR)$(TMPDIR)/$(PCFILE)"
 
 uninstall:
 	@echo "  Uninstalling..."
