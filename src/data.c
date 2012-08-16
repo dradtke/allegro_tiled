@@ -119,6 +119,63 @@ char *al_get_layer_name(ALLEGRO_MAP_LAYER *layer)
 	return layer->name;
 }
 
+int al_get_tile_id(ALLEGRO_MAP_TILE *tile)
+{
+	return tile->id;
+}
+
+char *al_get_object_name(ALLEGRO_MAP_OBJECT *object)
+{
+	return object->name;
+}
+
+char *al_get_object_type(ALLEGRO_MAP_OBJECT *object)
+{
+	return object->type;
+}
+
+int al_get_object_gid(ALLEGRO_MAP_OBJECT *object)
+{
+	return object->gid;
+}
+
+int al_get_object_x(ALLEGRO_MAP_OBJECT *object)
+{
+	return object->x;
+}
+
+int al_get_object_y(ALLEGRO_MAP_OBJECT *object)
+{
+	return object->y;
+}
+
+void al_get_object_pos(ALLEGRO_MAP_OBJECT *object, int *x, int *y)
+{
+	(*x) = object->x;
+	(*y) = object->y;
+}
+
+int al_get_object_width(ALLEGRO_MAP_OBJECT *object)
+{
+	return object->width;
+}
+
+int al_get_object_height(ALLEGRO_MAP_OBJECT *object)
+{
+	return object->height;
+}
+
+void al_get_object_dims(ALLEGRO_MAP_OBJECT *object, int *width, int *height)
+{
+	(*width) = object->width;
+	(*height) = object->height;
+}
+
+bool al_get_object_visible(ALLEGRO_MAP_OBJECT *object)
+{
+	return object->visible;
+}
+
 void _al_free_tile(gpointer data)
 {
 	ALLEGRO_MAP_TILE *tile = (ALLEGRO_MAP_TILE*)data;
