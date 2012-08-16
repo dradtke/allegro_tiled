@@ -18,9 +18,11 @@ all: $(TARGET)
 $(TARGET): $(OBJECTS)
 	@echo "  Linking..."; $(CC) $(LDFLAGS) $^ -o $(TARGET) $(LIBS)
 
-build/%.o: src/%.c
-	@mkdir -p build/
+build/%.o: src/%.c | init
 	@echo "  CC $<"; $(CC) $(CFLAGS) -MD -MF $(@:.o=.deps) -c -o $@ $<
+
+init:
+	@mkdir -p build/
 
 install: all
 	@echo "  Installing..."; install -D -m 0644 "$(TARGET)" "$(DESTDIR)$(LIBDIR)/$(TARGET)"
