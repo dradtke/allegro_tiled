@@ -18,6 +18,10 @@
 #ifndef ALLEGRO_ALLEGRO_H
 #define ALLEGRO_ALLEGRO_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <allegro5/allegro.h>
 
 enum LayerType {
@@ -64,5 +68,9 @@ ALLEGRO_MAP_LAYER *al_get_map_layer(ALLEGRO_MAP *map, char *name);
 
 // destructors
 void al_free_map(ALLEGRO_MAP *map);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
