@@ -15,7 +15,7 @@ LIBDIR	= $(PREFIX)/lib
 INCDIR	= $(PREFIX)/include
 
 HEADER	= "allegro5/allegro_tiled.h"
-PCFILE	= "liballegro_tiled-5.0.pc"
+PCFILE	= "allegro_tiled-5.0.pc"
 
 all: $(TARGET)
 
