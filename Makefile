@@ -11,16 +11,16 @@ OBJECTS := $(patsubst src/%,build/%,$(SOURCES:.c=.o))
 DEPS 	:= $(OBJECTS:.o=.deps)
 
 PREFIX	= /usr/local
-LIBDIR	= $(PREFIX)/lib
 INCDIR	= $(PREFIX)/include
+ifeq ($(shell getconf LONG_BIT),64)
+	LIBDIR = $(PREFIX)/lib64
+else
+	LIBDIR= $(PREFIX)/lib
+endif
 
 HEADER	= "allegro5/allegro_tiled.h"
 PCFILE	= "allegro_tiled-5.0.pc"
 
-# default to /usr/local/lib64 on 64-bit systems
-ifeq ($(shell getconf LONG_BIT),64)
-	LIBDIR = $(LIBDIR)64
-endif
 
 all: $(TARGET)
 
