@@ -11,7 +11,7 @@ OBJECTS := $(patsubst src/%,build/%,$(SOURCES:.c=.o))
 DEPS 	:= $(OBJECTS:.o=.deps)
 
 PREFIX	= /usr/local
-LIBDIR	= $(PREFIX)/lib
+LIBDIR	= $(PREFIX)/lib$(if $(eq `uname -m`,"x86_64"),64)
 INCDIR	= $(PREFIX)/include
 
 HEADER	= "allegro5/allegro_tiled.h"
