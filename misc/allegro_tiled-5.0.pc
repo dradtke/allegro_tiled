@@ -1,15 +1,10 @@
-prefix=@PREFIX@
-exec_prefix=${prefix}
-libdir=${exec_prefix}/lib
-includedir=${prefix}/include
+libdir=@LIBDIR@
+includedir=@INCDIR@
 version=5.0.7
 soversion=5.0
-suffix=
 
 Name: allegro_tiled
 Description: Allegro game programming library, tiled map addon
 Version: ${version}
-Libs: -L${libdir} -lallegro_tiled${suffix}
-Libs.private: 
-Requires: allegro${suffix}-${soversion} >= ${version}
+Libs: -L${libdir} -lallegro_tiled
 Cflags: -I${includedir}
