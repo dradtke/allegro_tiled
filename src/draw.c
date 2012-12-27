@@ -34,6 +34,9 @@ static void _al_draw_orthogonal_tile_layer(ALLEGRO_MAP_LAYER *layer, ALLEGRO_MAP
 	int mx, my;
 	int ystart = sy / map->tile_height, yend = (sy + sh) / map->tile_height;
 	int xstart = sx / map->tile_width, xend = (sx + sw) / map->tile_width;
+
+	al_hold_bitmap_drawing(true); // hugely improves performance
+	
 	for (my = ystart; my <= yend; my++) {
 		for (mx = xstart; mx <= xend; mx++) {
 			ALLEGRO_MAP_TILE *tile = al_get_single_tile(map, layer, mx, my);
@@ -51,6 +54,8 @@ static void _al_draw_orthogonal_tile_layer(ALLEGRO_MAP_LAYER *layer, ALLEGRO_MAP
 			al_draw_tinted_bitmap(tile->bitmap, color, x, y, flags);
 		}
 	}
+	
+	al_hold_bitmap_drawing(false);
 }
 
 static void _al_draw_orthogonal_object_layer(ALLEGRO_MAP_LAYER *layer, ALLEGRO_MAP *map, ALLEGRO_COLOR tint, float sx, float sy, float sw, float sh, float dx, float dy, int flags)
@@ -62,7 +67,9 @@ static void _al_draw_orthogonal_object_layer(ALLEGRO_MAP_LAYER *layer, ALLEGRO_M
 	float r, g, b, a;
 	al_unmap_rgba_f(tint, &r, &g, &b, &a);
 	ALLEGRO_COLOR color = al_map_rgba_f(r, g, b, a * layer->opacity);
-
+	
+	al_hold_bitmap_drawing(true);
+	
 	GSList *objects = layer->objects;
 	while (objects) {
 		ALLEGRO_MAP_OBJECT *object = (ALLEGRO_MAP_OBJECT*)objects->data;
@@ -83,6 +90,8 @@ static void _al_draw_orthogonal_object_layer(ALLEGRO_MAP_LAYER *layer, ALLEGRO_M
 
 		al_draw_tinted_bitmap(object->bitmap, color, x, y-object->height, flags);
 	}
+	
+	al_hold_bitmap_drawing(false);
 }
 
 static void _al_draw_orthogonal_map(ALLEGRO_MAP *map, ALLEGRO_COLOR tint, float sx, float sy, float sw, float sh, float dx, float dy, int flags)
