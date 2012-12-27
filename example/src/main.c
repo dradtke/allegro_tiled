@@ -115,9 +115,11 @@ int main(int argc, char *argv[])
 	al_draw_map_region(map, map_x, map_y, screen_width, screen_height, 0, 0, 0);
 	al_flip_display();
 	
+#if DEBUG
 	// FPS counter
 	double old_time = al_get_time(), fps = 0;
 	int frames_done = 0;
+#endif
 
 	// Main loop
 	while (running) {
@@ -194,6 +196,7 @@ int main(int argc, char *argv[])
 				reload = false;
 			}
 			
+#if DEBUG
 		    double game_time = al_get_time();
 			if(game_time - old_time >= 1.0) {
 				fps = frames_done / (game_time - old_time);
@@ -203,6 +206,7 @@ int main(int argc, char *argv[])
 				fprintf(stderr, "FPS:%f\n", fps);
 			}
 			frames_done++;
+#endif
 			
 			al_draw_map_region(map, map_x, map_y, screen_width, screen_height, 0, 0, 0);
 			
