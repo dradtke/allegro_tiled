@@ -197,10 +197,9 @@ int main(int argc, char *argv[])
 			}
 			
 #if DEBUG
-		    double game_time = al_get_time();
+			double game_time = al_get_time();
 			if(game_time - old_time >= 1.0) {
 				fps = frames_done / (game_time - old_time);
-
 				frames_done = 0;
 				old_time = game_time;
 				fprintf(stderr, "FPS:%f\n", fps);
