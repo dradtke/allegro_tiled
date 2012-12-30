@@ -171,7 +171,7 @@ static void cache_tile_list(ALLEGRO_MAP *map)
  */
 static GHashTable *parse_properties(xmlNode *node)
 {
-	GHashTable *props = g_hash_table_new_full(NULL, &g_str_equal, &g_free, &g_free);
+	GHashTable *props = g_hash_table_new_full(&g_str_hash, &g_str_equal, &g_free, &g_free);
 
 	xmlNode *properties_node = get_first_child_for_name(node, "properties");
 	if (!properties_node) {
