@@ -41,11 +41,4 @@ ALLEGRO_MAP_LAYER *al_get_layer_for_name(ALLEGRO_MAP *map, char *name);
 int al_map_get_pixel_width(ALLEGRO_MAP *map);
 int al_map_get_pixel_height(ALLEGRO_MAP *map);
 
-void dtor_map_tile(void *value, void *user_data);
-void dtor_map_tileset(void *value, void *user_data);
-void dtor_map_layer(void *value, void *user_data);
-void dtor_map_object(void *value, void *user_data);
-void dtor_map_object_group(void *value, void *user_data);
-void dtor_prop(void *value, void *user_data);
-
 #endif
