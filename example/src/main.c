@@ -185,7 +185,6 @@ int main(int argc, char *argv[])
 			al_clear_to_color(al_map_rgb(0, 0, 0));
 
 			// If we need to reload, do it
-			// Otherwise, redraw
 			if (reload) {
 				int x = map_x;
 				int y = map_y;
