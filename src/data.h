@@ -10,14 +10,14 @@ struct _ALLEGRO_MAP
 	int width, height;          // dimensions in tiles
 	int tile_width;             // width of each tile in pixels
 	int tile_height;            // height of each tile in pixels
-    char *orientation;          // "orthogonal" or ... isometric?
-    GSList *layers;             // list of all layers
+	char *orientation;          // "orthogonal" or ... isometric?
+	GSList *layers;             // list of all layers
 	GSList *tile_layers;        // list of tile layers
 	GSList *object_layers;      // list of object layers
-    GSList *tilesets;           // list of tilesets
+	GSList *tilesets;           // list of tilesets
 	int tile_layer_count;       // number of tile layers
 	int object_layer_count;     // number of object layers
-    GHashTable *tiles;          // full list of tiles
+	GHashTable *tiles;          // full list of tiles
 };
 
 struct _ALLEGRO_MAP_LAYER
