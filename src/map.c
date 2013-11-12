@@ -216,12 +216,24 @@ ALLEGRO_MAP_LAYER *al_get_layer_for_name(ALLEGRO_MAP *map, char *name)
 	return NULL;
 }
 
+/*
+ * Return the first object found in the map with the corresponding name.
+ */
 ALLEGRO_MAP_OBJECT *al_get_object_for_name(ALLEGRO_MAP *map, char *name)
 {
+	GSList *layers = map->layers;
+	while (layers) {
+		ALLEGRO_MAP_LAYER *layer = (ALLEGRO_MAP_LAYER*)layers->data;
+		layers = g_slist_next(layers);
+
+		GSList *objects = layer->objects;
+		while (objects) {
+			ALLEGRO_MAP_OBJECT *object = (ALLEGRO_MAP_OBJECT*)objects->data;
+			objects = g_slist_next(objects);
+			if (!strcmp(object->name, name)) {
+				return object;
+			}
+		}
+	}
 	return NULL;
 }
-
-/*
- * Destructors.
- */
-
