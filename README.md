@@ -27,8 +27,8 @@ The following is not yet supported:
 Compiling the Library
 =====================
 
-On Linux:
----------
+Dependencies in Linux:
+----------------------
 
 Make sure the following dependencies are installed:
 
@@ -37,10 +37,33 @@ Make sure the following dependencies are installed:
  * xml2
  * zlib
  * glib
+ * cmake
 
-Then simply run `make` in the root folder to compile it, and optionally `sudo make [install|uninstall]` to handle (un)installation. To run the example, cd to the examples folder and type `make run`. Use the arrow keys to scroll and Space to reload the map file.
+Dependencies in OSX:
+--------------------
+
+Make sure the following dependencies are installed using [Homebrew](http://brew.sh/):
+
+ * allegro5
+ * libxml2
+ * zlib
+ * glib
+ * cmake
+
+WARNING: Note that right now, this library does not link against the brew versions of zlib and libxml2 if they are not linked. Note that I do not know if linking these libs will break other software, so use these instructions with a grain of salt.
+
+Run the following in a shell (after noting the above warning):
+```bash
+brew link libxml2 --force
+brew link zlib --force
+```
+
+Compiling:
+----------
+
+Then simply run `cmake .` followed by `make` in the root folder to compile it, and optionally `sudo make install` to handle installation. To run the example, cd to the examples folder and type `LD_LIBRARY_PATH=.. ./example`. Use the arrow keys to scroll and Space to reload the map file.
 
 On Other Platorms:
 ------------------
 
-No other platforms are supported yet, but this should change in the future. If you want to have this module available on your platform ASAP, then let me know!
+This should work just fine on Windows and possibly FreeBSD, provided you know how to use CMake for those platforms and have the proper dependencies installed. However, because I primarily develop on Linux, I don't test on those platforms. Bug reports and fixes are welcome.

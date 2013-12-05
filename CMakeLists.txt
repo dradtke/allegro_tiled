@@ -1,0 +1,94 @@
+cmake_minimum_required(VERSION 2.6)
+project(allegro_tiled)
+
+# Allows us to get CMake stuff from other places
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
+# Utility functions
+include(Utils)
+
+# Options
+option(WANT_EXAMPLE "build the example" true)
+
+# Use pkg-config for all deps
+find_package(PkgConfig)
+
+if (APPLE)
+	# $(brew --prefix libxml2)/lib/pkgconfig
+	execute_process(
+		COMMAND brew --prefix
+		OUTPUT_VARIABLE brew_path
+		RESULT_VARIABLE brew_failed
+	)
+if (NOT brew_failed)
+		set(ENV{PKG_CONFIG_PATH} "${brew_path}/lib/pkgconfig")
+	endif()
+endif()
+
+pkg_check_modules(
+	ALLEGRO REQUIRED
+	allegro-5.0
+	allegro_main-5.0
+	allegro_image-5.0
+)
+
+pkg_check_modules(
+	GLIB REQUIRED
+	glib-2.0
+)
+
+pkg_check_modules(
+	LIBXML REQUIRED
+	libxml-2.0
+)
+
+pkg_check_modules(
+	ZLIB REQUIRED
+	zlib
+)
+
+link_directories(
+	${ALLEGRO_LIBRARY_DIRS}
+	${GLIB_LIBRARY_DIRS}
+	${LIBXML_LIBRARY_DIRS}
+	${ZLIB_LIBRARY_DIRS}
+)
+
+include_directories(
+	${ALLEGRO_INCLUDE_DIRS}
+	${GLIB_INCLUDE_DIRS}
+	${LIBXML_INCLUDE_DIRS}
+	${ZLIB_INCLUDE_DIRS}
+	${CMAKE_SOURCE_DIR}/include
+)
+
+file(GLOB allegro_tiled_headers include/allegro5/*.h)
+file(GLOB allegro_tiled_sources src/*.c)
+
+add_library(
+	allegro_tiled
+	${allegro_tiled_sources}
+)
+
+target_link_libraries(
+	allegro_tiled
+	${ALLEGRO_LIBRARIES}
+	${GLIB_LIBRARIES}
+	${LIBXML_LIBRARIES}
+	${ZLIB_LIBRARIES}
+)
+
+install(
+	TARGETS allegro_tiled
+	ARCHIVE DESTINATION lib
+	LIBRARY DESTINATION lib
+)
+
+install(
+	FILES ${allegro_tiled_headers}
+	DESTINATION include/allegro5
+)
+
+if (WANT_EXAMPLE)
+	add_subdirectory(example)
+endif()
