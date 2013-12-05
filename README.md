@@ -50,14 +50,6 @@ Make sure the following dependencies are installed using [Homebrew](http://brew.
  * glib
  * cmake
 
-WARNING: Note that right now, this library does not link against the brew versions of zlib and libxml2 if they are not linked. Note that I do not know if linking these libs will break other software, so use these instructions with a grain of salt.
-
-Run the following in a shell (after noting the above warning):
-```bash
-brew link libxml2 --force
-brew link zlib --force
-```
-
 Compiling:
 ----------
 

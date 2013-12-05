@@ -13,17 +13,9 @@ option(WANT_EXAMPLE "build the example" true)
 # Use pkg-config for all deps
 find_package(PkgConfig)
 
-if (APPLE)
-	# $(brew --prefix libxml2)/lib/pkgconfig
-	execute_process(
-		COMMAND brew --prefix
-		OUTPUT_VARIABLE brew_path
-		RESULT_VARIABLE brew_failed
-	)
-if (NOT brew_failed)
-		set(ENV{PKG_CONFIG_PATH} "${brew_path}/lib/pkgconfig")
-	endif()
-endif()
+# Note: I've set this to not just run for APPLE
+# just in case someone's using linuxbrew
+add_homebrew_package_path(libxml2 zlib)
 
 pkg_check_modules(
 	ALLEGRO REQUIRED

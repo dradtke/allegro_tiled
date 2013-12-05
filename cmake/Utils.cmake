@@ -1,5 +1,5 @@
 # Includes the following functions
-#  copy_data
+#  copy_data add_brew_package_path
 
 # This is used for copying assets
 # It allows for assets to be copied to the build dir
@@ -23,4 +23,28 @@ function(copy_data target name destination)
                     "${CMAKE_CURRENT_SOURCE_DIR}/${file}" "${destination}/${file}"
             )
     endforeach()
+endfunction()
+
+# This function is used to add a homebrew package
+# to the pkg-config path. This can currently only
+# be run once .
+function (add_homebrew_package_path)
+	set(first true)
+	foreach(f ${ARGN})
+		execute_process(
+			COMMAND brew --prefix ${f}
+			OUTPUT_VARIABLE brew_path
+			RESULT_VARIABLE brew_failed
+		)
+		if (NOT brew_failed)
+			STRING(REGEX REPLACE "(\r?\n)+$" "" brew_path "${brew_path}")
+			if (first)
+				set(ENV{PKG_CONFIG_PATH} "${brew_path}/lib/pkgconfig")
+				set(first false)
+			else()
+				set(ENV{PKG_CONFIG_PATH} "$ENV{PKG_CONFIG_PATH}:${brew_path}/lib/pkgconfig")
+			endif()
+			MESSAGE("$ENV{PKG_CONFIG_PATH}")
+		endif()
+	endforeach()
 endfunction()
