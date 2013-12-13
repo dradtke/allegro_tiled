@@ -17,12 +17,20 @@ find_package(PkgConfig)
 # just in case someone's using linuxbrew
 add_homebrew_package_path(libxml2 zlib)
 
-pkg_check_modules(
-	ALLEGRO REQUIRED
-	allegro-5.0
-	allegro_main-5.0
-	allegro_image-5.0
-)
+if(APPLE)
+	pkg_check_modules(
+		ALLEGRO REQUIRED
+		allegro-5.0
+		allegro_main-5.0
+		allegro_image-5.0
+	)
+else()
+	pkg_check_modules(
+		ALLEGRO REQUIRED
+		allegro-5.0
+		allegro_image-5.0
+	)
+endif()
 
 pkg_check_modules(
 	GLIB REQUIRED
