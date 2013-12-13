@@ -1,5 +1,5 @@
-libdir=@LIBDIR@
-includedir=@INCDIR@
+libdir=@CMAKE_INSTALL_PREFIX@/lib
+includedir=@CMAKE_INSTALL_PREFIX@/include
 version=5.0.7
 soversion=5.0
 

@@ -57,11 +57,26 @@ include_directories(
 file(GLOB allegro_tiled_headers include/allegro5/*.h)
 file(GLOB allegro_tiled_sources src/*.c)
 
+# Generate pc files
+configure_file(
+	misc/allegro_tiled-5.pc.in
+	misc/allegro_tiled-5.pc
+	@ONLY
+)
+
+configure_file(
+	misc/allegro_tiled-5.pc.in
+	misc/allegro_tiled-5.0.pc
+	@ONLY
+)
+
+# Actually build the library
 add_library(
 	allegro_tiled
 	${allegro_tiled_sources}
 )
 
+# Make sure the library is linked against everything we need
 target_link_libraries(
 	allegro_tiled
 	${ALLEGRO_LIBRARIES}
@@ -81,6 +96,12 @@ install(
 	DESTINATION include/allegro5
 )
 
+install(
+	FILES misc/allegro_tiled-5.pc misc/allegro_tiled-5.0.pc
+	DESTINATION lib/pkgconfig
+)
+
+# Build the example if the option is enabled
 if (WANT_EXAMPLE)
 	add_subdirectory(example)
 endif()
