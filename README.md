@@ -27,8 +27,8 @@ The following is not yet supported:
 Compiling the Library
 =====================
 
-On Linux:
----------
+Dependencies in Linux:
+----------------------
 
 Make sure the following dependencies are installed:
 
@@ -37,10 +37,29 @@ Make sure the following dependencies are installed:
  * xml2
  * zlib
  * glib
+ * cmake
 
-Then simply run `make` in the root folder to compile it, and optionally `sudo make [install|uninstall]` to handle (un)installation. To run the example, cd to the examples folder and type `make run`. Use the arrow keys to scroll and Space to reload the map file.
+Dependencies in OSX:
+--------------------
+
+Make sure the following dependencies are installed using [Homebrew](http://brew.sh/):
+
+ * allegro5
+ * libxml2
+ * zlib
+ * glib
+ * cmake
+
+Compiling:
+----------
+
+Then simply run `cmake .` followed by `make` in the root folder to compile it, and optionally `sudo make install` to handle installation. To run the example, cd to the examples folder and type `LD_LIBRARY_PATH=.. ./example`. Use the arrow keys to scroll and Space to reload the map file.
+
+If you wish to disable building the example, simply run cmake with `-DWANT_EXAMPLE=Off` before building the library.
+
+CMake will configure the build for a static library by default. If you would like to build a shared library instead, add `-DBUILD_SHARED_LIBS` to the cmake command above.
 
 On Other Platorms:
 ------------------
 
-No other platforms are supported yet, but this should change in the future. If you want to have this module available on your platform ASAP, then let me know!
+This should work just fine on Windows and possibly FreeBSD, provided you know how to use CMake for those platforms and have the proper dependencies installed. However, because I primarily develop on Linux, I don't test on those platforms. Bug reports and fixes are welcome.
