@@ -55,6 +55,10 @@ Compiling:
 
 Then simply run `cmake .` followed by `make` in the root folder to compile it, and optionally `sudo make install` to handle installation. To run the example, cd to the examples folder and type `LD_LIBRARY_PATH=.. ./example`. Use the arrow keys to scroll and Space to reload the map file.
 
+If you wish to disable building the example, simply run cmake with `-DWANT_EXAMPLE=Off` before building the library.
+
+CMake will configure the build for a static library by default. If you would like to build a shared library instead, add `-DBUILD_SHARED_LIBS` to the cmake command above.
+
 On Other Platorms:
 ------------------
 
