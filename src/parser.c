@@ -30,7 +30,7 @@
 
 // Overridable resources path. Defaults to
 // al_get_standard_path(ALLEGRO_RESOURCES_PATH).
-static char *RESOURCES_PATH = NULL;
+static ALLEGRO_PATH *RESOURCE_PATH = NULL;
 
 /*
  * Small workaround for Allegro's list creation.
@@ -214,9 +214,14 @@ static GHashTable *parse_properties(xmlNode *node)
  * resources path, which is usually the directory containing the executable. Use this
  * method to override that behavior by specifying a different path to make these calls
  * relative to. Calling this method with NULL will cause it to revert back to the default.
+ *
+ * Changing the resource path will cause the old one to be freed if it was non-NULL.
  */
-void al_set_map_resources_root(char *path)
+void al_set_map_resources_root(ALLEGRO_PATH *path)
 {
+	if (RESOURCE_PATH != NULL) {
+		al_destroy_path(RESOURCE_PATH);
+	}
 	RESOURCE_PATH = path;
 }
 
@@ -233,9 +238,9 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 	unsigned i, j;
 	char *cwd = al_get_current_directory();
 
-	ALLEGRO_PATH *resources = (RESOURCES_PATH == NULL
-		? al_get_standard_path(ALLEGRO_RESOURCES_PATH)
-		: al_create_path_for_directory(RESOURCES_PATH)
+	ALLEGRO_PATH *resources = (RESOURCE_PATH != NULL
+		? al_clone_path(RESOURCE_PATH)
+		: al_get_standard_path(ALLEGRO_RESOURCES_PATH)
 	);
 	ALLEGRO_PATH *maps = al_create_path(dir);
 

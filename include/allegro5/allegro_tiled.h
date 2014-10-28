@@ -44,7 +44,7 @@ typedef struct _ALLEGRO_MAP_OBJECT_GROUP   ALLEGRO_MAP_OBJECT_GROUP;
 typedef struct _ALLEGRO_MAP_OBJECT         ALLEGRO_MAP_OBJECT;
 
 // parsing methods
-void al_set_map_resources_root(char *path);
+void al_set_map_resources_root(ALLEGRO_PATH *path);
 ALLEGRO_MAP *al_open_map(const char *dir, const char *filename);
 
 // drawing methods

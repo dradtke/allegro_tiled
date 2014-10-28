@@ -35,7 +35,7 @@
 
 #define MALLOC(x) (x *)al_malloc(sizeof(x))
 
-void al_set_map_resources_root(char *path);
+void al_set_map_resources_root(ALLEGRO_PATH *path);
 ALLEGRO_MAP *al_open_map(const char *dir, const char *filename);
 
 #endif
