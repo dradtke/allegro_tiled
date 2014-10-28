@@ -15,17 +15,12 @@
  * For more information, visit http://www.gnu.org/copyleft
  */
 
-#ifndef _PARSER_H
-#define _PARSER_H
+#ifndef _UTIL_H
+#define _UTIL_H
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_tiled.h>
-#include <glib.h>
-#include "data.h"
-#include "map.h"
-#include "xml.h"
-#include "zpipe.h"
 
-#define MALLOC(x) (x *)al_malloc(sizeof(x))
+ALLEGRO_PATH *al_find_parent(char *name);
 
 #endif

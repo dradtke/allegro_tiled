@@ -1,25 +1,18 @@
 /*
  * This addon adds Tiled map support to the Allegro game library.
- * Copyright (c) 2012-2014 Damien Radtke - www.damienradtke.com
+ * Copyright (c) 2012 Damien Radtke - www.damienradtke.org
  *
- * This software is provided 'as-is', without any express or implied
- * warranty. In no event will the authors be held liable for any damages
- * arising from the use of this software.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3.0 of the License, or (at your option) any later version.
  *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  *
- *    1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software. If you use this software
- *    in a product, an acknowledgment in the product documentation would be
- *    appreciated but is not required.
- *
- *    2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.
- *
- *    3. This notice may not be removed or altered from any source
- *    distribution.
+ * For more information, visit http://www.gnu.org/copyleft
  *
  *                               ---
  *
@@ -27,6 +20,10 @@
  */
 
 #include "parser.h"
+
+// Overridable resources path. Defaults to
+// al_get_standard_path(ALLEGRO_RESOURCES_PATH).
+static char *RESOURCES_PATH = NULL;
 
 /*
  * Small workaround for Allegro's list creation.
@@ -206,9 +203,19 @@ static GHashTable *parse_properties(xmlNode *node)
 }
 
 /*
- * Parses a map file
- * Given the path to a map file, returns a new map struct
- * The struct must be freed once it's done being used
+ * By default, all calls to al_open_map() will be relative to the default Allegro
+ * resources path, which is usually the directory containing the executable. Use this
+ * method to override that behavior by specifying a different path to make these calls
+ * relative to. Calling this method with NULL will cause it to revert back to the default.
+ */
+void al_set_map_resources_root(char *path)
+{
+	RESOURCE_PATH = path;
+}
+
+/*
+ * Parses a map file and returns a pointer to a new ALLEGRO_MAP struct. It should
+ * be freed when it's no longer needed.
  */
 ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 {
@@ -217,9 +224,12 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 	ALLEGRO_MAP *map;
 
 	unsigned i, j;
+	char *cwd = al_get_current_directory();
 
-	ALLEGRO_PATH *cwd = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
-	ALLEGRO_PATH *resources = al_clone_path(cwd);
+	ALLEGRO_PATH *resources = (RESOURCES_PATH == NULL
+		? al_get_standard_path(ALLEGRO_RESOURCES_PATH)
+		: al_create_path_for_directory(RESOURCES_PATH)
+	);
 	ALLEGRO_PATH *maps = al_create_path(dir);
 
 	al_join_paths(resources, maps);
@@ -458,7 +468,8 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 	}
 
 	xmlFreeDoc(doc);
-	al_change_directory(al_path_cstr(cwd, ALLEGRO_NATIVE_PATH_SEP));
+	al_change_directory(cwd);
+	al_free(cwd);
 
 	return map;
 }
