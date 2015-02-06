@@ -15,8 +15,8 @@
  * For more information, visit http://www.gnu.org/copyleft
  */
 
-#ifndef ALLEGRO_ALLEGRO_H
-#define ALLEGRO_ALLEGRO_H
+#ifndef ALLEGRO_TILED_H
+#define ALLEGRO_TILED_H
 
 #ifdef __cplusplus
 extern "C" {
