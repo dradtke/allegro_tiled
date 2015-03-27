@@ -410,9 +410,7 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 				object->height = (object_height ? atoi(object_height) : 0);
 
 				char *gid = get_xml_attribute(object_node, "gid");
-				if (gid) {
-					object->gid = atoi(gid);
-				}
+				object->gid = (gid ? atoi(gid) : 0);
 
 				char *object_visible = get_xml_attribute(object_node, "visible");
 				object->visible = (object_visible ? atoi(object_visible) : 1);
