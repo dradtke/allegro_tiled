@@ -402,6 +402,7 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 				object->type = g_strdup(get_xml_attribute(object_node, "type"));
 				object->x = atoi(get_xml_attribute(object_node, "x"));
 				object->y = atoi(get_xml_attribute(object_node, "y"));
+				object->bitmap = NULL;
 
 				char *object_width = get_xml_attribute(object_node, "width");
 				object->width = (object_width ? atoi(object_width) : 0);
