@@ -20,34 +20,17 @@ if(PKG_CONFIG_FOUND)
 	add_homebrew_package_path(libxml2 zlib)
 
 	if(APPLE)
-		pkg_check_modules(
-			ALLEGRO REQUIRED
-			allegro-5.0
-			allegro_main-5.0
-			allegro_image-5.0
-		)
+		pkg_search_modules(ALLEGRO REQUIRED allegro-5 allegro-5.0)
+		pkg_search_modules(ALLEGRO REQUIRED allegro_main-5 allegro_main-5.0)
+		pkg_search_modules(ALLEGRO REQUIRED allegro_image-5 allegro_image-5.0)
 	else()
-		pkg_check_modules(
-			ALLEGRO REQUIRED
-			allegro-5.0
-			allegro_image-5.0
-		)
+		pkg_search_modules(ALLEGRO REQUIRED allegro-5 allegro-5.0)
+		pkg_search_modules(ALLEGRO REQUIRED allegro_image-5 allegro_image-5.0)
 	endif()
 
-	pkg_check_modules(
-		GLIB REQUIRED
-		glib-2.0
-	)
-
-	pkg_check_modules(
-		LIBXML REQUIRED
-		libxml-2.0
-	)
-
-	pkg_check_modules(
-		ZLIB REQUIRED
-		zlib
-	)
+	pkg_check_modules(GLIB REQUIRED glib-2.0)
+	pkg_check_modules(LIBXML REQUIRED libxml-2.0)
+	pkg_check_modules(ZLIB REQUIRED zlib)
 
 	# Generate pc files
 	configure_file(
