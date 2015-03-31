@@ -222,8 +222,9 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 	ALLEGRO_PATH *resources = al_clone_path(cwd);
 	ALLEGRO_PATH *maps = al_create_path(dir);
 
-	al_join_paths(resources, maps);
-	if (!al_change_directory(al_path_cstr(resources, ALLEGRO_NATIVE_PATH_SEP))) {
+	// Change directory to <cwd>/dir if dir is relative, otherwise dir.
+	ALLEGRO_PATH *new_path = (al_join_paths(resources, maps) ? resources : maps);
+	if (!al_change_directory(al_path_cstr(new_path, ALLEGRO_NATIVE_PATH_SEP))) {
 		fprintf(stderr, "Error: failed to change directory in al_parse_map().");
 	}
 
