@@ -13,7 +13,7 @@ option(WANT_EXAMPLE "build the example" true)
 # Use pkg-config for all deps
 find_package(PkgConfig)
 
-if(PkgConfig_FOUND)
+if(PKG_CONFIG_FOUND)
 
 	# Note: I've set this to not just run for APPLE
 	# just in case someone's using linuxbrew
