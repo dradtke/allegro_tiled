@@ -67,7 +67,6 @@ bool al_get_object_visible(ALLEGRO_MAP_OBJECT *object);
 // accessors
 int al_get_map_width(ALLEGRO_MAP *map);
 int al_get_map_height(ALLEGRO_MAP *map);
-int al_get_map_height(ALLEGRO_MAP *map);
 int al_get_tile_width(ALLEGRO_MAP *map);
 int al_get_tile_height(ALLEGRO_MAP *map);
 char *al_get_map_orientation(ALLEGRO_MAP *map);
