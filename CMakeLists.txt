@@ -79,11 +79,11 @@ link_directories(
 )
 
 include_directories(
+	${CMAKE_SOURCE_DIR}/include
 	${ALLEGRO_INCLUDE_DIRS}
 	${GLIB_INCLUDE_DIRS}
 	${LIBXML_INCLUDE_DIRS}
 	${ZLIB_INCLUDE_DIRS}
-	${CMAKE_SOURCE_DIR}/include
 )
 
 file(GLOB allegro_tiled_headers include/allegro5/*.h)
