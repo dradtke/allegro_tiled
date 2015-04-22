@@ -20,12 +20,12 @@ if(PKG_CONFIG_FOUND)
 	add_homebrew_package_path(libxml2 zlib)
 
 	if(APPLE)
-		pkg_search_modules(ALLEGRO REQUIRED allegro-5 allegro-5.0)
-		pkg_search_modules(ALLEGRO REQUIRED allegro_main-5 allegro_main-5.0)
-		pkg_search_modules(ALLEGRO REQUIRED allegro_image-5 allegro_image-5.0)
+		pkg_search_module(ALLEGRO REQUIRED allegro-5 allegro-5.0)
+		pkg_search_module(ALLEGRO_MAIN REQUIRED allegro_main-5 allegro_main-5.0)
+		pkg_search_module(ALLEGRO_IMAGE REQUIRED allegro_image-5 allegro_image-5.0)
 	else()
-		pkg_search_modules(ALLEGRO REQUIRED allegro-5 allegro-5.0)
-		pkg_search_modules(ALLEGRO REQUIRED allegro_image-5 allegro_image-5.0)
+		pkg_search_module(ALLEGRO REQUIRED allegro-5 allegro-5.0)
+		pkg_search_module(ALLEGRO_IMAGE REQUIRED allegro_image-5 allegro_image-5.0)
 	endif()
 
 	pkg_check_modules(GLIB REQUIRED glib-2.0)
@@ -56,6 +56,8 @@ endif()
 
 link_directories(
 	${ALLEGRO_LIBRARY_DIRS}
+	${ALLEGRO_MAIN_LIBRARY_DIRS}
+	${ALLEGRO_LIBRARY_LIBRARY_DIRS}
 	${GLIB_LIBRARY_DIRS}
 	${LIBXML_LIBRARY_DIRS}
 	${ZLIB_LIBRARY_DIRS}
@@ -63,6 +65,8 @@ link_directories(
 
 include_directories(
 	${ALLEGRO_INCLUDE_DIRS}
+	${ALLEGRO_MAIN_INCLUDE_DIRS}
+	${ALLEGRO_INCLUDE_INCLUDE_DIRS}
 	${GLIB_INCLUDE_DIRS}
 	${LIBXML_INCLUDE_DIRS}
 	${ZLIB_INCLUDE_DIRS}
@@ -82,6 +86,8 @@ add_library(
 target_link_libraries(
 	allegro_tiled
 	${ALLEGRO_LIBRARIES}
+	${ALLEGRO_MAIN_LIBRARIES}
+	${ALLEGRO_IMAGE_LIBRARIES}
 	${GLIB_LIBRARIES}
 	${LIBXML_LIBRARIES}
 	${ZLIB_LIBRARIES}
