@@ -205,43 +205,81 @@ static GHashTable *parse_properties(xmlNode *node)
 	return props;
 }
 
+static enum relative_to resources_rel_to = RELATIVE_TO_EXE;
+
 /*
- * Parses a map file
- * Given the path to a map file, returns a new map struct
- * The struct must be freed once it's done being used
+ * Set where `al_open_map()` finds its maps; the two options are
+ *   1. RELATIVE_TO_EXE (default)
+ *   2. RELATIVE_TO_CWD
+ */
+void al_find_resources_as(enum relative_to rel)
+{
+	resources_rel_to = rel;
+}
+
+/*
+ * Parse a map file into an `ALLEGRO_MAP` struct. By default, relative values of `dir`
+ * will be resolved relative to the path of the running executable. To change this,
+ * call `al_find_resources_as(RELATIVE_TO_CWD);` first.
  */
 ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 {
-	xmlDoc *doc;
-	xmlNode *root;
-	ALLEGRO_MAP *map;
+	char *cwd = al_get_current_directory();
+	if (!cwd) {
+		fprintf(stderr, "failed to get cwd; errno = %d", al_get_errno());
+		return NULL;
+	}
 
-	unsigned i, j;
+	// `resources` will point to either cwd or the location of the running executable,
+	// depending on what was passed in for `rel`.
+	ALLEGRO_PATH *resources;
+	switch (resources_rel_to) {
+		case RELATIVE_TO_EXE:
+			resources = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
+			break;
 
-	ALLEGRO_PATH *cwd = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
-	ALLEGRO_PATH *resources = al_clone_path(cwd);
-	ALLEGRO_PATH *maps = al_create_path(dir);
+		case RELATIVE_TO_CWD:
+			resources = al_create_path(cwd);
+			break;
 
-	al_join_paths(resources, maps);
-	if (!al_change_directory(al_path_cstr(resources, ALLEGRO_NATIVE_PATH_SEP))) {
-		fprintf(stderr, "Error: failed to change directory in al_parse_map().");
+		default:
+			fprintf(stderr, "unexpected value for `resources_rel_to` in al_open_map(): %d\n",
+					resources_rel_to);
+			al_free(cwd);
+			return NULL;
+	}
+
+	ALLEGRO_PATH *map_dir = al_create_path(dir);
+
+	// Change directory to <cwd>/dir if dir is relative, otherwise dir.
+	ALLEGRO_PATH *new_path = (al_join_paths(resources, map_dir) ? resources : map_dir);
+	const char *new_path_cstr = al_path_cstr(new_path, ALLEGRO_NATIVE_PATH_SEP);
+	if (!al_change_directory(new_path_cstr)) {
+		fprintf(stderr, "Error: failed to cd into `%s` in al_open_map().\n",
+				new_path_cstr);
+
+		al_destroy_path(resources);
+		al_destroy_path(map_dir);
+		al_free(cwd);
+		return NULL;
 	}
 
 	al_destroy_path(resources);
-	al_destroy_path(maps);
+	al_destroy_path(map_dir);
 
 	// Read in the data file
-	doc = xmlReadFile(filename, NULL, 0);
+	xmlDoc *doc = xmlReadFile(filename, NULL, 0);
 	if (!doc) {
 		fprintf(stderr, "Error: failed to parse map data: %s\n", filename);
+		al_free(cwd);
 		return NULL;
 	}
 
 	// Get the root element, <map>
-	root = xmlDocGetRootElement(doc);
+	xmlNode *root = xmlDocGetRootElement(doc);
 
 	// Get some basic info
-	map = MALLOC(ALLEGRO_MAP);
+	ALLEGRO_MAP *map = MALLOC(ALLEGRO_MAP);
 	map->width = atoi(get_xml_attribute(root, "width"));
 	map->height = atoi(get_xml_attribute(root, "height"));
 	map->tile_width = atoi(get_xml_attribute(root, "tilewidth"));
@@ -332,8 +370,9 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 			decode_layer_data(get_first_child_for_name(layer_node, "data"), layer);
 
 			// Create any missing tile objects
-			for (i = 0; i<layer->height; i++) {
-				for (j = 0; j<layer->width; j++) {
+			unsigned i, j;
+			for (i = 0; i < layer->height; i++) {
+				for (j = 0; j < layer->width; j++) {
 					char id = al_get_single_tile_id(layer, j, i);
 
 					if (id == 0) {
@@ -457,7 +496,8 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 	}
 
 	xmlFreeDoc(doc);
-	al_change_directory(al_path_cstr(cwd, ALLEGRO_NATIVE_PATH_SEP));
+	al_change_directory(cwd);
+	al_free(cwd);
 
 	return map;
 }

@@ -36,6 +36,9 @@ typedef struct _ALLEGRO_MAP_TILE           ALLEGRO_MAP_TILE;
 typedef struct _ALLEGRO_MAP_OBJECT_GROUP   ALLEGRO_MAP_OBJECT_GROUP;
 typedef struct _ALLEGRO_MAP_OBJECT         ALLEGRO_MAP_OBJECT;
 
+enum relative_to { RELATIVE_TO_EXE, RELATIVE_TO_CWD };
+void al_find_resources_as(enum relative_to rel);
+
 ALLEGRO_MAP *al_open_map(const char *dir, const char *filename);
 
 // drawing methods

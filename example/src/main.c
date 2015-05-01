@@ -105,7 +105,11 @@ int main(int argc, char *argv[])
 	// Start the timer
 	al_start_timer(timer);
 
-	// Parse the map
+	// Parse the map.
+	//
+	// If MAP_FOLDER is relative to the working directory and not the running
+	// executable, then add a call to `al_find_resources_as(RELATIVE_TO_CWD);`
+	// before calling `al_open_map()`.
 	map = al_open_map(MAP_FOLDER, "level1.tmx");
 	int map_total_width = al_get_map_width(map) * al_get_tile_width(map);
 	int map_total_height = al_get_map_height(map) * al_get_tile_height(map);
