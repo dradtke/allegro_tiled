@@ -239,7 +239,7 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 			break;
 
 		case RELATIVE_TO_CWD:
-			resources = al_create_path(cwd);
+			resources = al_create_path_for_directory(cwd);
 			break;
 
 		default:
@@ -249,7 +249,7 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 			return NULL;
 	}
 
-	ALLEGRO_PATH *map_dir = al_create_path(dir);
+	ALLEGRO_PATH *map_dir = al_create_path_for_directory(dir);
 
 	// Change directory to <cwd>/dir if dir is relative, otherwise dir.
 	ALLEGRO_PATH *new_path = (al_join_paths(resources, map_dir) ? resources : map_dir);
@@ -263,6 +263,8 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 		al_free(cwd);
 		return NULL;
 	}
+
+	printf("current directory: %s\n", al_get_current_directory());
 
 	al_destroy_path(resources);
 	al_destroy_path(map_dir);
@@ -309,6 +311,9 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 		tileset->height = atoi(get_xml_attribute(image_node, "height"));
 		tileset->source = g_strdup(get_xml_attribute(image_node, "source"));
 		tileset->bitmap = al_load_bitmap(tileset->source);
+		if (!tileset->bitmap) {
+			fprintf(stderr, "Error: no bitmap available; did you load the image addon?\n");
+		}
 
 		// Get this tileset's tiles
 		GSList *tiles = get_children_for_name(tileset_node, "tile");
@@ -414,11 +419,13 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 						int width = tileset->width / tileset->tilewidth;
 						int x = (id % width) * tileset->tilewidth;
 						int y = (id / width) * tileset->tileheight;
-						tile->bitmap = al_create_sub_bitmap(
-								tileset->bitmap,
-								x, y,
-								tileset->tilewidth,
-								tileset->tileheight);
+						if (tileset->bitmap) {
+							tile->bitmap = al_create_sub_bitmap(
+									tileset->bitmap,
+									x, y,
+									tileset->tilewidth,
+									tileset->tileheight);
+						}
 					}
 				}
 			}
