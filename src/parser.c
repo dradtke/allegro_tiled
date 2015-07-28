@@ -264,8 +264,6 @@ ALLEGRO_MAP *al_open_map(const char *dir, const char *filename)
 		return NULL;
 	}
 
-	printf("current directory: %s\n", al_get_current_directory());
-
 	al_destroy_path(resources);
 	al_destroy_path(map_dir);
 
